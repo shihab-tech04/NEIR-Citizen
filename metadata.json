@@ -1,0 +1,6 @@
+{
+  "name": "BTRC NEIR Citizen Portal — UX Prototype",
+  "description": "Faithful interactive prototype of the Bangladesh Telecommunication Regulatory Commission (BTRC) National Equipment Identity Register (NEIR) Citizen Portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
