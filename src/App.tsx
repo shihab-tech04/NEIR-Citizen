@@ -109,7 +109,7 @@ export default function App() {
             />
 
             {/* 3-Step Guide */}
-            <ThreeStepGuide
+            <div className="px-4 sm:px-5"><ThreeStepGuide
               language={language}
               onOpenWebGuide={() => {
                 setCurrentRoute('guides');
@@ -121,8 +121,9 @@ export default function App() {
               }}
             />
 
+            </div>
             {/* FAQ Section */}
-            <FaqSection language={language} />
+            <div className="px-4 sm:px-5"><FaqSection language={language} /></div>
           </div>
         )}
 
