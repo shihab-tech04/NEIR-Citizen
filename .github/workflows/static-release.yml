@@ -22,6 +22,8 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run lint
       - run: npm run build
+      - name: Record raw SHA1 digests for standalone Vercel file delivery
+        run: (cd dist && find . -type f -print0 | sort -z | xargs -0 sha1sum) > dist/SHA1SUMS
       - name: Publish compiled files to dedicated branch
         env:
           SOURCE_SHA: ${{ github.sha }}
