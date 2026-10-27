@@ -31,4 +31,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/neir-source
           git commit -m "assets: bundle original NEIR page and guide images"
+          git pull --rebase origin fix/neir-html-parity
           git push origin HEAD:fix/neir-html-parity
