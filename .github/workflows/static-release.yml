@@ -22,6 +22,18 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run lint
       - run: npm run build
+      - name: Optimize large source guide image without cropping
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          src=Path('dist/neir-source/user-guides/pwd-guide-web-steps/pwd-guide-web-full-process.png')
+          dst=src.with_suffix('.webp')
+          with Image.open(src) as img:
+              img.save(dst, format='WEBP', quality=87, method=6)
+          print(f'Original {src.stat().st_size} bytes, optimized {dst.stat().st_size} bytes')
+          PY
       - name: Record raw SHA1 digests for standalone Vercel file delivery
         run: (cd dist && find . -type f -print0 | sort -z | xargs -0 sha1sum) > dist/SHA1SUMS
       - name: Split oversized NEIR source assets for verified transfer
