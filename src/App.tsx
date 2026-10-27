@@ -8,20 +8,18 @@ import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomeHero } from './components/HomeHero.tsx';
-import { ImeiChecker } from './components/ImeiChecker.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
-import { CitizenServices } from './components/CitizenServices.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { LoginModal } from './components/LoginModal.tsx';
-import { CitizenDashboardModal } from './components/CitizenDashboardModal.tsx';
+import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
 import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
 import { ProposedDesignView } from './components/ProposedDesignView.tsx';
-import { INITIAL_SAMPLE_QUERIES, QueryTicket } from './utils/queryTracker.ts';
+import { QueryTicket } from './utils/queryTracker.ts';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>('home');
-  const [language, setLanguage] = useState<Language>('bn');
+  const [language, setLanguage] = useState<Language>('en');
 
   // Citizen Session
   const [session, setSession] = useState<UserSession>({
@@ -51,10 +49,10 @@ export default function App() {
 
   // Modal dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
 
   // Queries state
-  const [queries, setQueries] = useState<QueryTicket[]>(INITIAL_SAMPLE_QUERIES);
+  const [queries, setQueries] = useState<QueryTicket[]>([]);
   const [prefilledContactImei, setPrefilledContactImei] = useState<string>('');
 
   const handleScrollToVerifier = () => {
@@ -68,37 +66,6 @@ export default function App() {
       const el = document.getElementById('imei-verifier');
       el?.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const handleSelectService = (service: 'verify' | 'register' | 'lost' | 'query' | 'guides') => {
-    if (service === 'verify') {
-      handleScrollToVerifier();
-    } else if (service === 'register') {
-      if (!session.isLoggedIn) {
-        setIsLoginOpen(true);
-      } else {
-        setIsDashboardOpen(true);
-      }
-    } else if (service === 'lost') {
-      setCurrentRoute('contact');
-    } else if (service === 'query') {
-      setCurrentRoute('contact');
-    } else if (service === 'guides') {
-      setCurrentRoute('guides');
-    }
-  };
-
-  const handleAddHandset = (newHandset: {
-    imei: string;
-    brand: string;
-    model: string;
-    registeredOn: string;
-    status: 'Active' | 'Under Review' | 'Flagged';
-  }) => {
-    setSession((prev) => ({
-      ...prev,
-      registeredHandsets: [newHandset, ...prev.registeredHandsets],
-    }));
   };
 
   const handleAddQuery = (newTicket: QueryTicket) => {
@@ -117,42 +84,27 @@ export default function App() {
         language={language}
         onLanguageChange={setLanguage}
         session={session}
-        onOpenLogin={() => setIsLoginOpen(true)}
-        onOpenDashboard={() => setIsDashboardOpen(true)}
+        onOpenLogin={() => { setLoginInitialView('login'); setIsLoginOpen(true); }}
+        onOpenRegister={() => { setLoginInitialView('register'); setIsLoginOpen(true); }}
+        onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
           setSession((prev) => ({ ...prev, isLoggedIn: false }));
+          setCurrentRoute('home');
         }}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
           <div className="space-y-8">
-            {/* Hero Section */}
+            {/* Saved NEIR homepage hero and its built-in first-14-digit IMEI checker */}
             <HomeHero
               language={language}
               onScrollToVerifier={handleScrollToVerifier}
               onOpenGuides={() => {
                 setCurrentRoute('guides');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-
-            {/* IMEI Verification Section */}
-            <ImeiChecker
-              language={language}
-              onNavigateToContact={(imeiVal) => {
-                setPrefilledContactImei(imeiVal || '');
-                setCurrentRoute('contact');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onNavigateToRegister={() => {
-                if (!session.isLoggedIn) {
-                  setIsLoginOpen(true);
-                } else {
-                  setIsDashboardOpen(true);
-                }
               }}
             />
 
@@ -169,12 +121,6 @@ export default function App() {
               }}
             />
 
-            {/* Key Citizen Services */}
-            <CitizenServices
-              language={language}
-              onSelectService={handleSelectService}
-            />
-
             {/* FAQ Section */}
             <FaqSection language={language} />
           </div>
@@ -184,7 +130,7 @@ export default function App() {
         {currentRoute === 'guides' && (
           <UserGuidesView
             language={language}
-            onOpenLogin={() => setIsLoginOpen(true)}
+            onOpenLogin={() => { setLoginInitialView('login'); setIsLoginOpen(true); }}
           />
         )}
 
@@ -215,13 +161,23 @@ export default function App() {
             }}
           />
         )}
+        {/* Source-backed authenticated citizen IMEI list */}
+        {currentRoute === 'dashboard' && (
+          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 pb-10"><CitizenImeiListView language={language} session={session} /></div>
+        )}
       </main>
+
+      {/* Persistent safety disclosure, intentionally outside the source-fidelity page layout. */}
+      <p aria-label="Prototype disclosure" className="fixed z-50 bottom-3 left-3 rounded-lg border border-cyan-200 bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-cyan-900 shadow-md">
+        NEIR UX Prototype · No live BTRC services
+      </p>
 
       {/* Footer */}
       <Footer language={language} />
 
       {/* Modals */}
       <LoginModal
+        initialView={loginInitialView}
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         language={language}
@@ -231,19 +187,10 @@ export default function App() {
             ...newSessionData,
             isLoggedIn: true,
           }));
+          setCurrentRoute('dashboard');
         }}
       />
 
-      <CitizenDashboardModal
-        isOpen={isDashboardOpen}
-        onClose={() => setIsDashboardOpen(false)}
-        language={language}
-        session={session}
-        onAddHandset={handleAddHandset}
-        onLogout={() => {
-          setSession((prev) => ({ ...prev, isLoggedIn: false }));
-        }}
-      />
     </div>
   );
 }
