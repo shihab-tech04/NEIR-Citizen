@@ -1,0 +1,46 @@
+name: Prepare NEIR static release branch
+on:
+  push:
+    branches: [feat/source-faithful-imei-baseline]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: neir-static-release
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run build
+      - name: Publish compiled files to dedicated branch
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          cp -R dist /tmp/neir-compiled-static
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --heads origin presentation-static | grep -q 'refs/heads/presentation-static'; then
+            git fetch origin presentation-static
+            git checkout -B presentation-static origin/presentation-static
+            git rm -r --ignore-unmatch .
+          else
+            git checkout --orphan presentation-static
+            git rm -r --ignore-unmatch .
+          fi
+          cp -R /tmp/neir-compiled-static/. .
+          printf '%s\n' "$SOURCE_SHA" > SOURCE_COMMIT.txt
+          touch .nojekyll
+          git add -A
+          git commit -m "build: NEIR frontend-only static presentation from $SOURCE_SHA"
+          git push origin HEAD:refs/heads/presentation-static
