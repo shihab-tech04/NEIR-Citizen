@@ -24,6 +24,21 @@ jobs:
       - run: npm run build
       - name: Record raw SHA1 digests for standalone Vercel file delivery
         run: (cd dist && find . -type f -print0 | sort -z | xargs -0 sha1sum) > dist/SHA1SUMS
+      - name: Split oversized NEIR source assets for verified transfer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          for source in Path('dist/neir-source/user-guides').rglob('*.png'):
+              if source.stat().st_size <= 1000000:
+                  continue
+              data = base64.b64encode(source.read_bytes()).decode('ascii')
+              target = Path('dist/__delivery_chunks__') / source.relative_to('dist')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              for i, start in enumerate(range(0, len(data), 720000)):
+                  Path(str(target) + f'.part{i:03d}.txt').write_text(data[start:start+720000])
+              print(f'Chunked {source} into {(len(data)+719999)//720000} parts')
+          PY
       - name: Publish compiled files to dedicated branch
         env:
           SOURCE_SHA: ${{ github.sha }}
