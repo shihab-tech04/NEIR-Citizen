@@ -8,9 +8,7 @@ import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomeHero } from './components/HomeHero.tsx';
-import { ImeiChecker } from './components/ImeiChecker.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
-import { CitizenServices } from './components/CitizenServices.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { LoginModal } from './components/LoginModal.tsx';
 import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
@@ -69,24 +67,6 @@ export default function App() {
     }
   };
 
-  const handleSelectService = (service: 'verify' | 'register' | 'lost' | 'query' | 'guides') => {
-    if (service === 'verify') {
-      handleScrollToVerifier();
-    } else if (service === 'register') {
-      if (!session.isLoggedIn) {
-        setIsLoginOpen(true);
-      } else {
-        setCurrentRoute('dashboard');
-      }
-    } else if (service === 'lost') {
-      setCurrentRoute('contact');
-    } else if (service === 'query') {
-      setCurrentRoute('contact');
-    } else if (service === 'guides') {
-      setCurrentRoute('guides');
-    }
-  };
-
   const handleAddQuery = (newTicket: QueryTicket) => {
     setQueries((prev) => [newTicket, ...prev]);
   };
@@ -112,34 +92,17 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
           <div className="space-y-8">
-            {/* Hero Section */}
+            {/* Saved NEIR homepage hero and its built-in first-14-digit IMEI checker */}
             <HomeHero
               language={language}
               onScrollToVerifier={handleScrollToVerifier}
               onOpenGuides={() => {
                 setCurrentRoute('guides');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-
-            {/* IMEI Verification Section */}
-            <ImeiChecker
-              language={language}
-              onNavigateToContact={(imeiVal) => {
-                setPrefilledContactImei(imeiVal || '');
-                setCurrentRoute('contact');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onNavigateToRegister={() => {
-                if (!session.isLoggedIn) {
-                  setIsLoginOpen(true);
-                } else {
-                  setCurrentRoute('dashboard');
-                }
               }}
             />
 
@@ -154,12 +117,6 @@ export default function App() {
                 setCurrentRoute('guides');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-            />
-
-            {/* Key Citizen Services */}
-            <CitizenServices
-              language={language}
-              onSelectService={handleSelectService}
             />
 
             {/* FAQ Section */}
