@@ -110,3 +110,35 @@ button,input,select,textarea{font:inherit}
  .neir-source-step-content{padding:22px}
  .neir-source-step-content h3{font-size:27px}
 }
+
+/* Reproduce the captured white PrimeNG dialog, not the invented green login. */
+.neir-dialog-backdrop{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.neir-original-dialog{width:25vw;min-width:350px;max-width:95vw;max-height:92vh;overflow:auto;display:flex;flex-direction:column;background:#fff;border-radius:6px;box-shadow:0 18px 55px #0003;color:#111827}
+.neir-dialog-maximized{width:calc(100vw - 32px);height:calc(100vh - 32px)}
+.neir-original-dialog-top{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+.neir-original-dialog-top h2{font-size:18px;font-weight:600}
+.neir-original-dialog-actions{display:flex;gap:12px;align-items:center}
+.neir-original-dialog-actions button{width:25px;height:25px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer}
+.neir-original-dialog-actions button:hover{color:var(--neir-primary-900)}
+.neir-original-dialog-body{padding:0 24px 24px;overflow-y:auto;flex:1}
+.neir-original-dialog-body form{display:flex;flex-direction:column;gap:12px}
+.neir-original-dialog-body label{font-weight:500;font-size:15px;color:#242424;margin-top:3px}
+.neir-original-dialog-body label span{color:#e11d48}
+.neir-original-dialog-body hr{border:0;border-top:1px solid #ddd;margin:1px 0}
+.neir-dialog-input-icon{position:relative}
+.neir-dialog-input-icon>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#64748b}
+.neir-original-dialog-input{width:100%;min-height:46px;border:1px solid #cbd5e1;border-radius:6px;font-size:15px;padding:11px 12px;outline:none}
+.neir-dialog-input-icon .neir-original-dialog-input{padding-left:42px;padding-right:40px}
+.neir-dialog-input-icon>button{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:5px;color:#64748b}
+.neir-original-dialog-input:focus{border-color:var(--neir-primary-600);box-shadow:0 0 0 1px var(--neir-primary-600)}
+.neir-dialog-primary{width:100%;height:46px;border-radius:8px;background:var(--neir-primary-600);color:#fff;font-size:15px;font-weight:600;margin-top:3px}
+.neir-original-field-error{color:#d32f2f;font-size:13px;line-height:1.35}
+.neir-dialog-switch{font-size:14px;text-align:center;line-height:1.45}
+.neir-dialog-switch button{color:var(--neir-primary-900);font-weight:600}
+.neir-dialog-demo-note{color:#596579;background:#f3f7f9;padding:8px;border-radius:6px;font-size:12px;line-height:1.4}
+.neir-source-guide-tile-img{display:block;width:60px;height:60px;object-fit:contain;margin:0 auto 12px}
+#faq-section{border-radius:32px;padding:64px max(24px,calc((100% - 1200px) / 2));}
+#faq-section>div:first-child{text-align:left}
+#faq-section>div:first-child h2{font-size:46px}
+#faq-section>div:first-child p{font-size:32px}
+@media(max-width:767px){.neir-original-dialog{width:100%;min-width:0;max-height:90vh}#faq-section{padding:28px 16px;border-radius:16px}#faq-section>div:first-child h2{font-size:35px}#faq-section>div:first-child p{font-size:24px}}
