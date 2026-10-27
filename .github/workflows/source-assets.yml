@@ -1,0 +1,34 @@
+name: Recover public NEIR reference media
+on:
+  push:
+    branches: [fix/neir-html-parity]
+    paths: ['.github/workflows/source-assets.yml']
+permissions:
+  contents: write
+jobs:
+  media:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download original public-site assets and validate format
+        run: |
+          set -eu
+          mkdir -p public/neir-source/images public/neir-source/gifs public/neir-source/frames
+          count=0
+          for rel in images/btrc-logo.png images/govt-seal.svg gifs/neir-herobanner.gif images/step-1.svg images/step-2.svg images/step-3.svg images/step-4.svg images/step-5.svg images/step-6.svg frames/right-arrow.png; do
+            for host in testcitizenportal.neir.btrc.gov.bd neir.btrc.gov.bd; do
+              url="https://${host}/assets/${rel}"
+              echo "Attempt: ${url}"
+              if curl -k -f -sSL --connect-timeout 4 --max-time 12 "${url}" -o "/tmp/neir-asset" && [ "$(wc -c < /tmp/neir-asset)" -ge 100 ]; then
+                mime="$(file -b --mime-type /tmp/neir-asset)"
+                case "$mime" in image/png|image/svg+xml|image/gif) cp /tmp/neir-asset "public/neir-source/${rel}"; count=$((count+1)); echo "Recovered: ${rel} (${mime})"; break ;; *) echo "Rejected non-image: ${mime}" ;; esac
+              fi
+            done
+          done
+          echo "Found: $count / 10 assets"
+          if [ "$count" -lt 1 ]; then echo "::warning::Original assets cannot be recovered from public host; reference requires original internal network or bundled files"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/neir-source
+          git commit -m "assets: bundle retrievable original NEIR portal media"
+          git push origin HEAD:fix/neir-html-parity
