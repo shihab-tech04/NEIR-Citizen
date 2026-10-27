@@ -28,6 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           cp -R dist /tmp/neir-compiled-static
+          git clean -fdx
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git ls-remote --heads origin presentation-static | grep -q 'refs/heads/presentation-static'; then
