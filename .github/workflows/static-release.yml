@@ -33,10 +33,10 @@ jobs:
           if git ls-remote --heads origin presentation-static | grep -q 'refs/heads/presentation-static'; then
             git fetch origin presentation-static
             git checkout -B presentation-static origin/presentation-static
-            git rm -r --ignore-unmatch .
+            git rm -r -f --ignore-unmatch .
           else
             git checkout --orphan presentation-static
-            git rm -r --ignore-unmatch .
+            git rm -r -f --ignore-unmatch .
           fi
           cp -R /tmp/neir-compiled-static/. .
           printf '%s\n' "$SOURCE_SHA" > SOURCE_COMMIT.txt
