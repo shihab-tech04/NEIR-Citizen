@@ -1,7 +1,5 @@
 name: Publish NEIR presentation prototype to GitHub Pages
 on:
-  push:
-    branches: [feat/source-faithful-imei-baseline]
   workflow_dispatch:
 permissions:
   contents: read
