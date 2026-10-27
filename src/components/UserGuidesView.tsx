@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Language } from '../types.ts';
-import { BookOpen, LockKeyhole, UserPlus } from 'lucide-react';
+import React from 'react';
 
 type Props = { language: Language; onOpenLogin: () => void };
 type Guide = 'register' | 'reset';
@@ -25,7 +25,7 @@ export const UserGuidesView: React.FC<Props> = () => {
   const steps = isReg ? registration : reset;
   const base = isReg ? 'acc-guide-web-steps/' : 'pwd-guide-web-steps/';
   const fullImage = isReg ? 'acc-guide-web-full-process.png' : 'pwd-guide-web-full-process.png';
-  const url = (file:string) => 'https://testcitizenportal.neir.btrc.gov.bd/assets/user-guides/' + base + file;
+  const url = (file:string) => '/neir-source/user-guides/' + base + file;
   const image = (file:string, alt:string) => broken.includes(file)
     ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Reference illustration unavailable offline: {alt}</div>
     : <img src={url(file)} alt={alt} loading="lazy" onError={() => setBroken(v => [...v, file])} className="w-full rounded-xl object-contain border border-slate-100 bg-white" />;
@@ -33,8 +33,8 @@ export const UserGuidesView: React.FC<Props> = () => {
     <header className="text-center space-y-3"><h1 className="text-3xl md:text-[44px] text-slate-950 font-bold">User Guide of NEIR</h1>
       <p className="text-base sm:text-lg text-slate-700">A complete user guide to help you navigate the system.</p></header>
     <div className="grid grid-cols-2 gap-3 sm:gap-6 max-w-xl mx-auto">
-      <button onClick={() => {setGuide('register');setPlatform('web');}} aria-pressed={isReg} className={isReg ? 'bg-[#E0F7FA] border-2 border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><UserPlus className="mx-auto mb-2"/>Account Registration</button>
-      <button onClick={() => {setGuide('reset');setPlatform('web');}} aria-pressed={!isReg} className={!isReg ? 'bg-[#E0F7FA] border-2 border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><LockKeyhole className="mx-auto mb-2"/>Password Reset</button>
+      <button onClick={() => {setGuide('register');setPlatform('web');}} aria-pressed={isReg} className={isReg ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src="/neir-source/user-guides/tab-img/acc-reg.png" alt=""/>Account Registration</button>
+      <button onClick={() => {setGuide('reset');setPlatform('web');}} aria-pressed={!isReg} className={!isReg ? 'bg-[#E0F7FA] border-2 border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src="/neir-source/user-guides/tab-img/pwd-res.png" alt=""/>Password Reset</button>
     </div>
     <div className="bg-white rounded-[32px] p-5 sm:p-8 lg:p-12 space-y-7">
       <div className="space-y-4"><h2 className="text-2xl sm:text-3xl font-semibold">{isReg ? 'Account Registration' : 'Password Reset'}</h2>
