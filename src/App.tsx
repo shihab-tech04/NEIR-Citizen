@@ -13,7 +13,7 @@ import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { CitizenServices } from './components/CitizenServices.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { LoginModal } from './components/LoginModal.tsx';
-import { CitizenDashboardModal } from './components/CitizenDashboardModal.tsx';
+import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
 import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
 import { ProposedDesignView } from './components/ProposedDesignView.tsx';
@@ -21,7 +21,7 @@ import { INITIAL_SAMPLE_QUERIES, QueryTicket } from './utils/queryTracker.ts';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>('home');
-  const [language, setLanguage] = useState<Language>('bn');
+  const [language, setLanguage] = useState<Language>('en');
 
   // Citizen Session
   const [session, setSession] = useState<UserSession>({
@@ -51,7 +51,6 @@ export default function App() {
 
   // Modal dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
 
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>(INITIAL_SAMPLE_QUERIES);
@@ -77,7 +76,7 @@ export default function App() {
       if (!session.isLoggedIn) {
         setIsLoginOpen(true);
       } else {
-        setIsDashboardOpen(true);
+        setCurrentRoute('dashboard');
       }
     } else if (service === 'lost') {
       setCurrentRoute('contact');
@@ -86,19 +85,6 @@ export default function App() {
     } else if (service === 'guides') {
       setCurrentRoute('guides');
     }
-  };
-
-  const handleAddHandset = (newHandset: {
-    imei: string;
-    brand: string;
-    model: string;
-    registeredOn: string;
-    status: 'Active' | 'Under Review' | 'Flagged';
-  }) => {
-    setSession((prev) => ({
-      ...prev,
-      registeredHandsets: [newHandset, ...prev.registeredHandsets],
-    }));
   };
 
   const handleAddQuery = (newTicket: QueryTicket) => {
@@ -118,9 +104,10 @@ export default function App() {
         onLanguageChange={setLanguage}
         session={session}
         onOpenLogin={() => setIsLoginOpen(true)}
-        onOpenDashboard={() => setIsDashboardOpen(true)}
+        onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
           setSession((prev) => ({ ...prev, isLoggedIn: false }));
+          setCurrentRoute('home');
         }}
       />
 
@@ -151,7 +138,7 @@ export default function App() {
                 if (!session.isLoggedIn) {
                   setIsLoginOpen(true);
                 } else {
-                  setIsDashboardOpen(true);
+                  setCurrentRoute('dashboard');
                 }
               }}
             />
@@ -217,6 +204,11 @@ export default function App() {
         )}
       </main>
 
+      {/* Source-backed authenticated citizen IMEI list */}
+      {currentRoute === 'dashboard' && (
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 pb-10"><CitizenImeiListView language={language} session={session} /></div>
+      )}
+
       {/* Footer */}
       <Footer language={language} />
 
@@ -231,19 +223,10 @@ export default function App() {
             ...newSessionData,
             isLoggedIn: true,
           }));
+          setCurrentRoute('dashboard');
         }}
       />
 
-      <CitizenDashboardModal
-        isOpen={isDashboardOpen}
-        onClose={() => setIsDashboardOpen(false)}
-        language={language}
-        session={session}
-        onAddHandset={handleAddHandset}
-        onLogout={() => {
-          setSession((prev) => ({ ...prev, isLoggedIn: false }));
-        }}
-      />
     </div>
   );
 }
