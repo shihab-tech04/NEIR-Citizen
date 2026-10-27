@@ -161,12 +161,11 @@ export default function App() {
             }}
           />
         )}
+        {/* Source-backed authenticated citizen IMEI list */}
+        {currentRoute === 'dashboard' && (
+          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 pb-10"><CitizenImeiListView language={language} session={session} /></div>
+        )}
       </main>
-
-      {/* Source-backed authenticated citizen IMEI list */}
-      {currentRoute === 'dashboard' && (
-        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 pb-10"><CitizenImeiListView language={language} session={session} /></div>
-      )}
 
       {/* Footer */}
       <Footer language={language} />
