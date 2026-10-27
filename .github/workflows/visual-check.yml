@@ -1,8 +1,8 @@
 name: NEIR desktop and mobile visual verification
 on:
   push:
-    branches: [fix/neir-html-parity]
-    paths: ['.github/workflows/visual-check.yml']
+    branches: [fix/neir-source-fidelity-release]
+    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**']
 permissions:
   contents: read
 jobs:
@@ -29,6 +29,34 @@ jobs:
           mkdir -p screenshots
           npx playwright screenshot --browser chromium --viewport-size="1780,925" --wait-for-timeout=1000 --full-page http://127.0.0.1:4567 screenshots/neir-restored-desktop.png
           npx playwright screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1000 --full-page http://127.0.0.1:4567 screenshots/neir-restored-mobile.png
+      - name: Compare source screen structure and mobile cards
+        run: |
+          node --input-type=module <<'EOT'
+          import { chromium } from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          try {
+            const mobile=await browser.newPage({viewport:{width:390,height:844}});
+            await mobile.goto('http://127.0.0.1:4567/', {waitUntil:'networkidle'});
+            const metrics=await mobile.evaluate(()=>{
+              const heights=[...document.querySelectorAll('.neir-source-step-card')].map(e=>Math.round(e.getBoundingClientRect().height));
+              const badImages=[...document.querySelectorAll('.neir-source-step-card img, .neir-source-hero-media img, .neir-logo-wrap img')].filter(e=>!e.complete || e.naturalWidth===0).map(e=>e.getAttribute('src'));
+              return {heights,badImages,overflow:document.documentElement.scrollWidth-window.innerWidth};
+            });
+            console.log('mobile source metrics',metrics);
+            if(metrics.heights.length!==6 || metrics.heights.some(h=>h<160)) throw Error('Mobile original step cards missing/collapsed');
+            if(metrics.badImages.length) throw Error('Required original images not loading: '+metrics.badImages.join(', '));
+            if(metrics.overflow>3) throw Error('Mobile horizontal overflow '+metrics.overflow);
+            const desktop=await browser.newPage({viewport:{width:1918,height:924}});
+            await desktop.goto('http://127.0.0.1:4567/', {waitUntil:'networkidle'});
+            await desktop.screenshot({path:'screenshots/neir-1918-source-match.png',fullPage:false});
+            await desktop.locator('.neir-main-navigation button').nth(1).click();
+            await desktop.screenshot({path:'screenshots/neir-guides-1918.png',fullPage:false});
+            await desktop.locator('.neir-main-navigation button').nth(2).click();
+            await desktop.screenshot({path:'screenshots/neir-contact-1918.png',fullPage:false});
+            await desktop.locator('.neir-auth-login').click();
+            await desktop.screenshot({path:'screenshots/neir-login-1918.png',fullPage:false});
+          } finally {await browser.close()}
+          EOT
       - uses: actions/upload-artifact@v4
         with:
           name: neir-source-restoration-screenshots

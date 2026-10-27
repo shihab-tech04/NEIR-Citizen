@@ -39,7 +39,7 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
     const ticket = queryList.find(q => q.ticketId.toUpperCase() === number.trim().toUpperCase() && q.ticketId.startsWith('DEMO-'));
     setResult(ticket ? 'Demo query found: ' + ticket.ticketId + ' — locally received (not a BTRC service status).' : 'No matching demo query in this session. Official BTRC query tracking is not connected.');
   };
-  return <section className="space-y-7 max-w-5xl mx-auto py-4">
+  return <section className="neir-source-subpage neir-source-contact-page space-y-7">
     <header className="text-center py-7 space-y-3"><h1 className="text-3xl sm:text-4xl font-bold text-slate-950">{isBn ? 'আমরা আপনাকে সহায়তা করতে এখানে আছি!' : "We're here to help!"}</h1>
       <p className="text-base text-slate-700 max-w-3xl mx-auto">If you need assistance or have any questions regarding the NEIR Portal Bangladesh, feel free to reach out to us. We are here to help and support you.</p>
     </header>

@@ -94,7 +94,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className={currentRoute === 'home' ? 'flex-1 w-full neir-home-main' : 'flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8'}>
+      <main className={(currentRoute === 'home' || currentRoute === 'guides' || currentRoute === 'contact') ? 'flex-1 w-full neir-home-main' : 'flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8'}>
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
           <div className="neir-home-sections">
