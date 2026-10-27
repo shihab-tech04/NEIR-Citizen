@@ -170,3 +170,13 @@ button,input,select,textarea{font:inherit}
   .neir-source-subpage > header h1{font-size:32px;line-height:1.3}
   .neir-source-subpage > header p{font-size:16px}
 }
+
+
+/* Mobile source regression: cards with flex-basis 0 collapsed to height 0 after
+   the step row switched from horizontal to vertical layout. */
+@media(max-width:767px){
+  .neir-source-steps-row { flex-direction:column; align-items:stretch; }
+  .neir-source-step-card { flex:0 0 auto; width:100%; min-height:0; }
+  .neir-source-step-art { width:100%; }
+  .neir-source-step-arrow { flex:0 0 45px; min-height:45px; }
+}
