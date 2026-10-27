@@ -38,6 +38,7 @@ jobs:
             git checkout --orphan presentation-static
             git rm -r -f --ignore-unmatch .
           fi
+          git clean -fdx
           cp -R /tmp/neir-compiled-static/. .
           printf '%s\n' "$SOURCE_SHA" > SOURCE_COMMIT.txt
           touch .nojekyll
