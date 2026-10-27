@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Language, UserSession } from '../types.ts';
 import { 
   X, 
@@ -26,6 +26,7 @@ interface LoginModalProps {
   onClose: () => void;
   language: Language;
   onLoginSuccess: (session: Partial<UserSession>) => void;
+  initialView?: 'login' | 'register';
 }
 
 type ModalView = 'login' | 'register' | 'forgot_step1' | 'forgot_step2' | 'forgot_step3' | 'trader';
@@ -35,10 +36,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   onClose,
   language,
   onLoginSuccess,
+  initialView = 'login',
 }) => {
   const isBn = language === 'bn';
 
-  const [currentView, setCurrentView] = useState<ModalView>('login');
+  const [currentView, setCurrentView] = useState<ModalView>(initialView);
+  useEffect(() => { if (isOpen) setCurrentView(initialView); }, [isOpen, initialView]);
 
   // Login form state
   const [identifier, setIdentifier] = useState('01711223344');
