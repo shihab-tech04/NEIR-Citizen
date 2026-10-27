@@ -1,1 +1,112 @@
 @import "tailwindcss";
+
+/* Source-derived NEIR visual baseline from supplied Angular HTML, not a redesign. */
+:root {
+  --neir-primary-bg:#E0F7FA;
+  --neir-primary-600:#00ACC1;
+  --neir-primary-900:#00838F;
+  --neir-secondary:#F1F3F4;
+  --neir-tertiary:#F2F9F4;
+  --neir-quaternary:#F1F8E9;
+  --neir-border:#DEE0E3;
+}
+html,body,#root{min-height:100%;font-family:Poppins,Arial,sans-serif}
+html{overflow-x:hidden}
+body{margin:0;overflow-x:hidden}
+button,input,select,textarea{font:inherit}
+.neir-original-header{position:sticky;top:0;z-index:40;width:100%;background:var(--neir-primary-bg);border-bottom:1px solid #fff}
+.neir-menubar{height:76px;padding:8px 28px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+.neir-logo-wrap{display:flex;align-items:center;justify-content:center;gap:5px;height:54px;min-width:114px;padding:4px 5px;background:#fff;border-radius:16px;flex-shrink:0;cursor:pointer}
+.neir-logo-wrap img{width:48px;height:48px;object-fit:contain}
+.neir-main-navigation{position:absolute;left:40%;transform:translateX(-40%);display:flex;align-items:center;gap:12px}
+.neir-nav-btn{min-height:46px;border:1px solid var(--neir-primary-600);color:var(--neir-primary-600);padding:12px 20px;border-radius:15px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#ffffff4d;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background-color .15s,color .15s}
+.neir-nav-btn:hover,.neir-menu-button.neir-active{background:var(--neir-primary-600);color:white}
+.neir-header-end{display:flex;align-items:center;gap:12px;margin-left:auto}
+.neir-language-select{height:42px;min-width:112px;display:flex;align-items:center;gap:5px;padding:0 12px;border:1px solid #c1dbe3;border-radius:6px}
+.neir-language-select select{width:100%;background:none;border:0;appearance:none;outline:none;font-size:14px;color:#334155}
+.neir-language-select svg{pointer-events:none;color:#64748b;flex-shrink:0}
+.neir-header-auth{display:flex;align-items:center;gap:10px}
+.neir-auth-register{background:#fff}
+.neir-auth-login{background:var(--neir-primary-600);color:#fff}
+.neir-profile-container{position:relative}
+.neir-profile-icon{width:46px;height:46px;border-radius:50%;background:#eb6d4a;color:#1c2850;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.neir-profile-dropdown{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:#fff;box-shadow:0 12px 36px #0002;border-radius:12px;padding:10px;border:1px solid #ddd}
+.neir-profile-name{font-size:13px;font-weight:600;color:#334155;border-bottom:1px solid #eee;padding:10px}
+.neir-profile-dropdown button{display:flex;align-items:center;gap:8px;padding:12px;width:100%;font-size:14px;text-align:left}
+.neir-mobile-toggle,.neir-mobile-menu{display:none}
+.neir-home-main{background:#fff}
+.neir-home-sections{display:flex;flex-direction:column;gap:24px}
+.neir-source-hero{width:100%;padding:68px 24px 66px;background:var(--neir-primary-bg);border-radius:0 0 32px 32px}
+.neir-source-hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:80px;align-items:center}
+.neir-source-hero-copy{min-width:0}
+.neir-source-hero-copy h1{font-size:46.4px;font-weight:700;line-height:1.37;color:#000;letter-spacing:-1.1px;margin:0 0 12px}
+.neir-source-description{font-size:20px;line-height:1.43;color:#111;margin:0 0 18px}
+.neir-source-verification-card{padding:30px;border-radius:24px;background:#fff;color:#000}
+.neir-source-verification-card h2{font-size:20px;font-weight:600;line-height:1.5;margin:0 0 16px}
+.neir-source-verification-card form{display:flex;flex-direction:column;gap:14px}
+.neir-source-input-wrap{position:relative}
+.neir-source-input-wrap input{border:1px solid #cbd5e1;border-radius:32px;background:#fff;width:100%;height:56px;padding:14px 48px 14px 22px;font-size:16px;outline:none}
+.neir-source-input-wrap input:focus-visible{box-shadow:0 0 0 2px var(--neir-primary-600)}
+.neir-source-input-wrap input::placeholder{color:#637795}
+.neir-source-imei-help{position:absolute;right:24px;top:50%;transform:translateY(-50%);color:#8da3c0;pointer-events:none}
+.neir-source-verify-button{border:0;border-radius:32px;background:var(--neir-primary-600);color:#fff;height:54px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:500;cursor:pointer}
+.neir-source-verify-button:hover{background:var(--neir-primary-900)}
+.neir-source-error{color:#b91c1c;font-size:13px}
+.neir-source-demo-result{border-radius:12px;background:#ecfeff;color:#155e75;padding:12px;font-size:13px}
+.neir-source-hero-media{width:100%;min-height:480px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
+.neir-source-hero-media img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}
+.neir-source-steps-wrap{display:flex;flex-direction:column;gap:24px}
+.neir-source-guide-section{border-radius:32px;padding:64px 24px}
+.neir-source-guide-inner{max-width:1200px;margin:auto}
+.neir-source-guide-heading{text-align:center;font-size:32px;font-weight:700;line-height:1.4;color:#000;margin:0 0 32px}
+.neir-source-guide-heading span{color:var(--neir-primary-900)}
+.neir-source-steps-row{display:flex;align-items:stretch;gap:0}
+.neir-source-step-card{background:white;border-radius:24px;flex:1 1 0;min-width:0;overflow:hidden;display:flex;flex-direction:column}
+.neir-source-step-art{display:flex;align-items:center;justify-content:center;padding:8px;min-height:220px;border-radius:24px}
+.neir-source-step-art img{max-width:100%;width:100%;height:auto;max-height:250px;object-fit:contain}
+.neir-source-step-content{padding:30px 28px;flex:1}
+.neir-source-step-content h3{font-size:32px;font-weight:700;margin:0 0 10px;color:#111}
+.neir-source-step-content p{white-space:pre-line;font-size:16px;line-height:1.6}
+.neir-source-step-arrow{width:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:center}
+.neir-source-step-arrow img{max-width:40px;width:100%;height:auto;object-fit:contain}
+@media(max-width:1400px){
+ .neir-main-navigation{left:35%;transform:translateX(-35%)}
+ .neir-source-hero-inner,.neir-source-guide-inner{max-width:1100px}
+ .neir-source-hero-inner{gap:45px}
+ .neir-source-hero-copy h1{font-size:42px}
+}
+@media(max-width:1000px){
+ .neir-main-navigation,.neir-header-end{display:none}
+ .neir-mobile-toggle{display:flex;align-items:center;justify-content:center;margin-left:auto;width:44px;height:44px;border:1px solid var(--neir-primary-600);color:var(--neir-primary-900);border-radius:10px}
+ .neir-mobile-menu{display:flex;flex-direction:column;gap:10px;padding:16px 24px;background:var(--neir-primary-bg);border-top:1px solid #fff}
+ .neir-mobile-menu-item{padding:10px 12px;border:1px solid var(--neir-primary-600);color:var(--neir-primary-900);border-radius:10px;display:flex;align-items:center;gap:8px;font-weight:600}
+ .neir-mobile-language{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px}
+ .neir-mobile-language select{border:1px solid #bddae0;border-radius:6px;padding:8px}
+ .neir-mobile-menu .neir-header-auth{justify-content:flex-start}
+ .neir-source-hero-inner{gap:28px}
+ .neir-source-hero-copy h1{font-size:35px}
+ .neir-source-description{font-size:17px}
+ .neir-source-hero-media{min-height:290px}
+ .neir-source-guide-section{padding:40px 20px}
+}
+@media(max-width:767px){
+ .neir-menubar{height:76px;padding:10px 16px}
+ .neir-logo-wrap{height:46px;min-width:100px}
+ .neir-logo-wrap img{width:42px;height:42px}
+ .neir-source-hero{padding:28px 16px 40px;border-radius:0 0 16px 16px}
+ .neir-source-hero-inner{grid-template-columns:1fr;gap:28px}
+ .neir-source-hero-copy h1{font-size:34px;line-height:1.25;letter-spacing:-.4px;text-align:center}
+ .neir-source-description{text-align:center;font-size:16px}
+ .neir-source-verification-card{padding:22px 18px}
+ .neir-source-verification-card h2{font-size:18px}
+ .neir-source-input-wrap input{font-size:14px}
+ .neir-source-verify-button{font-size:14px}
+ .neir-source-hero-media{max-width:600px;margin:auto;min-height:230px}
+ .neir-source-guide-section{border-radius:16px;padding:24px 14px}
+ .neir-source-guide-heading{font-size:26px;margin-bottom:24px}
+ .neir-source-steps-row{flex-direction:column}
+ .neir-source-step-arrow{height:45px;flex:0 0 45px;width:100%;transform:rotate(90deg)}
+ .neir-source-step-art{min-height:170px}
+ .neir-source-step-content{padding:22px}
+ .neir-source-step-content h3{font-size:27px}
+}
