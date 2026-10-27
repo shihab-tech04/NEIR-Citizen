@@ -44,21 +44,21 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
       <p className="text-base text-slate-700 max-w-3xl mx-auto">If you need assistance or have any questions regarding the NEIR Portal Bangladesh, feel free to reach out to us. We are here to help and support you.</p>
     </header>
     <div className="grid grid-cols-2 gap-3 sm:gap-5">
-      <button aria-pressed={tab === 'submit'} onClick={() => {setTab('submit');setResult('');setError('');}} className={tab === 'submit' ? 'rounded-3xl p-4 sm:p-6 bg-[#E0F7FA] border-2 border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
+      <button aria-pressed={tab === 'submit'} onClick={() => {setTab('submit');setResult('');setError('');}} className={tab === 'submit' ? 'rounded-3xl p-4 sm:p-6 bg-white border-[8px] border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
         <Send className="mx-auto mb-2" size={26} /> Submit New Query
       </button>
-      <button aria-pressed={tab === 'status'} onClick={() => {setTab('status');setResult('');setError('');}} className={tab === 'status' ? 'rounded-3xl p-4 sm:p-6 bg-[#E0F7FA] border-2 border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
+      <button aria-pressed={tab === 'status'} onClick={() => {setTab('status');setResult('');setError('');}} className={tab === 'status' ? 'rounded-3xl p-4 sm:p-6 bg-white border-[8px] border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
         <Search className="mx-auto mb-2" size={26} /> Check Query Status
       </button>
     </div>
     <div className="rounded-3xl bg-white border border-slate-200 p-5 sm:p-9 shadow-sm">
       {tab === 'submit' ? <form className="space-y-5" onSubmit={submit}>
-        <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">Submit Your Query</h2>
+        <h2 className="text-center text-2xl sm:text-3xl font-semibold text-slate-900">Submit Your Query</h2><hr className="border-slate-200"/>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <label className="block text-sm font-medium">Full Name <span className="text-red-600">*</span><input required className={inputClass} placeholder="Enter your full name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>
+          <label className="block text-sm font-medium sm:col-span-2">Full Name <span className="text-red-600">*</span><input required className={inputClass} placeholder="Enter your full name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>
           <label className="block text-sm font-medium">Enter your mobile number <span className="text-red-600">*</span><input required inputMode="numeric" maxLength={11} className={inputClass} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e => setMobile(e.target.value.replace(/\D/g,'').slice(0,11))} /></label>
           <label className="block text-sm font-medium">Email <span className="text-red-600">*</span><input required type="email" className={inputClass} placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} /></label>
-          <label className="block text-sm font-medium">Choose Purpose Type <span className="text-red-600">*</span><input required className={inputClass} placeholder="Select a purpose type" value={purpose} onChange={e => setPurpose(e.target.value)} /><span className="block text-xs text-slate-500 mt-1">Demo text field: original dropdown choices were not captured.</span></label>
+          <label className="block text-sm font-medium sm:col-span-2">Choose Purpose Type <span className="text-red-600">*</span><select required className={inputClass} aria-label="Choose Purpose Type" value={purpose} onChange={e => setPurpose(e.target.value)}><option value="">Select a purpose type</option><option value="Demo inquiry">Demo inquiry (prototype only)</option></select><span className="block text-xs text-slate-500 mt-1">The original dropdown options were not included in the supplied HTML. This temporary choice is visibly labeled demo.</span></label>
         </div>
         <label className="block text-sm font-medium">Issues Summary <span className="text-red-600">*</span><textarea required className={inputClass} rows={4} placeholder="Tell us more about the issue you are facing" value={summary} onChange={e => setSummary(e.target.value)} /></label>
         <button type="submit" className="bg-[#00ACC1] hover:bg-[#00838F] text-white font-semibold rounded-xl px-8 py-3">Submit</button>

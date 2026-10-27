@@ -94,10 +94,10 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className={currentRoute === 'home' ? 'flex-1 w-full neir-home-main' : 'flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8'}>
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
-          <div className="space-y-8">
+          <div className="neir-home-sections">
             {/* Saved NEIR homepage hero and its built-in first-14-digit IMEI checker */}
             <HomeHero
               language={language}
