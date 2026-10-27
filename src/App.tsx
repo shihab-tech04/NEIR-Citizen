@@ -49,6 +49,7 @@ export default function App() {
 
   // Modal dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
 
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>(INITIAL_SAMPLE_QUERIES);
@@ -83,7 +84,8 @@ export default function App() {
         language={language}
         onLanguageChange={setLanguage}
         session={session}
-        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenLogin={() => { setLoginInitialView('login'); setIsLoginOpen(true); }}
+        onOpenRegister={() => { setLoginInitialView('register'); setIsLoginOpen(true); }}
         onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
           setSession((prev) => ({ ...prev, isLoggedIn: false }));
@@ -128,7 +130,7 @@ export default function App() {
         {currentRoute === 'guides' && (
           <UserGuidesView
             language={language}
-            onOpenLogin={() => setIsLoginOpen(true)}
+            onOpenLogin={() => { setLoginInitialView('login'); setIsLoginOpen(true); }}
           />
         )}
 
@@ -171,6 +173,7 @@ export default function App() {
 
       {/* Modals */}
       <LoginModal
+        initialView={loginInitialView}
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         language={language}
