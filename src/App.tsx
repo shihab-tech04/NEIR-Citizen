@@ -15,7 +15,7 @@ import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
 import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
 import { ProposedDesignView } from './components/ProposedDesignView.tsx';
-import { INITIAL_SAMPLE_QUERIES, QueryTicket } from './utils/queryTracker.ts';
+import { QueryTicket } from './utils/queryTracker.ts';
 
 export default function App() {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>('home');
@@ -52,7 +52,7 @@ export default function App() {
   const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
 
   // Queries state
-  const [queries, setQueries] = useState<QueryTicket[]>(INITIAL_SAMPLE_QUERIES);
+  const [queries, setQueries] = useState<QueryTicket[]>([]);
   const [prefilledContactImei, setPrefilledContactImei] = useState<string>('');
 
   const handleScrollToVerifier = () => {
