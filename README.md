@@ -33,5 +33,18 @@ Open http://localhost:3000/. For an offline meeting, build in advance and test a
 
 **Safety:** Do not type actual citizen identifiers or credentials; don't commit uploaded source HTML containing personal data. Every simulated submission is client-side only.
 
-## Release policy
-Draft PR only until CI is green, source screenshot comparison is conducted, missing assets/option sets are addressed or accurately disclosed, and an independent presentation preview is verified. Do not merge unverified changes into `main` or call the application `LIVE`.
+## Published frontend-only demonstration
+
+- **URL:** https://neir-citizen-ux-demo.vercel.app
+- **Vercel state:** READY; `dpl_2Wn65kDGMNMtx3cfphEV5E6WDRz5`, target production for this standalone **demo** project.
+- **Access:** Vercel Authentication disabled, password protection disabled, aliases assigned. The external site could not be fetched by the automated web checker; Vercel reports the deployment READY.
+- **GitHub:** PR #1 merged into `main`, merge commit `9fc247b4de1b2d4f9acf5e6246dd747b5deb8d23`.
+- **Quality checks:** TypeScript and Vite build PASS on merged `main`; local Chromium smoke tests passed desktop login → IMEI list → Special Registration validation → Contact Us, and mobile navigation/login without page overflow or JS errors.
+- **Release source:** compiled presentation files were deployed directly using Vercel's file deployment API because this Vercel connection has no GitHub namespace access (`git_info_fail` / 403 for team-linked Git source).
+- **Automation:** GitHub CI and an isolated `presentation-static` build branch work; pushes to GitHub **do not auto-deploy** to Vercel until its GitHub integration is authorized.
+
+### Still unverified against the real NEIR interface
+
+**Do not call the baseline pixel-perfect or 100% reconstructed.** The image assets and mobile guides, specific registration dropdown options, login/modal parity, restricted-IMEI content and full visual comparison need further source-based review. See [docs/source-coverage.md](docs/source-coverage.md).
+
+No real BTRC backend, authentication, API, SQL, OTP, handset data or official ticket reporting is connected. The site is solely a labeled presentation prototype.
