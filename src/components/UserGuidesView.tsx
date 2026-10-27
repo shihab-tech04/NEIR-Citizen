@@ -24,7 +24,7 @@ export const UserGuidesView: React.FC<Props> = () => {
   const steps = isReg ? registration : reset;
   const base = isReg ? 'acc-guide-web-steps/' : 'pwd-guide-web-steps/';
   const fullImage = isReg ? 'acc-guide-web-full-process.png' : 'pwd-guide-web-full-process.png';
-  const url = (file:string) => '/neir-source/user-guides/' + base + file;
+  const url = (file:string) => '/neir-source/user-guides/' + base + (file === 'pwd-guide-web-full-process.png' ? 'pwd-guide-web-full-process.webp' : file);
   const image = (file:string, alt:string) => broken.includes(file)
     ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Reference illustration unavailable offline: {alt}</div>
     : <img src={url(file)} alt={alt} loading="lazy" onError={() => setBroken(v => [...v, file])} className="w-full rounded-xl object-contain border border-slate-100 bg-white" />;
