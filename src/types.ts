@@ -5,7 +5,7 @@
 
 export type Language = 'bn' | 'en';
 
-export type AppRoute = 'home' | 'guides' | 'faq' | 'contact' | 'proposed';
+export type AppRoute = 'home' | 'guides' | 'faq' | 'contact' | 'dashboard' | 'proposed';
 
 export interface UserSession {
   isLoggedIn: boolean;
