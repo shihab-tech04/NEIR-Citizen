@@ -1,8 +1,8 @@
 name: NEIR desktop and mobile visual verification
 on:
   push:
-    branches: [fix/neir-html-parity]
-    paths: ['.github/workflows/visual-check.yml']
+    branches: [fix/neir-source-fidelity-release]
+    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**']
 permissions:
   contents: read
 jobs:
