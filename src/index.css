@@ -142,3 +142,11 @@ button,input,select,textarea{font:inherit}
 #faq-section>div:first-child h2{font-size:46px}
 #faq-section>div:first-child p{font-size:32px}
 @media(max-width:767px){.neir-original-dialog{width:100%;min-width:0;max-height:90vh}#faq-section{padding:28px 16px;border-radius:16px}#faq-section>div:first-child h2{font-size:35px}#faq-section>div:first-child p{font-size:24px}}
+
+/* Final desktop alignment from captured 1780px source viewport. The source contains
+   a 600px media frame and a 600px content column with a 40px gutter. */
+@media(min-width:1500px) {
+ .neir-source-hero-inner{max-width:1240px;grid-template-columns:600px 600px;gap:40px;transform:translateX(24px)}
+ .neir-source-guide-inner{max-width:1240px}
+ .neir-main-navigation{left:calc(40% + 105px)}
+}
