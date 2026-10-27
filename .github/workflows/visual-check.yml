@@ -1,0 +1,36 @@
+name: NEIR desktop and mobile visual verification
+on:
+  push:
+    branches: [fix/neir-html-parity]
+    paths: ['.github/workflows/visual-check.yml']
+permissions:
+  contents: read
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build
+        run: |
+          npm install --no-audit --no-fund
+          npm run lint
+          npm run build
+      - name: Install screenshot browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Render homepage
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4567 &
+          for i in $(seq 1 25); do curl -fsS http://127.0.0.1:4567 >/dev/null && break || sleep 1; done
+          mkdir -p screenshots
+          npx playwright screenshot --browser chromium --viewport-size="1780,925" --wait-for-timeout=1000 --full-page http://127.0.0.1:4567 screenshots/neir-restored-desktop.png
+          npx playwright screenshot --browser chromium --viewport-size="390,844" --wait-for-timeout=1000 --full-page http://127.0.0.1:4567 screenshots/neir-restored-mobile.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neir-source-restoration-screenshots
+          path: screenshots/
+          retention-days: 7
