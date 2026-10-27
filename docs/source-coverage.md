@@ -26,15 +26,26 @@ Some earlier unnumbered snapshots in the conversation are duplicate homepage/gui
 - Browser-local demonstration only: registration isn't transmitted, simulated device marking isn't an official stolen report, profile edits are local, and fixtures are synthetic.
 - Default locale on captured pages: English.
 
-## Known gaps / NOT yet 1:1 PASS
-1. Public homepage layout, source color tokens and imagery: current AI Studio-generated React version still has non-source government announcement/metrics and green branding. Must be visually compared and corrected.
-2. Header: official BTRC logo and government seal asset copies are missing; current design includes extra FAQ/Proposed tabs and a prototype banner absent from captured UI.
-3. Contact form: saved reference has Full Name, Mobile, Email, Choose Purpose Type, Issues Summary; current React contains extra fields and Captcha not present in capture.
-4. Login: saved reference has Mobile Number, Password and account reset links; current generated form has extra demo affordances. Need source-comparison.
-5. Source IMEI checker requests first 14 digits; generated React presently validates 15 digits with captcha. Needs correction or separate scoped review.
-6. Missing official options for Application Reason and Purchase Method in saved HTML; temporary free-text demo inputs are flagged in UI.
-7. Restricted IMEIs contents, IMEI Details payload, actual submission outcome and backend authorization are not available from the snapshots; do not invent them.
-8. Desktop/mobile pixel-diff, offline asset verification, build/TS checks, accessibility and route refresh recovery must PASS before marking entire baseline 1:1.
+## Verification and remaining gaps
+**CI:** TypeScript and Vite production build succeeded at commit `1faf9028b6544aef213cce0f60e9509e091e5d4d`; rerun for each later commit before merge. Browser-rendered visual comparison is **not** yet verified.
+
+### Source-backed changes in this branch
+- Captured homepage hero, cyan palette, Poppins loading, first-14-digit IMEI field (demo validation only), two 3-step how-to sections, and FAQ structure.
+- Header Home / User Guides / Contact Us, distinct Register and Login actions, default English, copyright footer.
+- Contact Us Submit New Query and Check Query Status; source-backed form fields and local demo ticket lookup, no government API.
+- User Guides: captured 4-step registration and 5-step reset Web instructions; attempts to load source image assets and shows an honest fallback when offline.
+- Authenticated full-page IMEI list; searchable 19 synthetic records, 10-row pagination, captured status labels, action menu and details demonstration.
+- 3-step Special Registration form and 1MB PNG/JPG/PDF attachment checks. No actual upload/submission.
+
+### Still blocking a complete 1:1 claim
+1. Original BTRC/GoB logos, animated hero, guide illustrations and step art are linked from test-server URLs. A self-contained verified asset bundle is needed for offline parity.
+2. Pixel-by-pixel desktop and mobile comparison with the user's connected original portal has not been run in a controlled screenshot environment.
+3. The native options for Special Registration's Application Reason and How you purchased the device? dropdowns were not present in the saved HTML. The prototype uses explicitly labeled text entry until the actual options are verified.
+4. The original Restricted IMEIs tab's contents, full Details payload and actual responses from verification/authentication are not represented in available static snapshots.
+5. Mobile guide content and all original EN/BN translations were not fully captured; these remain incomplete rather than being invented.
+6. The generated sign-in and registration modal requires further exact field-by-field parity review against the saved login capture.
+7. A staged interactive deployment / offline backup is not yet verified. Do not call the website **LIVE** until its actual URL and deployed commit are checked.
+8. The original FAQ capture covered the IMEI Check category; content of other tabs is intentionally marked unavailable in the prototype.
 
 ## Presentation safeguards
 - Use synthetic IMEI and account records, with no sensitive data from captured snapshots.
