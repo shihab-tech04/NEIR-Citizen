@@ -1,7 +1,7 @@
 name: Prepare NEIR static release branch
 on:
   push:
-    branches: [feat/source-faithful-imei-baseline]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
