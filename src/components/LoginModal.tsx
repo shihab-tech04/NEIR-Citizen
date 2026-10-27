@@ -44,20 +44,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   useEffect(() => { if (isOpen) setCurrentView(initialView); }, [isOpen, initialView]);
 
   // Login form state
-  const [identifier, setIdentifier] = useState('01711223344');
-  const [password, setPassword] = useState('Btrc@1234');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Register form state
-  const [regName, setRegName] = useState('Md. Zahid Hasan');
-  const [regNid, setRegNid] = useState('19942691234567890');
-  const [regDob, setRegDob] = useState('1994-06-15');
-  const [regMobile, setRegMobile] = useState('01799887766');
-  const [regEmail, setRegEmail] = useState('zahid.hasan@example.com');
-  const [regPassword, setRegPassword] = useState('Pass@2026');
-  const [regConfirmPassword, setRegConfirmPassword] = useState('Pass@2026');
+  const [regName, setRegName] = useState('');
+  const [regNid, setRegNid] = useState('');
+  const [regDob, setRegDob] = useState('');
+  const [regMobile, setRegMobile] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [regError, setRegError] = useState<string | null>(null);
 
   // Forgot Password state
