@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { Language } from '../types.ts';
-import React from 'react';
 
 type Props = { language: Language; onOpenLogin: () => void };
 type Guide = 'register' | 'reset';
