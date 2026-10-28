@@ -13,8 +13,8 @@ const sourceGroups: Group[] = [
     {q: 'What does “Stolen or Blocked” mean?', a: 'The device has been reported as lost or stolen by the original owner or it is blocked by regulatory authority (BTRC).'}
   ]},
   {title: 'Troubleshooting Special Cases', items: [
-    {q: 'Why am I seeing multiple IMEI numbers on my dashboard?', a: 'You are seeing multiple IMEI numbers because this SIM card has been used in different phones before or is currently used in different SIM slots.'},
-    {q: 'Why does my new phone show “Not Registered”?', a: 'It may not have been added to the NEIR database yet. You can submit a Device Registration request with valid documents from NEIR portal. Regulatory authority (BTRC) will review your registration request.'},
+    {q: 'Why am I seeing multiple IMEI numbers on my dashboard?', a: 'You are seeing multiple IMEI numbers because this SIM card has been used in different phones before or is currently used in different SIM slots. Some of these phones were used by you, while others were used by someone else earlier. The system also keeps old records, so all of them appear together.'},
+    {q: 'Why does my new phone show “Not Registered”?', a: 'It may not have been added to the NEIR database yet. You can submit a Device Registration request with valid documents from NEIR portal. Regulatory authority (BTRC) will review your registration request. You will be notified about your registration status by SMS and you can also check it from the portal.'},
     {q: 'What if IMEI Check shows the wrong model or device details?', a: 'This may indicate a cloned IMEI. Register the device or contact support.'},
     {q: 'My phone has more than one SIM. Which one should I check?', a: 'If your device supports more than one SIM, it will have multiple IMEI numbers. Each SIM slot is assigned a different IMEI. Therefore, to check the IMEI status, you must check each IMEI individually for all SIM slots.'},
   ]},

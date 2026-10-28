@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
@@ -18,7 +18,24 @@ import { ProposedDesignView } from './components/ProposedDesignView.tsx';
 import { QueryTicket } from './utils/queryTracker.ts';
 
 export default function App() {
-  const [currentRoute, setCurrentRoute] = useState<AppRoute>('home');
+  const routePaths: Record<AppRoute, string> = {
+    home: '/', guides: '/user-guides', contact: '/contact-us', faq: '/faq',
+    proposed: '/proposed', dashboard: '/dashboard',
+  };
+  const getRoute = (): AppRoute => (Object.entries(routePaths).find(([, path]) => path === window.location.pathname)?.[0] as AppRoute | undefined) ?? 'home';
+  const [currentRoute, setCurrentRoute] = useState<AppRoute>(getRoute);
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(getRoute());
+      window.scrollTo({ top: 0 });
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+  useEffect(() => {
+    const path = routePaths[currentRoute];
+    if (window.location.pathname !== path) window.history.pushState({route: currentRoute}, '', path);
+  }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
 
   // Citizen Session
@@ -168,7 +185,7 @@ export default function App() {
       </main>
 
       {/* Persistent safety disclosure, intentionally outside the source-fidelity page layout. */}
-      <p aria-label="Prototype disclosure" className="fixed z-50 bottom-3 left-3 rounded-lg border border-cyan-200 bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-cyan-900 shadow-md">
+      <p aria-label="Prototype disclosure" className="neir-prototype-disclosure fixed z-50 bottom-3 left-3 rounded-lg border border-cyan-200 bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-cyan-900 shadow-md">
         NEIR UX Prototype · No live BTRC services
       </p>
 

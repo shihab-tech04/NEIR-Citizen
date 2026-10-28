@@ -22,6 +22,7 @@ export const HomeHero:React.FC<Props> = ({language}) => {
           <form onSubmit={verify} noValidate>
             <div className="neir-source-input-wrap">
               <label className="sr-only" htmlFor="neir-imei-input">Please enter the first 14 digits of your IMEI</label>
+              <p className="neir-source-imei-mobile-label" aria-hidden="true">First 14 digits of your IMEI</p>
               <input id="neir-imei-input" type="text" inputMode="numeric" maxLength={14} minLength={14} placeholder="Please enter the first 14 digits of your IMEI" value={imei} onChange={e=>{setImei(e.target.value.replace(/\D/g,'').slice(0,14));setError('');setDemoResult('');}}/>
               <span className="neir-source-imei-help" title="Dial *#06# to find the 15-digit IMEI" aria-label="IMEI help"><Info size={16}/></span>
             </div>

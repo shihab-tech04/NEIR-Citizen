@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/user-guides",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/proposed",
+      "destination": "/index.html"
+    }
+  ]
+}

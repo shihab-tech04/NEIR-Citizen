@@ -55,3 +55,17 @@ Some earlier unnumbered snapshots in the conversation are duplicate homepage/gui
 
 ## Acceptance route
 Open the app, use Login (demo), reach authenticated IMEI list, search a fixture IMEI, inspect Details/Actions, open Special Registration, validate Step 1 → Step 2 → Step 3, verify attachments reject >1MB and disallowed MIME types, then return to the list. Verify Home, User Guides, Contact Us, log out and mobile layout independently.
+
+## 28 October 2026 — 1:1 parity correction checkpoint
+The earlier blanket statement that **Application Reason** options were unavailable was incorrect. `NEIR Citizen 10.html` exposes three selectable choices. The Step 2 dropdown now reproduces those choices. The purchase-method dropdown is again a select, but its original options remain unavailable and **the single explicit demo fallback is not source-certified**.
+
+Corrections in `fix/neir-parity-20261028`:
+- Full password-reset overview now requests the existing original `.png` asset, never an absent `.webp`.
+- User Guides / Mobile shows the captured Web instructions as a clearly identified fallback instead of empty steps; the original native Mobile guide is still not captured.
+- Recovered full FAQ responses for the two previously abbreviated items; three other FAQ tabs still lack verified original content.
+- Registration demo validates four document digits, password and matching confirmation; no live OTP.
+- App paths and browser history preserve /user-guides and /contact-us on refresh/back; Vercel fallback rewrites added.
+- Mobile IMEI field has a visible small-screen label and the prototype disclaimer no longer overlays content.
+- PR/main visual smoke checks exercise guide assets and subpage reload.
+
+Still unverified: Contact Us purpose options, purchase method option values, missing FAQ tabs, original native mobile guide, full EN/BN source translations and controlled source-vs-live pixel diff. Frontend-only demonstration boundaries remain unchanged. Do not certify 100% parity without these reference-backed acceptance checks.
