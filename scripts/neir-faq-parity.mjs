@@ -9,7 +9,7 @@ for(const width of [1918,390]){
  for(const [kind,url] of sources){
   const page=await browser.newPage({viewport:{width,height:930},deviceScaleFactor:1});
   try{
-   await page.goto(url,{waitUntil:'domcontentloaded',timeout:35000});
+   await page.goto(url,{waitUntil:'domcontentloaded',timeout:kind==='original'?12000:35000});
    await page.waitForTimeout(1300);
    const faq=page.getByText('FAQ',{exact:true}).first();
    await faq.waitFor({state:'visible',timeout:15000});
