@@ -1,8 +1,16 @@
 import React from 'react';
-import type { Language } from '../types.ts';
+import type {Language} from '../types.ts';
 
-export const Footer: React.FC<{language: Language}> = () => (
-  <footer className="bg-white w-full border-t border-slate-100 py-6 px-4 text-center">
-    <p className="text-xs sm:text-sm text-slate-700">Copyright © 2026 Bangladesh Telecommunication Regulatory Commission (BTRC)</p>
+type Props = { language: Language; onContactUs: () => void };
+export const Footer:React.FC<Props> = ({onContactUs}) => (
+  <footer className="neir-original-footer">
+    <div className="neir-original-footer-inner">
+      <p>Copyright © 2026 Bangladesh Telecommunication Regulatory Commission (BTRC)</p>
+      <nav aria-label="Footer">
+        <span>Terms of Service</span>
+        <span>Privacy Policy</span>
+        <button type="button" onClick={onContactUs}>Contact Us</button>
+      </nav>
+    </div>
   </footer>
 );
