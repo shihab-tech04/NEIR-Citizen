@@ -36,7 +36,11 @@ try{
     await desktop.locator('img[src$="pwd-guide-web-full-process.png"]').evaluate(e=>e.decode());
     await snap(desktop,'03-guides-password-reset');
     await desktop.getByRole('tab',{name:'Mobile'}).click();
-    await expectVisible(desktop.getByRole('status').filter({hasText:'The supplied reference does not include mobile-specific guide content'}),'guide fallback disclosure');
+    assert.equal(await desktop.locator('article').count(),5);
+    await desktop.getByRole('button',{name:'Account Registration',exact:true}).click();
+    await desktop.getByRole('tab',{name:'Mobile'}).click();
+    assert.equal(await desktop.locator('article').count(),5);
+    await desktop.locator('img[src$="acc-guide-mobile-full-process.png"]').evaluate(e=>e.decode());
     await snap(desktop,'04-guides-mobile-tab');
     await desktop.reload({waitUntil:'networkidle'});
     await expectVisible(desktop.getByRole('heading',{name:'User Guide of NEIR'}),'guide deep link on refresh');
