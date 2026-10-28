@@ -14,6 +14,8 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  const [otp,setOtp]=useState('');
  const [regStep,setRegStep]=useState(1);
  const [newPassword,setNewPassword]=useState('');
+ const [documentDigits,setDocumentDigits]=useState('');
+ const [confirmPassword,setConfirmPassword]=useState('');
  useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);}},[initialView,isOpen]);
  if(!isOpen)return null;
  const demoSignIn=()=>{
@@ -53,11 +55,11 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
       {error && <p role="alert" className="neir-original-field-error">{error}</p>}
       <p className="neir-dialog-demo-note">Prototype only: enter demo details, not a real password. No BTRC authentication takes place.</p>
     </form>}
-    {view==='register' && <form onSubmit={e=>{e.preventDefault();setError('');if(!/^01\d{9}$/.test(mobile)){setError('Enter an 11-digit demo mobile number.');return;}if(regStep===1){setRegStep(2);return;}if(regStep===2){if(otp!=='1234'){setError('For this offline demo use 1234.');return;}setRegStep(3);return;}if(newPassword.length<4){setError('Enter a demo password of at least 4 characters.');return;}demoSignIn();}}>
+    {view==='register' && <form onSubmit={e=>{e.preventDefault();setError('');if(!/^01\d{9}$/.test(mobile)){setError('Enter an 11-digit demo mobile number.');return;}if(regStep===1){if(!/^\d{4}$/.test(documentDigits)){setError('Enter the last 4 digits of your document ID.');return;}setRegStep(2);return;}if(regStep===2){if(otp!=='1234'){setError('For this offline demo use 1234.');return;}setRegStep(3);return;}if(newPassword.length<4){setError('Enter a demo password of at least 4 characters.');return;}if(newPassword!==confirmPassword){setError('The confirmation password must match.');return;}demoSignIn();}}>
       <p className="neir-dialog-demo-note">Frontend-only registration demonstration. No OTP is sent.</p>
-      {regStep===1&&<><label htmlFor="reg-mobile">Enter your mobile number <span>*</span></label><input id="reg-mobile" className={inputStyle} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g,'').slice(0,11))}/><label htmlFor="reg-document">Last 4 digits of document ID</label><input id="reg-document" className={inputStyle} maxLength={4} inputMode="numeric" placeholder="Last 4 digits" /></>}
+      {regStep===1&&<><label htmlFor="reg-mobile">Enter your mobile number <span>*</span></label><input id="reg-mobile" className={inputStyle} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g,'').slice(0,11))}/><label htmlFor="reg-document">Last 4 digits of document ID</label><input id="reg-document" className={inputStyle} maxLength={4} inputMode="numeric" required value={documentDigits} onChange={e=>{setDocumentDigits(e.target.value.replace(/\D/g,'').slice(0,4));setError('');}} placeholder="Last 4 digits" /></>}
       {regStep===2&&<><label htmlFor="reg-otp">Enter OTP</label><input id="reg-otp" className={inputStyle} value={otp} onChange={e=>setOtp(e.target.value)} placeholder="Demo code 1234" maxLength={4}/></>}
-      {regStep===3&&<><label htmlFor="reg-pass">Set Account Password</label><input id="reg-pass" className={inputStyle} type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} placeholder="Demo password"/></>}
+      {regStep===3&&<><label htmlFor="reg-pass">Set Account Password</label><input id="reg-pass" className={inputStyle} type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} placeholder="Demo password"/><label htmlFor="reg-pass-confirm">Confirm Account Password <span>*</span></label><input id="reg-pass-confirm" className={inputStyle} type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} placeholder="Re-enter your demo password" required/></>}
       {error&&<p role="alert" className="neir-original-field-error">{error}</p>}
       <button className="neir-dialog-primary" type="submit">{regStep===1?'Request OTP':regStep===2?'Verify and Proceed':'Create Account'}</button>
       <p className="neir-dialog-switch">Already have an account? <button onClick={()=>setView('login')} type="button">Login</button></p>
