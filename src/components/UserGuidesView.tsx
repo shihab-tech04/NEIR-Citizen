@@ -24,7 +24,7 @@ export const UserGuidesView: React.FC<Props> = () => {
   const steps = isReg ? registration : reset;
   const base = isReg ? 'acc-guide-web-steps/' : 'pwd-guide-web-steps/';
   const fullImage = isReg ? 'acc-guide-web-full-process.png' : 'pwd-guide-web-full-process.png';
-  const url = (file:string) => '/neir-source/user-guides/' + base + (file === 'pwd-guide-web-full-process.png' ? 'pwd-guide-web-full-process.webp' : file);
+  const url = (file:string) => '/neir-source/user-guides/' + base + file;
   const image = (file:string, alt:string) => broken.includes(file)
     ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Reference illustration unavailable offline: {alt}</div>
     : <img src={url(file)} alt={alt} loading="lazy" onError={() => setBroken(v => [...v, file])} className="w-full rounded-xl object-contain border border-slate-100 bg-white" />;
@@ -45,8 +45,8 @@ export const UserGuidesView: React.FC<Props> = () => {
         <button role="tab" aria-selected={platform === 'web'} onClick={() => setPlatform('web')} className={platform === 'web' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Web</button>
         <button role="tab" aria-selected={platform === 'mobile'} onClick={() => setPlatform('mobile')} className={platform === 'mobile' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Mobile</button>
       </div>
-      {platform === 'mobile' ? <div className="bg-amber-50 border border-amber-200 p-6 rounded-xl text-sm">The supplied HTML captures the Web guide. The original Mobile instructions are not available in this reference set, so they have not been invented for the prototype.</div>
-        : <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="grid grid-cols-1 md:grid-cols-2 items-start gap-5 md:gap-8">
+      {platform === 'mobile' && <p role="status" className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm">The supplied reference does not include mobile-specific guide content. The verified Web instructions are shown below as a fallback, not as an official mobile guide.</p>}
+        <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="grid grid-cols-1 md:grid-cols-2 items-start gap-5 md:gap-8">
           <div><h3 className="text-lg sm:text-xl font-semibold mb-3">{step.title}</h3><p className="text-sm sm:text-base text-slate-700 leading-7">{step.description}</p></div>
           <div>{image(step.image, step.title)}</div>
         </article>)}
