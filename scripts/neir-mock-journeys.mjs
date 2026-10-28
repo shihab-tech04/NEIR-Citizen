@@ -25,6 +25,21 @@ try{
     assert.deepEqual(failed,[]);
     await snap(desktop,'01-home-desktop');
   });
+  await check('Source FAQ category layouts and recovered About NEIR answers',async()=>{
+    const tabs=desktop.getByRole('tab');
+    await tabs.filter({hasText:'Registration'}).click();
+    await expectVisible(desktop.getByRole('heading',{name:'Understanding Special Registration'}),'registration FAQ group');
+    await snap(desktop,'01b-faq-registration');
+    await tabs.filter({hasText:'Account & Help'}).click();
+    await expectVisible(desktop.getByRole('heading',{name:'OTP & Login Issues'}),'account FAQ group');
+    await snap(desktop,'01c-faq-account-help');
+    await tabs.filter({hasText:'About NEIR'}).click();
+    await expectVisible(desktop.getByRole('heading',{name:'Privacy & Security'}),'About NEIR groups');
+    await desktop.getByRole('button',{name:'What is NEIR?'}).click();
+    await expectVisible(desktop.getByText('NEIR (National Equipment Identity Register) is a centralized system managed by BTRC',{exact:false}),'source-backed About answer');
+    await snap(desktop,'01d-faq-about-neir');
+    await tabs.filter({hasText:'IMEI Check'}).click();
+  });
   await check('User Guides registration, reset, images and platform states',async()=>{
     await desktop.locator('.neir-main-navigation button').nth(1).click();
     assert.equal(new URL(desktop.url()).pathname,'/user-guides');
