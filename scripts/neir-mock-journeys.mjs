@@ -55,7 +55,7 @@ try{
     await desktop.getByRole('button',{name:'Submit',exact:true}).click();
     await expectVisible(desktop.getByRole('status').filter({hasText:'Demo query created'}),'demo status');
     await desktop.getByRole('button',{name:/Check Query Status/,exact:true}).first().click();
-    await desktop.getByRole('button',{name:'Check Query Status',exact:true}).click();
+    await desktop.locator('form').getByRole('button',{name:'Check Query Status',exact:true}).click();
     await expectVisible(desktop.getByRole('status').filter({hasText:'Demo query found:'}),'demo ticket lookup');
     await snap(desktop,'06-contact-query-status');
   });
