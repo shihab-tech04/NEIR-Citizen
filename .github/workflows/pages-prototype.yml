@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 concurrency:
@@ -60,13 +61,38 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           path: dist/
+  wait-for-legacy-pages:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Wait for the competing GitHub-managed Jekyll publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "GitHub Pages has an additional managed 'pages build and deployment' workflow."
+          echo "The compiled React artifact must publish AFTER that legacy workflow for the same SHA."
+          for attempt in $(seq 1 36); do
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" | jq -r --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.name == "pages build and deployment" and .head_sha == $sha)] | first | .status // "pending"')"
+            if [[ "$state" == "completed" ]]; then
+              echo "PASS: legacy Pages job for $GITHUB_SHA finished; compiled app may publish last."
+              sleep 8
+              exit 0
+            fi
+            echo "Legacy publisher: $state (check $attempt/36)"
+            sleep 6
+          done
+          echo "FAIL: legacy Pages workflow did not finish; refusing a deployment that could be overwritten."
+          exit 1
   deploy:
     if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, wait-for-legacy-pages]
     steps:
       - name: Deploy compiled frontend
         id: deployment
