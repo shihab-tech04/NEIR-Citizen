@@ -51,6 +51,25 @@ jobs:
             if(metrics.overflow>3) throw Error('Mobile horizontal overflow '+metrics.overflow);
             const desktop=await browser.newPage({viewport:{width:1918,height:924}});
             await desktop.goto('http://127.0.0.1:4567/', {waitUntil:'networkidle'});
+            const sourceParity=await desktop.evaluate(()=>{
+              const steps=[...document.querySelectorAll('.neir-source-guide-heading')];
+              const mainNav=[...document.querySelectorAll('.neir-main-navigation button')];
+              const home=document.querySelector('.neir-source-hero-copy h1')?.getBoundingClientRect();
+              const media=document.querySelector('.neir-source-hero-media')?.getBoundingClientRect();
+              const firstCard=document.querySelector('.neir-source-step-card')?.getBoundingClientRect();
+              return {
+                headings:steps.map(e=>[e.querySelector('h2')?.textContent?.trim(),e.querySelector('p')?.textContent?.trim()]),
+                nav:mainNav.map(e=>e.textContent?.trim()),
+                firstStep:document.querySelector('.neir-source-step-content p')?.textContent?.trim(),
+                boxes:{heroX:home?.x,heroY:home?.y,mediaX:media?.x,mediaY:media?.y,cardX:firstCard?.x,cardY:firstCard?.y},
+                loginStyle:getComputedStyle(document.querySelector('.neir-auth-login')).backgroundColor
+              };
+            });
+            console.log('Original desktop source parity:',JSON.stringify(sourceParity));
+            if(sourceParity.headings.length!==2 || sourceParity.headings.some(x=>x[0]!=='3 Steps &')) throw Error('Original two-level 3 Steps headings missing');
+            if(sourceParity.nav.length!==2) throw Error('Source top navigation must have Home and User Guides only');
+            if(!sourceParity.firstStep?.startsWith('Go to your mobile phone’s messaging option')) throw Error('IMEI guide step 1 changed from captured original');
+            if(sourceParity.loginStyle !== 'rgb(255, 255, 255)') throw Error('Original outlined login styling not restored');
             await desktop.screenshot({path:'screenshots/neir-1918-source-match.png',fullPage:false});
             await desktop.locator('.neir-main-navigation button').nth(1).click();
             if(new URL(desktop.url()).pathname !== '/user-guides') throw Error('Guide path not preserved');
@@ -65,7 +84,7 @@ jobs:
             if(await desktop.locator('article').count()!==5) throw Error('Mobile guide fallback lacks accessible steps');
             await desktop.getByRole('tab',{name:'Web'}).click();
             await desktop.screenshot({path:'screenshots/neir-guides-1918.png',fullPage:false});
-            await desktop.locator('.neir-main-navigation button').nth(2).click();
+            await desktop.locator('.neir-original-footer button').click();
             if(new URL(desktop.url()).pathname !== '/contact-us') throw Error('Contact path not preserved');
             await desktop.reload({waitUntil:'networkidle'});
             if(!(await desktop.getByRole('heading',{name:"We're here to help!"}).isVisible())) throw Error('Contact reload lost content');
