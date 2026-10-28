@@ -196,7 +196,7 @@ export default function App() {
       </p>
 
       {/* Footer */}
-      <Footer language={language} />
+      <Footer language={language} onContactUs={() => {setCurrentRoute('contact'); window.scrollTo({top:0});}} />
 
       {/* Modals */}
       <LoginModal
