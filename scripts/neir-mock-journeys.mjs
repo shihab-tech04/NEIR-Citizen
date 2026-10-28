@@ -29,9 +29,13 @@ try{
     const tabs=desktop.getByRole('tab');
     await tabs.filter({hasText:'Registration'}).click();
     await expectVisible(desktop.getByRole('heading',{name:'Understanding Special Registration'}),'registration FAQ group');
+    await desktop.getByRole('button',{name:'What is special registration?'}).click();
+    await expectVisible(desktop.getByText('This applies to devices that do not fall under the standard registration process',{exact:false}),'source Registration answer');
     await snap(desktop,'01b-faq-registration');
     await tabs.filter({hasText:'Account & Help'}).click();
     await expectVisible(desktop.getByRole('heading',{name:'OTP & Login Issues'}),'account FAQ group');
+    await desktop.getByRole('button',{name:'How do I create a NEIR account?'}).click();
+    await expectVisible(desktop.getByText('To create a NEIR account:',{exact:false}),'source Account answer');
     await snap(desktop,'01c-faq-account-help');
     await tabs.filter({hasText:'About NEIR'}).click();
     await expectVisible(desktop.getByRole('heading',{name:'Privacy & Security'}),'About NEIR groups');
