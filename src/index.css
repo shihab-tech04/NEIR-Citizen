@@ -52,15 +52,15 @@ button,input,select,textarea{font:inherit}
 .neir-source-hero-copy{min-width:0}
 .neir-source-hero-copy h1{font-size:46.4px;font-weight:700;line-height:1.5;color:#000;letter-spacing:-1.1px;margin:0 0 12px}
 .neir-source-description{font-size:20px;line-height:1.5;color:#111;margin:0 0 18px}
-.neir-source-verification-card{padding:34px;border-radius:24px;background:#fff;color:#000}
+.neir-source-verification-card{padding:32px;border-radius:24px;background:#fff;color:#000}
 .neir-source-verification-card h2{font-size:20px;font-weight:600;line-height:1.5;margin:0 0 16px}
 .neir-source-verification-card form{display:flex;flex-direction:column;gap:16px}
 .neir-source-input-wrap{position:relative}
-.neir-source-input-wrap input{border:1px solid #cbd5e1;border-radius:32px;background:#fff;width:100%;height:56px;padding:14px 48px 14px 22px;font-size:16px;outline:none}
+.neir-source-input-wrap input{border:1px solid #cbd5e1;border-radius:32px;background:#fff;width:100%;height:59px;padding:14px 48px 14px 22px;font-size:16px;outline:none}
 .neir-source-input-wrap input:focus-visible{box-shadow:0 0 0 2px var(--neir-primary-600)}
 .neir-source-input-wrap input::placeholder{color:#637795}
 .neir-source-imei-help{position:absolute;right:24px;top:50%;transform:translateY(-50%);color:#8da3c0;pointer-events:none}
-.neir-source-verify-button{border:0;border-radius:32px;background:var(--neir-primary-600);color:#fff;height:56px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:500;cursor:pointer}
+.neir-source-verify-button{border:0;border-radius:32px;background:var(--neir-primary-600);color:#fff;height:57px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:500;cursor:pointer}
 .neir-source-verify-button:hover{background:var(--neir-primary-900)}
 .neir-source-error{color:#b91c1c;font-size:13px}
 .neir-source-demo-result{border-radius:12px;background:#ecfeff;color:#155e75;padding:12px;font-size:13px}
@@ -189,10 +189,13 @@ button,input,select,textarea{font:inherit}
    a 600px media frame and a 600px content column with a 40px gutter. */
 @media(min-width:1500px) {
  .neir-source-hero-inner{max-width:1300px;grid-template-columns:626px 626px;gap:64px;transform:translateX(16px)}
+ .neir-source-description{margin-bottom:13px}
+ .neir-source-hero-copy{transform:translateY(-1px)}
  .neir-source-guide-inner{max-width:1290px;transform:translateX(11px)}
  .neir-source-guide-heading{width:840px;max-width:100%}
  .neir-source-steps-row{width:1284px;max-width:calc(100% + 16px);transform:translateX(-8px)}
  .neir-main-navigation{left:50%;transform:translateX(-50%)}
+ .neir-home-sections{padding-top:1px}
 }
 
 
