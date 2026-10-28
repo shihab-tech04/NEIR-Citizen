@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {AppRoute, Language, UserSession} from '../types.ts';
-import {Home, CircleHelp, Send, ChevronDown, Menu, X, UserRound, LogOut} from 'lucide-react';
+import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut} from 'lucide-react';
 
 type Props = {
   currentRoute: AppRoute; onRouteChange: (route:AppRoute)=>void;
@@ -11,7 +11,6 @@ type Props = {
 const menu = [
   {route:'home' as AppRoute,en:'Home',bn:'হোম',icon:Home},
   {route:'guides' as AppRoute,en:'User Guides',bn:'ব্যবহার নির্দেশিকা',icon:CircleHelp},
-  {route:'contact' as AppRoute,en:'Contact Us',bn:'যোগাযোগ',icon:Send},
 ];
 export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLanguageChange,session,onOpenLogin,onOpenRegister,onOpenDashboard,onLogout}) => {
   const [open,setOpen]=useState(false);
