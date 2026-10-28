@@ -40,6 +40,7 @@ button,input,select,textarea{font:inherit}
 .neir-original-footer nav{display:flex;align-items:center;justify-content:flex-end;gap:20px}
 .neir-original-footer button{background:none;color:#fff;border:0;padding:4px 0;font:inherit;cursor:pointer}
 .neir-original-footer button:hover{text-decoration:underline}
+.neir-footer-prototype-note{font-size:11px;font-weight:400;line-height:1.5;text-align:center;opacity:.85;padding:0 16px 12px;color:#fff}
 @media(max-width:767px){
  .neir-original-footer-inner{width:100%;padding:18px 16px;min-height:0;flex-direction:column;align-items:flex-start}
  .neir-original-footer nav{flex-wrap:wrap;justify-content:flex-start}
