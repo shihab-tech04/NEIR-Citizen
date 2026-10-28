@@ -31,8 +31,14 @@ for(const size of [{width:1918,height:924},{width:390,height:844}]){
    await shot('faq-'+name.replace(/[^a-z]/gi,'-'));
    const answers={};
    for(const q of faqQuestions[name]){
-     const locator=page.getByText(q,{exact:true});
-     if(!(await locator.count())){answers[q]={status:'NOT_FOUND'};continue;}
+     let locator=page.getByText(q,{exact:true});
+     if(!(await locator.count()))locator=page.getByText(q,{exact:false});
+     if(!(await locator.count()))locator=page.locator('p-accordionheader, p-accordion-header, [role=button],button').filter({hasText:q});
+     if(!(await locator.count())){
+       const diag=await page.evaluate(t=>Array.from(document.querySelectorAll('*')).filter(e=>e.children.length===0&&(e.textContent||'').toLowerCase().includes(t.slice(0,15).toLowerCase())).slice(0,4).map(e=>e.outerHTML.slice(0,450)),q);
+       answers[q]={status:'NOT_FOUND',diagnostic:diag};
+       continue;
+     }
      await locator.first().click({timeout:6000});
      await page.waitForTimeout(250);
      const current=await page.locator('body').innerText();
