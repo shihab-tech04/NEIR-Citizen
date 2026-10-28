@@ -52,7 +52,7 @@ export const UserGuidesView: React.FC<Props> = () => {
         </article>)}
           <div className="pt-5 border-t space-y-4"><h3 className="text-xl font-semibold">{isReg ? 'User Registration Process at a glance' : 'Reset Password Process at a glance'}</h3>
           {image(fullImage, 'Complete ' + (isReg ? 'registration' : 'password reset') + ' process')}</div>
-        </div>}
+        </div>
     </div>
   </section>;
 };
