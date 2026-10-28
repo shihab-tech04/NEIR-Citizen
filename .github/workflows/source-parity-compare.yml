@@ -35,7 +35,7 @@ jobs:
           const all={source:'https://neir.btrc.gov.bd/',clone:'http://127.0.0.1:4567/',samples:[]};
           const selectors={
             source:{header:'.menubar-container',hero:'.container-card:nth-of-type(1)',heroText:'.container-card:nth-of-type(1) .container-card-header-title',heroImage:'.gif-image',form:'.container-card:nth-of-type(1) .basic-card-1',stepSection:'.container-card:nth-of-type(2)',stepHeading:'.container-card:nth-of-type(2) .container-card-header-title',stepText:'.container-card:nth-of-type(2) .font-size-2xl',stepCards:'.container-card:nth-of-type(2) .tutorial-card',imeiInput:'input[formcontrolname="imei"]',imeiSubmit:'.check-status-btn, .iemi-input-btn-addon'},
-            clone:{header:'.neir-menubar',hero:'.neir-source-hero',heroText:'.neir-source-hero-copy h1',heroImage:'.neir-source-hero-media',form:'.neir-source-verification-card',stepSection:'.neir-source-guide-section:first-child',stepHeading:'.neir-source-guide-heading h2',stepText:'.neir-source-guide-heading p',stepCards:'.neir-source-guide-section:first-child .neir-source-step-card',imeiInput:'.neir-source-input-wrap input',imeiSubmit:'.neir-source-verify-button'}
+            clone:{header:'.neir-menubar',hero:'.neir-source-hero',heroText:'.neir-source-hero-copy h1',heroImage:'.neir-source-hero-media img',form:'.neir-source-verification-card',stepSection:'.neir-source-guide-section:first-child',stepHeading:'.neir-source-guide-heading h2',stepText:'.neir-source-guide-heading p',stepCards:'.neir-source-guide-section:first-child .neir-source-step-card',imeiInput:'.neir-source-input-wrap input',imeiSubmit:'.neir-source-verify-button'}
           };
           function round(n){return Math.round(n*10)/10}
           async function sample(page,kind,size) {
@@ -69,6 +69,12 @@ jobs:
                 const a=item.source[key],b=item.clone[key];
                 if(a&&b)item.differences[key]=Object.fromEntries(['x','y','width','height'].map(p=>[p,round(b[p]-a[p])]));
               }
+              const srcCards=item.source.stepCards??[],cloneCards=item.clone.stepCards??[];
+              item.differences.stepCards=srcCards.map((src,i)=>Object.fromEntries(['x','y','width','height'].map(p=>[p,round((cloneCards[i]?.[p]??0)-src[p])])));
+              const keys=['header','hero','heroText','heroImage','imeiInput','imeiSubmit','stepHeading'];
+              const maxGeometryError=Math.max(0,...keys.flatMap(k=>Object.values(item.differences[k]??{}).map(Math.abs)),...item.differences.stepCards.flatMap(c=>Object.values(c).map(Math.abs)));
+              item.maxGeometryErrorPx=maxGeometryError;
+              item.geometryWithin3px=maxGeometryError<=3;
             }
           }
           fs.writeFileSync('parity/metrics.json',JSON.stringify(all,null,2));
