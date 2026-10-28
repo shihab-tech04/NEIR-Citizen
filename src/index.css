@@ -212,6 +212,52 @@ button,input,select,textarea{font:inherit}
 #faq-section>div:first-child p{font-size:32px}
 @media(max-width:767px){.neir-original-dialog{width:100%;min-width:0;max-height:90vh}#faq-section{padding:28px 16px;border-radius:16px}#faq-section>div:first-child h2{font-size:35px}#faq-section>div:first-child p{font-size:24px}}
 
+/* NEIR FAQ — source-matched visual primitives from the user's 28 Oct screenshots.
+   Keep all adjustments scoped to FAQ; other pages and their source parity are frozen. */
+#faq-section.neir-faq-source{
+  padding:80px max(24px,calc((100% - 1276px)/2)) 64px;
+}
+#faq-section .neir-faq-content{max-width:1276px}
+#faq-section .neir-faq-intro{margin-bottom:20px}
+#faq-section .neir-faq-intro p{color:#000;font-weight:400}
+#faq-section .neir-faq-tabs{gap:24px;margin-bottom:33px}
+#faq-section .neir-faq-tab{
+  min-height:54px;
+  font-weight:600;
+  border-radius:7px;
+}
+#faq-section .neir-faq-group{
+  padding:32px;
+  border-radius:24px;
+}
+#faq-section .neir-faq-group-title{margin-bottom:12px;color:#000;font-weight:700}
+#faq-section .neir-faq-item{
+  padding-inline:24px;
+  border-radius:16px;
+}
+#faq-section .neir-faq-question{
+  min-height:72px;
+  font-weight:600;
+  color:#637795;
+  line-height:1.5;
+}
+#faq-section .neir-faq-question:focus:not(:focus-visible){outline:none}
+#faq-section .neir-faq-question:focus-visible{
+  outline:2px solid var(--neir-primary-900);
+  outline-offset:2px;
+  border-radius:8px;
+}
+#faq-section .neir-faq-answer{color:#4b617d;line-height:1.55}
+@media(max-width:767px){
+  #faq-section.neir-faq-source{padding:32px 16px;border-radius:16px}
+  #faq-section .neir-faq-tabs{gap:8px;margin-bottom:24px}
+  #faq-section .neir-faq-tab{min-height:46px;padding-inline:12px}
+  #faq-section .neir-faq-group{padding:18px;border-radius:18px}
+  #faq-section .neir-faq-item{padding-inline:16px}
+  #faq-section .neir-faq-question{min-height:52px}
+  #faq-section .neir-faq-intro{margin-bottom:24px}
+}
+
 /* Final desktop alignment from captured 1780px source viewport. The source contains
    a 600px media frame and a 600px content column with a 40px gutter. */
 @media(min-width:1500px) {
