@@ -1,7 +1,7 @@
 da39a3ee5e6b4b0d3255bfef95601890afd80709  ./SHA1SUMS
-915ae1490eed8818fd41f5f5bb0c4de80e17b6b6  ./assets/index-6YuLfkiY.css
-6d729b5d855de26db72cd6ff731b04f61e98b297  ./assets/index-BRCA_Caf.js
-856e814d8f499f9070c35ae7043aeba509a5e37e  ./index.html
+ce6c893436b8502e713fe611c0f832e43c973d6e  ./assets/index-CMNrdziJ.css
+d8708dcd1c134ad05cd2b6a7b370ad4358982824  ./assets/index-COYfVOxu.js
+a7543d624cf851dbef9dd26da4772c8cfff01c79  ./index.html
 321e7f0d4b59f00e3268a1d669b70b9f12b593b1  ./neir-source/frames/right-arrow.png
 f436536b6cacd6db41cb718ea498ad9f14f39303  ./neir-source/gifs/neir-herobanner.gif
 714d24c64c6fe3ba87d539f51debb60e6b64deaf  ./neir-source/images/btrc-logo.png
@@ -12,6 +12,12 @@ fe11e4521eeb882db2386ef67d57e8f2f0a41ddd  ./neir-source/images/step-3.svg
 086ff589eb4c295714827aee11926ca050dc8200  ./neir-source/images/step-4.svg
 037bca72f3c7d0d1da9f932c36090d5bdadcb2e5  ./neir-source/images/step-5.svg
 294ee2f6c7fb04b641b2016ed96c1a2669605e47  ./neir-source/images/step-6.svg
+eab43ad3c245ec7fef7573030aac599253927cc1  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-full-process.png
+5d15f55bbca2eb7b91bd3527080b21b3baed4e8c  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-step-1.png
+b1f515a0cee05b4eeff5ccca10ecbf8d4e3a0b33  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-step-2.png
+a927c758ca3832099e538421dc05efd2fdd92609  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-step-3.png
+ee8bf462d914acc1e1499458983e7adcf57bef8d  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-step-4.png
+bb12daea4007796fe51c10067cc5934b7b8878e3  ./neir-source/user-guides/acc-guide-mobile-steps/acc-guide-mobile-step-5.png
 ed1153e755334c730dfb652ac092602e4f480641  ./neir-source/user-guides/acc-guide-web-steps/acc-guide-web-full-process.png
 4e1800c1d7a2bc748380bea7bffe811d4485419e  ./neir-source/user-guides/acc-guide-web-steps/acc-guide-web-step-1.png
 d47777b1d638bfa35e93f032fcba9e1ccf4fd14b  ./neir-source/user-guides/acc-guide-web-steps/acc-guide-web-step-2.png
