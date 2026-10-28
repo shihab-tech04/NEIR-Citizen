@@ -22,11 +22,11 @@ export const ThreeStepGuide:React.FC<Props> = () => <div className="neir-source-
         {section.steps.map((step,i)=><React.Fragment key={g+'-'+i}>
           <article className="neir-source-step-card">
             <div className="neir-source-step-art" style={{backgroundColor:imageColors[i]}}>
-              <img src={`/neir-source/images/step-${g*3+i+1}.svg`} alt={`Step ${i+1} illustration`} loading="lazy"/>
+              <img src={`${import.meta.env.BASE_URL}neir-source/images/step-${g*3+i+1}.svg`} alt={`Step ${i+1} illustration`} loading="lazy"/>
             </div>
             <div className="neir-source-step-content"><h3>Step {i+1}</h3><p>{step}</p></div>
           </article>
-          {i<2 && <div className="neir-source-step-arrow"><img src="/neir-source/frames/right-arrow.png" alt="" aria-hidden="true" loading="lazy"/></div>}
+          {i<2 && <div className="neir-source-step-arrow"><img src={`${import.meta.env.BASE_URL}neir-source/frames/right-arrow.png`} alt="" aria-hidden="true" loading="lazy"/></div>}
         </React.Fragment>)}
       </div>
     </div>
