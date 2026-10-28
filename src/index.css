@@ -159,7 +159,7 @@ button,input,select,textarea{font:inherit}
 /* Final desktop alignment from captured 1780px source viewport. The source contains
    a 600px media frame and a 600px content column with a 40px gutter. */
 @media(min-width:1500px) {
- .neir-source-hero-inner{max-width:1300px;grid-template-columns:minmax(0,638px) minmax(0,638px);gap:24px;transform:translateX(16px)}
+ .neir-source-hero-inner{max-width:1300px;grid-template-columns:minmax(0,626px) minmax(0,626px);gap:48px;transform:none}
  .neir-source-guide-inner{max-width:1240px;transform:translateX(-26px)}
  .neir-main-navigation{left:50%;transform:translateX(-50%)}
 }
