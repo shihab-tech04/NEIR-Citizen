@@ -163,17 +163,17 @@ export const FaqSection: React.FC<{language:Language}> = () => {
   const [open,setOpen] = useState<string[]>([]);
   const activeGroups = selected === 'IMEI Check' ? sourceGroups : recoveredGroups[selected] ?? [];
   const toggle = (id:string) => setOpen(v => v.includes(id) ? v.filter(k => k !== id) : [...v,id]);
-  return <section id="faq-section" className="bg-[#F2F9F4] rounded-[32px] px-4 sm:px-8 lg:px-16 py-12 lg:py-16">
-    <div className="text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">FAQ</h2><p className="mt-2 text-lg text-slate-700">Need help?</p></div>
-    <div className="max-w-[1250px] mx-auto">
-      <div className="flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
-        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className={selected === cat ? 'flex-1 min-w-max bg-[#00ACC1] text-white rounded-lg px-5 py-3 font-medium text-sm' : 'flex-1 min-w-max bg-white text-slate-600 rounded-lg px-5 py-3 font-medium text-sm hover:bg-cyan-50'}>{cat}</button>)}
+  return <section id="faq-section" className="neir-faq-source bg-[#F2F9F4] rounded-[32px] px-4 sm:px-8 lg:px-16 py-12 lg:py-16">
+    <div className="neir-faq-intro text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">FAQ</h2><p className="mt-2 text-lg text-slate-700">Need help?</p></div>
+    <div className="neir-faq-content max-w-[1250px] mx-auto">
+      <div className="neir-faq-tabs flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
+        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className={selected === cat ? 'neir-faq-tab flex-1 min-w-max bg-[#00ACC1] text-white rounded-lg px-5 py-3 font-medium text-sm' : 'neir-faq-tab flex-1 min-w-max bg-white text-slate-600 rounded-lg px-5 py-3 font-medium text-sm hover:bg-cyan-50'}>{cat}</button>)}
       </div>
-      <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="bg-white rounded-3xl p-5 sm:p-7">
-          <h3 className="text-lg sm:text-xl font-bold mb-5">{group.title}</h3>
-          <div className="flex flex-col gap-2">{group.items.map((item,i) => {const id=g+'-'+i;const visible=open.includes(id);return <div key={id} className="border border-[#E3DBD8] rounded-2xl px-4">
-            <button aria-expanded={visible} onClick={() => toggle(id)} className="w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
-            {visible && <p className="text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line pb-4">{item.a}</p>}
+      <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="neir-faq-group bg-white rounded-3xl p-5 sm:p-7">
+          <h3 className="neir-faq-group-title text-lg sm:text-xl font-bold mb-5">{group.title}</h3>
+          <div className="flex flex-col gap-2">{group.items.map((item,i) => {const id=g+'-'+i;const visible=open.includes(id);return <div key={id} className="neir-faq-item border border-[#E3DBD8] rounded-2xl px-4">
+            <button aria-expanded={visible} onClick={() => toggle(id)} className="neir-faq-question w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
+            {visible && <p className="neir-faq-answer text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line pb-4">{item.a}</p>}
           </div>})}</div>
         </div>)}</div>
     </div>
