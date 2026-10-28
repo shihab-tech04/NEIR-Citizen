@@ -106,27 +106,49 @@ button,input,select,textarea{font:inherit}
  .neir-source-guide-section{padding:40px 20px}
 }
 @media(max-width:767px){
- .neir-menubar{height:76px;padding:10px 16px}
- .neir-logo-wrap{height:46px;min-width:100px}
- .neir-logo-wrap img{width:42px;height:42px}
- .neir-source-hero{padding:28px 16px 40px;border-radius:0 0 16px 16px}
- .neir-source-hero-inner{grid-template-columns:1fr;gap:28px}
- .neir-source-hero-copy h1{font-size:34px;line-height:1.25;letter-spacing:-.4px;text-align:center}
- .neir-source-description{text-align:center;font-size:16px}
- .neir-source-verification-card{padding:22px 18px}
- .neir-source-verification-card h2{font-size:18px}
- .neir-source-input-wrap input{font-size:14px}
- .neir-source-verify-button{font-size:14px}
- .neir-source-hero-media{max-width:600px;margin:auto;min-height:230px}
- .neir-source-guide-section{border-radius:16px;padding:24px 14px}
- .neir-source-guide-heading{margin-bottom:24px;text-align:center}
- .neir-source-guide-heading h2{font-size:32px}
- .neir-source-guide-heading p{font-size:23px}
- .neir-source-steps-row{flex-direction:column}
- .neir-source-step-arrow{height:45px;flex:0 0 45px;width:100%;transform:rotate(90deg)}
+ /* Original mobile header: logo, language and Login. No desktop nav or registration card. */
+ .neir-menubar{height:68px;padding:8px 25px 8px 21px}
+ .neir-logo-wrap{height:42px;min-width:85px;width:85px;gap:3px;padding:3px}
+ .neir-logo-wrap img{width:38px;height:38px}
+ .neir-mobile-toggle{display:none}
+ .neir-source-mobile-auth{display:flex;align-items:center;gap:13px;margin-left:auto}
+ .neir-source-mobile-language{display:flex;align-items:center;gap:4px;height:36px;width:104px;padding:0 9px;border:1px solid var(--neir-primary-600);border-radius:6px;background:transparent;color:#1c4760}
+ .neir-source-mobile-language select{min-width:0;width:100%;font-size:14px;background:transparent;appearance:none;color:inherit;outline-offset:2px}
+ .neir-source-mobile-language svg{flex:0 0 auto;pointer-events:none}
+ .neir-source-mobile-login{min-width:92px;height:46px;display:flex;gap:8px;align-items:center;justify-content:center;border:0;background:var(--neir-primary-600);color:#fff;border-radius:24px;font-size:14px;font-weight:500}
+ .neir-home-sections{gap:21px}
+ .neir-source-hero{left:-7px;position:relative;width:calc(100% + 14px);padding:28px 28px 28px;border-radius:0 0 16px 16px}
+ .neir-source-hero-inner{grid-template-columns:1fr;gap:56px;transform:none}
+ .neir-source-hero-copy h1{font-size:31.5px;line-height:1.5;letter-spacing:0;margin:0 0 7px;text-align:center}
+ .neir-source-description{text-align:center;font-size:17.5px;line-height:1.5;margin:0 0 16px}
+ .neir-source-verification-card{padding:0;background:transparent;border-radius:0}
+ .neir-source-verification-card h2{display:none}
+ .neir-source-verification-card form{display:flex;flex-direction:row;align-items:flex-start;gap:0;flex-wrap:wrap}
+ .neir-source-input-wrap{min-width:0;flex:1 1 0}
+ .neir-source-input-wrap input{width:100%;height:35px;min-height:0;padding:6px 28px 6px 12px;font-size:14px;border:1px solid #bcd6dd;border-right:0;border-radius:24px 0 0 24px}
+ .neir-source-imei-help{right:10px}
+ .neir-source-verify-button{width:88px;flex:0 0 88px;height:35px;min-height:35px;padding:0 10px;gap:6px;border-radius:0 24px 24px 0;line-height:1;font-size:14px;font-weight:500}
+ .neir-source-verify-button svg{height:18px;width:18px;flex:0 0 auto}
+ .neir-source-verify-long{display:none}
+ .neir-source-verify-short{display:inline}
+ .neir-source-verify-button span{flex:0 0 auto}
+ .neir-source-error,.neir-source-demo-result{flex-basis:100%;margin-top:8px}
+ .neir-source-hero-media{width:100%;max-width:600px;margin:0 auto;min-height:0;height:auto}
+ .neir-source-guide-section{position:relative;left:-7px;width:calc(100% + 14px);border-radius:16px;padding:28px}
+ .neir-source-guide-heading{width:100%;margin:0 0 18px;text-align:center}
+ .neir-source-guide-heading h2{font-size:31.5px;line-height:1.5}
+ .neir-source-guide-heading p{font-size:28px;line-height:1.5}
+ .neir-source-steps-row{width:100%;transform:none;flex-direction:column}
+ .neir-source-step-arrow{height:70px;flex:0 0 70px;width:100%;transform:rotate(90deg)}
  .neir-source-step-art{min-height:170px}
- .neir-source-step-content{padding:22px}
- .neir-source-step-content h3{font-size:27px}
+ .neir-source-step-content{padding:28px}
+ .neir-source-step-content h3{font-size:28px}
+}
+@media(max-width:360px){
+ .neir-menubar{padding-right:13px;padding-left:13px}
+ .neir-source-mobile-auth{gap:7px}
+ .neir-source-mobile-language{width:94px}
+ .neir-source-mobile-login{min-width:82px}
 }
 
 /* Reproduce the captured white PrimeNG dialog, not the invented green login. */
@@ -201,13 +223,9 @@ button,input,select,textarea{font:inherit}
   .neir-source-step-arrow { flex:0 0 45px; min-height:45px; }
 }
 
-/* Small-screen adjustments, preserving the source layout on desktop. */
+/* Source mobile uses the inline placeholder and check control; do not overlay the hero. */
 .neir-source-imei-mobile-label{display:none}
 @media(max-width:767px){
- .neir-source-imei-mobile-label{display:block;font-size:13px;line-height:1.4;margin:0 0 6px;color:#334155}
- .neir-source-input-wrap input::placeholder{color:transparent}
- .neir-source-verify-button{height:auto;min-height:54px;padding:11px 16px;gap:8px;line-height:1.35}
- .neir-source-verify-button span{flex:1;min-width:0}
- .neir-source-verify-button svg{flex:0 0 auto}
+ .neir-source-input-wrap input::placeholder{color:#667b99}
  .neir-prototype-disclosure{position:static!important;display:table;margin:12px 16px 16px;box-shadow:none;max-width:calc(100% - 32px)}
 }
