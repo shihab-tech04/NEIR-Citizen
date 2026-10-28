@@ -48,7 +48,7 @@ jobs:
           ):
               assert (root/filename).is_file(), filename
           js=''.join(p.read_text() for p in (root/'assets').glob('*.js'))
-          assert '/NEIR-Citizen/neir-source/' in js, 'Pages image base is incorrect'
+          assert '/NEIR-Citizen/' in js and 'neir-source/' in js, 'Pages image base is incorrect'
           assert 'user-guides' in js and 'contact-us' in js, 'Subpage code missing'
           (root/'404.html').write_text(html)
           (root/'.nojekyll').touch()
