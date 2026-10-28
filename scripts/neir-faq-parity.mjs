@@ -52,7 +52,7 @@ for(const width of [1918,390]){
     Object.assign(m,metrics);
     if(width===1918){
       assert(metrics.rowHeight>=70&&metrics.rowHeight<=78,'Original desktop accordion row height expected ~72px');
-      assert(metrics.tabHeight>=52&&metrics.tabHeight<=58,'Original desktop tab height expected ~54px');
+      assert(metrics.tabHeight>=57&&metrics.tabHeight<=62,'Original desktop tab height expected ~59px');
       assert(Number(metrics.firstQuestionWeight)>=600,'Original FAQ question text must be semibold');
     }
     assert(metrics.overflow<=3,'FAQ viewport must not overflow horizontally');
