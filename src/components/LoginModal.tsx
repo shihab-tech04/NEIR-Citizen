@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {X,Maximize2,Minimize2,Phone,Lock,Eye,EyeOff} from 'lucide-react';
+import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
 interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'}
 type View='login'|'register'|'forgot';
@@ -49,11 +49,10 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
       <label htmlFor="login-password">Enter your password</label>
       <div className="neir-dialog-input-icon"><Lock size={17}/><input id="login-password" type={showPassword?'text':'password'} placeholder="Enter your password" autoComplete="off" className={inputStyle} value={password} onChange={e=>{setPassword(e.target.value);setError('')}}/><button type="button" aria-label={showPassword?'Hide password':'Show password'} onClick={()=>setShowPassword(!showPassword)}><Eye size={17}/></button></div>
       <hr/>
-      <button className="neir-dialog-primary" type="submit">Login</button>
-      <p className="neir-dialog-switch">Did you forget your password? <button onClick={()=>{setView('forgot');setError('')}} type="button">Forgot Password</button></p>
-      <p className="neir-dialog-switch">Don't have an account? <button onClick={()=>{setView('register');setError('')}} type="button">Sign Up</button></p>
+      <button className="neir-dialog-primary" type="submit">LOGIN <ArrowRight size={18} aria-hidden="true"/></button>
+      <div className="neir-dialog-links"><p className="neir-dialog-switch">Did you forget your password? <button onClick={()=>{setView('forgot');setError('')}} type="button">Forgot Password</button></p>
+      <p className="neir-dialog-switch">Don't have an account? <button onClick={()=>{setView('register');setError('')}} type="button">Sign Up</button></p></div>
       {error && <p role="alert" className="neir-original-field-error">{error}</p>}
-      <p className="neir-dialog-demo-note">Prototype only: enter demo details, not a real password. No BTRC authentication takes place.</p>
     </form>}
     {view==='register' && <form onSubmit={e=>{e.preventDefault();setError('');if(!/^01\d{9}$/.test(mobile)){setError('Enter an 11-digit demo mobile number.');return;}if(regStep===1){if(!/^\d{4}$/.test(documentDigits)){setError('Enter the last 4 digits of your document ID.');return;}setRegStep(2);return;}if(regStep===2){if(otp!=='1234'){setError('For this offline demo use 1234.');return;}setRegStep(3);return;}if(newPassword.length<4){setError('Enter a demo password of at least 4 characters.');return;}if(newPassword!==confirmPassword){setError('The confirmation password must match.');return;}demoSignIn();}}>
       <p className="neir-dialog-demo-note">Frontend-only registration demonstration. No OTP is sent.</p>
