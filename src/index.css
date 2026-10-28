@@ -173,12 +173,39 @@ button,input,select,textarea{font:inherit}
 .neir-dialog-input-icon .neir-original-dialog-input{padding-left:42px;padding-right:40px}
 .neir-dialog-input-icon>button{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:5px;color:#64748b}
 .neir-original-dialog-input:focus{border-color:var(--neir-primary-600);box-shadow:0 0 0 1px var(--neir-primary-600)}
-.neir-dialog-primary{width:100%;height:46px;border-radius:8px;background:var(--neir-primary-600);color:#fff;font-size:15px;font-weight:600;margin-top:3px}
+.neir-dialog-primary{width:100%;height:60px;border-radius:999px;border:1px solid var(--neir-primary-600);background:var(--neir-secondary);color:var(--neir-primary-600);font-size:15px;font-weight:600;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer}
+.neir-dialog-primary:hover{background:#dceff1}
 .neir-original-field-error{color:#d32f2f;font-size:13px;line-height:1.35}
-.neir-dialog-switch{font-size:14px;text-align:center;line-height:1.45}
-.neir-dialog-switch button{color:var(--neir-primary-900);font-weight:600}
+.neir-dialog-links{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:2px}
+.neir-dialog-switch{font-size:13px;text-align:left;line-height:1.5}
+.neir-dialog-switch button{color:var(--neir-primary-900);font-weight:500;text-decoration:underline;display:block;text-align:left}
+/* Presentational mock: the source login footer uses two side-by-side help links. */
+@media(max-width:400px){.neir-dialog-links{gap:8px}.neir-dialog-switch{font-size:12px}}
 .neir-dialog-demo-note{color:#596579;background:#f3f7f9;padding:8px;border-radius:6px;font-size:12px;line-height:1.4}
 .neir-source-guide-tile-img{display:block;width:60px;height:60px;object-fit:contain;margin:0 auto 12px}
+
+/* Original NEIR Web User Guide: centered description, alternating bordered steps. */
+.neir-source-guide-content{max-width:1300px;margin-inline:auto}
+.neir-source-guide-intro{text-align:center}
+.neir-source-guide-intro h2{font-size:40px;line-height:1.4;font-weight:400;color:#000}
+.neir-source-guide-intro p:first-of-type{max-width:1120px;margin:22px auto 0;line-height:1.65;text-align:center}
+.neir-source-guide-intro p:last-of-type{border-top:1px solid #e6ddda;padding-top:20px;margin-top:24px;font-weight:400}
+.neir-source-guide-platform{justify-content:center;border-bottom:0;padding-bottom:0}
+.neir-guide-step-card{border:1px solid #e7dddd;border-radius:20px;padding:22px;min-height:420px;overflow:hidden}
+.neir-guide-step-text h3{font-size:20px;line-height:1.4;font-weight:600;margin:0 0 10px;color:#000}
+.neir-guide-step-text p{font-size:16px;line-height:1.55;color:#111827;text-align:justify}
+.neir-guide-step-visual img{width:100%;max-height:390px;object-fit:contain;border-radius:16px}
+@media(min-width:768px){.neir-guide-step-card:nth-child(even) .neir-guide-step-visual{order:-1}}
+.neir-guide-overview{border:0;padding-top:0}
+.neir-guide-overview h3{border:1px solid #e7dddd;border-radius:18px;padding:15px 20px;text-align:center;color:#000}
+@media(max-width:767px){
+ .neir-source-guide-intro h2{font-size:26px}
+ .neir-source-guide-intro p:first-of-type{margin-top:14px}
+ .neir-guide-step-card{padding:16px;min-height:0}
+ .neir-guide-step-visual img{max-height:none}
+ .neir-guide-overview h3{font-size:18px}
+}
+
 #faq-section{border-radius:32px;padding:64px max(24px,calc((100% - 1200px) / 2));}
 #faq-section>div:first-child{text-align:left}
 #faq-section>div:first-child h2{font-size:46px}
