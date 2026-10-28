@@ -18,11 +18,17 @@ import { ProposedDesignView } from './components/ProposedDesignView.tsx';
 import { QueryTicket } from './utils/queryTracker.ts';
 
 export default function App() {
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
   const routePaths: Record<AppRoute, string> = {
     home: '/', guides: '/user-guides', contact: '/contact-us', faq: '/faq',
     proposed: '/proposed', dashboard: '/dashboard',
   };
-  const getRoute = (): AppRoute => (Object.entries(routePaths).find(([, path]) => path === window.location.pathname)?.[0] as AppRoute | undefined) ?? 'home';
+  const getRoute = (): AppRoute => {
+    const currentPath = window.location.pathname;
+    const relativePath = currentPath === basePath ? '/' :
+      currentPath.startsWith(basePath + '/') ? currentPath.slice(basePath.length) : currentPath;
+    return (Object.entries(routePaths).find(([, path]) => path === relativePath)?.[0] as AppRoute | undefined) ?? 'home';
+  };
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(getRoute);
   useEffect(() => {
     const handlePopState = () => {
@@ -33,7 +39,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
   useEffect(() => {
-    const path = routePaths[currentRoute];
+    const path = basePath + routePaths[currentRoute];
     if (window.location.pathname !== path) window.history.pushState({route: currentRoute}, '', path);
   }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
