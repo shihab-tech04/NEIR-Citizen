@@ -71,3 +71,30 @@ jobs:
       - name: Deploy compiled frontend
         id: deployment
         uses: actions/deploy-pages@v4
+
+  smoke:
+    name: Verify public GitHub Pages output
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check public compiled index and original images
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://shihab-tech04.github.io/NEIR-Citizen"
+          for attempt in $(seq 1 15); do
+            if curl -fsSL --max-time 20 "$url/" -o /tmp/neir-live.html && grep -Fq '/NEIR-Citizen/assets/' /tmp/neir-live.html; then
+              echo "PASS: compiled Vite assets are on public Pages"
+              break
+            fi
+            if [[ "$attempt" -eq 15 ]]; then
+              echo "FAIL: public Pages is not serving the compiled app"
+              exit 1
+            fi
+            sleep 4
+          done
+          curl -fsSL --max-time 20 -o /tmp/btrc-logo.png "$url/neir-source/images/btrc-logo.png"
+          curl -fsSL --max-time 20 -o /tmp/neir-reset-guide.png "$url/neir-source/user-guides/pwd-guide-web-steps/pwd-guide-web-full-process.png"
+          test "$(wc -c </tmp/btrc-logo.png)" -gt 1000
+          test "$(wc -c </tmp/neir-reset-guide.png)" -gt 1000
+          echo "PASS: source BTRC logo and complete password reset guide publicly available"
