@@ -1,7 +1,7 @@
 name: Publish compiled NEIR Citizen frontend to GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [main, 'fix/neir-pages-*']
     paths:
       - '.github/workflows/pages-prototype.yml'
       - 'src/**'
@@ -55,10 +55,13 @@ jobs:
           print('PASS: compiled base, image references and SPA fallback')
           PY
       - uses: actions/configure-pages@v5
+        if: github.ref == 'refs/heads/main'
       - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
         with:
           path: dist/
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
