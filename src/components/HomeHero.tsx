@@ -33,7 +33,7 @@ export const HomeHero:React.FC<Props> = ({language}) => {
         </div>
       </div>
       <div className="neir-source-hero-media">
-        <img src="/neir-source/gifs/neir-herobanner.gif" alt="Official NEIR handset verification illustration" decoding="async"/>
+        <img src={`${import.meta.env.BASE_URL}neir-source/gifs/neir-herobanner.gif`} alt="Official NEIR handset verification illustration" decoding="async"/>
       </div>
     </div>
   </section>;

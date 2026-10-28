@@ -33,8 +33,8 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
   return <header className="neir-original-header">
     <div className="neir-menubar">
       <button className="neir-logo-wrap" type="button" onClick={()=>navigate('home')} aria-label="NEIR Citizen home">
-        <img src="/neir-source/images/btrc-logo.png" alt="BTRC logo"/>
-        <img src="/neir-source/images/govt-seal.svg" alt="Government of Bangladesh seal"/>
+        <img src={`${import.meta.env.BASE_URL}neir-source/images/btrc-logo.png`} alt="BTRC logo"/>
+        <img src={`${import.meta.env.BASE_URL}neir-source/images/govt-seal.svg`} alt="Government of Bangladesh seal"/>
       </button>
       <nav className="neir-main-navigation" aria-label="NEIR portal navigation">
         {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className={'neir-nav-btn neir-menu-button'+(currentRoute===item.route?' neir-active':'')} aria-current={currentRoute===item.route?'page':undefined}><Icon size={16} strokeWidth={2.5}/>{language==='bn'?item.bn:item.en}</button>})}
