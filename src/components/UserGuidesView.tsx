@@ -9,6 +9,13 @@ const registration = [
   { title: 'Step 3: Request OTP & Verify OTP', description: 'Enter the received OTP and click “Verify and Proceed”.', image: 'acc-guide-web-step-3.png' },
   { title: 'Step 4: Set Account Password', description: 'Create a new password and re-enter it to confirm. Then click “Create Account” to complete the registration.', image: 'acc-guide-web-step-4.png' },
 ];
+const mobileRegistration = [
+  { title: 'Step 1: Initiate Account Registration', description: 'Access the system and click the “Log In” button to begin the account creation process.', image: 'acc-guide-mobile-step-1.png' },
+  { title: 'Step 2: Proceed to Sign up', description: 'Click on the “Sign up” button to proceed registration.', image: 'acc-guide-mobile-step-2.png' },
+  { title: 'Step 3: Provide Mobile Number & Verification Details', description: 'Enter your mobile number and input the last four (4) digits of the document ID used at the time of SIM purchase. Click “Request OTP” to receive a one-time password on your registered mobile number.', image: 'acc-guide-mobile-step-3.png' },
+  { title: 'Step 4: Request OTP & Verify OTP', description: 'Enter the received OTP and click “Verify and Proceed”.', image: 'acc-guide-mobile-step-4.png' },
+  { title: 'Step 5: Set Account Password', description: 'Create a new password and re-enter it to confirm. Then click “Create Account” to complete the registration.', image: 'acc-guide-mobile-step-5.png' },
+];
 const reset = [
   { title: 'Step 1: Open the Login Screen', description: 'Access the system and click the “Login” button to begin the Password Reset process', image: 'pwd-guide-web-step-1.png' },
   { title: 'Step 2: Select Reset Password', description: 'Tap “Reset Password” to begin the password reset process.', image: 'pwd-guide-web-step-2.png' },
@@ -21,9 +28,10 @@ export const UserGuidesView: React.FC<Props> = () => {
   const [platform,setPlatform] = useState<'web' | 'mobile'>('web');
   const [broken,setBroken] = useState<string[]>([]);
   const isReg = guide === 'register';
-  const steps = isReg ? registration : reset;
-  const base = isReg ? 'acc-guide-web-steps/' : 'pwd-guide-web-steps/';
-  const fullImage = isReg ? 'acc-guide-web-full-process.png' : 'pwd-guide-web-full-process.png';
+  const isMobileReg = isReg && platform === 'mobile';
+  const steps = isMobileReg ? mobileRegistration : isReg ? registration : reset;
+  const base = isReg ? (isMobileReg ? 'acc-guide-mobile-steps/' : 'acc-guide-web-steps/') : 'pwd-guide-web-steps/';
+  const fullImage = isReg ? (isMobileReg ? 'acc-guide-mobile-full-process.png' : 'acc-guide-web-full-process.png') : 'pwd-guide-web-full-process.png';
   const url = (file:string) => import.meta.env.BASE_URL + 'neir-source/user-guides/' + base + file;
   const image = (file:string, alt:string) => broken.includes(file)
     ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Reference illustration unavailable offline: {alt}</div>
@@ -45,7 +53,6 @@ export const UserGuidesView: React.FC<Props> = () => {
         <button role="tab" aria-selected={platform === 'web'} onClick={() => setPlatform('web')} className={platform === 'web' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Web</button>
         <button role="tab" aria-selected={platform === 'mobile'} onClick={() => setPlatform('mobile')} className={platform === 'mobile' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Mobile</button>
       </div>
-      {platform === 'mobile' && <p role="status" className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm">The supplied reference does not include mobile-specific guide content. The verified Web instructions are shown below as a fallback, not as an official mobile guide.</p>}
         <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="neir-guide-step-card grid grid-cols-1 md:grid-cols-2 items-center gap-5 md:gap-8">
           <div className="neir-guide-step-text"><h3 className="text-lg sm:text-xl font-semibold mb-3">{step.title}</h3><p className="text-sm sm:text-base text-slate-700 leading-7">{step.description}</p></div>
           <div className="neir-guide-step-visual">{image(step.image, step.title)}</div>
