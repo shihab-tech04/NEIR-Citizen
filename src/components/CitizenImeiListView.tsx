@@ -198,12 +198,22 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
             {form.bmet === 'Yes' && inputField('BMET card number', 'bmetNumber', 'BMET card number')}
           </div>}
           {step === 2 && <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {inputField('Application Reason', 'reason', 'Select an application reason')}
+            <label className="text-sm font-medium">Application Reason
+              <select className={fieldClass} value={form.reason} onChange={e => update('reason', e.target.value)} aria-label="Application Reason">
+                <option value="">Select an application reason</option>
+                <option value="Purchased device during his foreign tour">Purchased device during his foreign tour</option>
+                <option value="Gift Deed from his relative/ Friends">Gift Deed from his relative/ Friends</option>
+                <option value="Bought/Brought from Air Mail">Bought/Brought from Air Mail</option>
+              </select>{errors.reason && <span role="alert" className="block mt-1 text-xs text-red-700">{errors.reason}</span>}</label>
             <label className="text-sm font-medium">Select arrival date<input className={fieldClass} type="date" value={form.arrival} onChange={e => update('arrival', e.target.value)} />{errors.arrival && <span role="alert" className="block text-xs text-red-700">{errors.arrival}</span>}</label>
             {inputField('Passport number', 'passport', 'Passport number')}
-            {inputField('How you purchased the device?', 'purchase', 'Select a purchase option')}
+            <label className="text-sm font-medium">How you purchased the device?
+              <select className={fieldClass} value={form.purchase} onChange={e => update('purchase', e.target.value)} aria-label="How you purchased the device?">
+                <option value="">Select a purchase option</option>
+                <option value="Unspecified (demo only)">Unspecified (demo only — source choices not captured)</option>
+              </select>{errors.purchase && <span role="alert" className="block mt-1 text-xs text-red-700">{errors.purchase}</span>}</label>
             {inputField('Tax amount', 'tax', 'Tax amount')}
-            <p className="text-xs text-slate-500 sm:col-span-2">The saved HTML does not expose the selectable reason or purchase options, so these two fields accept demonstration text until their original options are verified.</p>
+            <p className="text-xs text-slate-500 sm:col-span-2">Application Reason choices match the supplied source. The purchase dropdown's original options were not captured; its temporary demo entry is not source-parity approved.</p>
           </div>}
           {step === 3 && <div className="space-y-3"><p className="text-sm bg-slate-50 rounded-lg p-3"><Info size={16} className="inline mr-2" />Any file should not exceed 1MB. Allowed formats: PNG, JPG, PDF</p>
             {requirements.map(r => <label key={r.key} className="block text-sm font-medium border rounded-lg p-3">{r.label}{r.required && ' *'}
