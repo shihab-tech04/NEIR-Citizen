@@ -27,16 +27,26 @@ button,input,select,textarea{font:inherit}
 .neir-language-select svg{pointer-events:none;color:#64748b;flex-shrink:0}
 .neir-header-auth{display:flex;align-items:center;gap:10px}
 .neir-auth-register{background:#fff}
-.neir-auth-login{background:var(--neir-primary-600);color:#fff}
+.neir-auth-login{background:#fff;color:var(--neir-primary-600)}
 .neir-profile-container{position:relative}
 .neir-profile-icon{width:46px;height:46px;border-radius:50%;background:#eb6d4a;color:#1c2850;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .neir-profile-dropdown{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:#fff;box-shadow:0 12px 36px #0002;border-radius:12px;padding:10px;border:1px solid #ddd}
 .neir-profile-name{font-size:13px;font-weight:600;color:#334155;border-bottom:1px solid #eee;padding:10px}
 .neir-profile-dropdown button{display:flex;align-items:center;gap:8px;padding:12px;width:100%;font-size:14px;text-align:left}
 .neir-mobile-toggle,.neir-mobile-menu{display:none}
+.neir-original-footer{width:100%;background:var(--neir-primary-900);color:#fff}
+.neir-original-footer-inner{max-width:1300px;width:75%;margin:0 auto;min-height:80px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.neir-original-footer p,.neir-original-footer nav{font-size:12px;font-weight:300;line-height:1.5;color:#fff}
+.neir-original-footer nav{display:flex;align-items:center;justify-content:flex-end;gap:20px}
+.neir-original-footer button{background:none;color:#fff;border:0;padding:4px 0;font:inherit;cursor:pointer}
+.neir-original-footer button:hover{text-decoration:underline}
+@media(max-width:767px){
+ .neir-original-footer-inner{width:100%;padding:18px 16px;min-height:0;flex-direction:column;align-items:flex-start}
+ .neir-original-footer nav{flex-wrap:wrap;justify-content:flex-start}
+}
 .neir-home-main{background:#fff}
 .neir-home-sections{display:flex;flex-direction:column;gap:24px}
-.neir-source-hero{width:100%;padding:68px 24px 66px;background:var(--neir-primary-bg);border-radius:0 0 32px 32px}
+.neir-source-hero{width:100%;padding:76px 24px 70px;background:var(--neir-primary-bg);border-radius:0 0 32px 32px}
 .neir-source-hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:80px;align-items:center}
 .neir-source-hero-copy{min-width:0}
 .neir-source-hero-copy h1{font-size:46.4px;font-weight:700;line-height:1.37;color:#000;letter-spacing:-1.1px;margin:0 0 12px}
@@ -53,13 +63,14 @@ button,input,select,textarea{font:inherit}
 .neir-source-verify-button:hover{background:var(--neir-primary-900)}
 .neir-source-error{color:#b91c1c;font-size:13px}
 .neir-source-demo-result{border-radius:12px;background:#ecfeff;color:#155e75;padding:12px;font-size:13px}
-.neir-source-hero-media{width:100%;min-height:480px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
+.neir-source-hero-media{width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
 .neir-source-hero-media img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}
 .neir-source-steps-wrap{display:flex;flex-direction:column;gap:24px}
-.neir-source-guide-section{border-radius:32px;padding:64px 24px}
+.neir-source-guide-section{border-radius:32px;padding:96px 24px 64px}
 .neir-source-guide-inner{max-width:1200px;margin:auto}
-.neir-source-guide-heading{text-align:center;font-size:32px;font-weight:700;line-height:1.4;color:#000;margin:0 0 32px}
-.neir-source-guide-heading span{color:var(--neir-primary-900)}
+.neir-source-guide-heading{text-align:left;color:#000;margin:0 0 22px}
+.neir-source-guide-heading h2{font-size:46.4px;font-weight:700;line-height:1.3;margin:0 0 4px;color:#000}
+.neir-source-guide-heading p{font-size:32px;font-weight:400;line-height:1.4;margin:0;color:#000}
 .neir-source-steps-row{display:flex;align-items:stretch;gap:0}
 .neir-source-step-card{background:white;border-radius:24px;flex:1 1 0;min-width:0;overflow:hidden;display:flex;flex-direction:column}
 .neir-source-step-art{display:flex;align-items:center;justify-content:center;padding:8px;min-height:220px;border-radius:24px}
@@ -103,7 +114,9 @@ button,input,select,textarea{font:inherit}
  .neir-source-verify-button{font-size:14px}
  .neir-source-hero-media{max-width:600px;margin:auto;min-height:230px}
  .neir-source-guide-section{border-radius:16px;padding:24px 14px}
- .neir-source-guide-heading{font-size:26px;margin-bottom:24px}
+ .neir-source-guide-heading{margin-bottom:24px;text-align:center}
+ .neir-source-guide-heading h2{font-size:32px}
+ .neir-source-guide-heading p{font-size:23px}
  .neir-source-steps-row{flex-direction:column}
  .neir-source-step-arrow{height:45px;flex:0 0 45px;width:100%;transform:rotate(90deg)}
  .neir-source-step-art{min-height:170px}
@@ -146,9 +159,9 @@ button,input,select,textarea{font:inherit}
 /* Final desktop alignment from captured 1780px source viewport. The source contains
    a 600px media frame and a 600px content column with a 40px gutter. */
 @media(min-width:1500px) {
- .neir-source-hero-inner{max-width:1240px;grid-template-columns:600px 600px;gap:40px;transform:translateX(24px)}
- .neir-source-guide-inner{max-width:1240px}
- .neir-main-navigation{left:calc(40% + 105px)}
+ .neir-source-hero-inner{max-width:1300px;grid-template-columns:minmax(0,626px) minmax(0,626px);gap:48px;transform:none}
+ .neir-source-guide-inner{max-width:1240px;transform:translateX(-26px)}
+ .neir-main-navigation{left:50%;transform:translateX(-50%)}
 }
 
 

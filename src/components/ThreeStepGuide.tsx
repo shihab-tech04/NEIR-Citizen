@@ -3,8 +3,8 @@ import type {Language} from '../types.ts';
 type Props={language:Language;onOpenWebGuide:()=>void;onOpenMobileGuide:()=>void};
 const sections=[
   {heading:'Check Phone Registration Status by IMEI',background:'#F1F3F4',steps:[
-    'You can find your phone’s 15-digit IMEI number by dialing *#06# on your phone, You can also check the device box or the purchase invoice. Alternatively, go to Settings, tap About Phone, then select Status to find the IMEI number.',
-    'Go to your mobile phone’s messaging option and type KYD, add a space, then enter the 15-digit IMEI number.\nExample:  KYD 123456789012345. Send the message to 16002.',
+    'Go to your mobile phone’s messaging option and type KYD, add a space, then enter the 15-digit IMEI number. Example:  KYD 123456789012345',
+    'Send the message to 16002.',
     'You will instantly receive a return message with the validity status of your mobile handset.'
   ]},
   {heading:'Check Mobile Numbers Registered Under Your NID',background:'#F1F8E9',steps:[
@@ -17,7 +17,10 @@ const imageColors=['#B2EBF2','#D1C4E9','#DCEDC8'];
 export const ThreeStepGuide:React.FC<Props> = () => <div className="neir-source-steps-wrap">
   {sections.map((section,g)=><section key={section.heading} className="neir-source-guide-section" style={{backgroundColor:section.background}}>
     <div className="neir-source-guide-inner">
-      <h2 className="neir-source-guide-heading"><span>3 Steps &amp;</span> {section.heading}</h2>
+      <header className="neir-source-guide-heading">
+        <h2>3 Steps &amp;</h2>
+        <p>{section.heading}</p>
+      </header>
       <div className="neir-source-steps-row">
         {section.steps.map((step,i)=><React.Fragment key={g+'-'+i}>
           <article className="neir-source-step-card">
