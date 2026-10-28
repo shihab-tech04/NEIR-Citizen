@@ -180,3 +180,14 @@ button,input,select,textarea{font:inherit}
   .neir-source-step-art { width:100%; }
   .neir-source-step-arrow { flex:0 0 45px; min-height:45px; }
 }
+
+/* Small-screen adjustments, preserving the source layout on desktop. */
+.neir-source-imei-mobile-label{display:none}
+@media(max-width:767px){
+ .neir-source-imei-mobile-label{display:block;font-size:13px;line-height:1.4;margin:0 0 6px;color:#334155}
+ .neir-source-input-wrap input::placeholder{color:transparent}
+ .neir-source-verify-button{height:auto;min-height:54px;padding:11px 16px;gap:8px;line-height:1.35}
+ .neir-source-verify-button span{flex:1;min-width:0}
+ .neir-source-verify-button svg{flex:0 0 auto}
+ .neir-prototype-disclosure{position:static!important;display:table;margin:12px 16px 16px;box-shadow:none;max-width:calc(100% - 32px)}
+}
