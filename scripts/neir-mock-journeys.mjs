@@ -65,11 +65,11 @@ try{
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
     await snap(desktop,'07-login');
-    await dialog.getByRole('button',{name:'Login',exact:true}).click();
+    await dialog.getByRole('button',{name:/^login$/i}).click();
     await expectVisible(dialog.getByRole('alert'),'empty login validation');
     await dialog.locator('#login-mobile').fill('01712345678');
     await dialog.locator('#login-password').fill('example-demo-only');
-    await dialog.getByRole('button',{name:'Login',exact:true}).click();
+    await dialog.getByRole('button',{name:/^login$/i}).click();
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'mock IMEI list');
     await snap(desktop,'08-dashboard');
