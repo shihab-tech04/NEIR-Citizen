@@ -22,8 +22,8 @@ for(const width of [1918,390]){
     firstTab:page.getByText('IMEI Check',{exact:true}).last(),
     secondTab:page.getByText('Registration',{exact:true}).last(),
     firstGroup:page.getByText('IMEI Basics',{exact:true}).first(),
-    firstQuestion:page.getByText('What is an IMEI number?',{exact:true}).first(),
-    secondQuestion:page.getByText('How can I find my IMEI?',{exact:true}).first()
+    firstQuestion:kind==='clone'?page.locator('.neir-faq-question').first():page.getByText('What is an IMEI number?',{exact:true}).first(),
+    secondQuestion:kind==='clone'?page.locator('.neir-faq-question').nth(1):page.getByText('How can I find my IMEI?',{exact:true}).first()
    };
    const m={kind,width};
    for(const [key,locator] of Object.entries(fields)){
@@ -56,10 +56,16 @@ for(const width of [1918,390]){
       assert(Number(metrics.firstQuestionWeight)>=600,'Original FAQ question text must be semibold');
     }
     assert(metrics.overflow<=3,'FAQ viewport must not overflow horizontally');
+   }
+   await page.screenshot({path:'faq-parity/'+kind+'-'+width+'-closed.png',fullPage:false,animations:'disabled'});
+   if(kind==='clone'){
     await page.getByRole('button',{name:'What is an IMEI number?'}).click();
     assert(await page.getByText('IMEI (International Mobile Equipment Identity)',{exact:false}).isVisible(),'Expanded FAQ answer missing');
+   } else {
+    await page.getByText('What is an IMEI number?',{exact:true}).first().click();
    }
-   await page.screenshot({path:'faq-parity/'+kind+'-'+width+'.png',fullPage:false,animations:'disabled'});
+   await page.locator('body').click({position:{x:15,y:20}});
+   await page.screenshot({path:'faq-parity/'+kind+'-'+width+'-open.png',fullPage:false,animations:'disabled'});
    report.screens.push(m);
   }catch(err){
    report.screens.push({kind,width,error:String(err)});
