@@ -118,10 +118,10 @@ button,input,select,textarea{font:inherit}
  .neir-source-mobile-language svg{flex:0 0 auto;pointer-events:none}
  .neir-source-mobile-login{min-width:92px;height:46px;display:flex;gap:8px;align-items:center;justify-content:center;border:0;background:var(--neir-primary-600);color:#fff;border-radius:24px;font-size:14px;font-weight:500}
  .neir-home-sections{gap:21px}
- .neir-source-hero{left:-7px;position:relative;width:calc(100% + 14px);padding:28px 28px 28px;border-radius:0 0 16px 16px}
- .neir-source-hero-inner{grid-template-columns:1fr;gap:56px;transform:none}
+ .neir-source-hero{left:-7px;position:relative;width:calc(100% + 14px);padding:28px 28px 22px;border-radius:0 0 16px 16px}
+ .neir-source-hero-inner{grid-template-columns:1fr;gap:49px;transform:none}
  .neir-source-hero-copy h1{font-size:31.5px;line-height:1.5;letter-spacing:0;margin:0 0 7px;text-align:center}
- .neir-source-description{text-align:center;font-size:17.5px;line-height:1.5;margin:0 0 16px}
+ .neir-source-description{text-align:center;font-size:17.5px;line-height:1.5;margin:0 0 13px}
  .neir-source-verification-card{padding:0;background:transparent;border-radius:0}
  .neir-source-verification-card h2{display:none}
  .neir-source-verification-card form{display:flex;flex-direction:row;align-items:flex-start;gap:0;flex-wrap:wrap}
@@ -134,7 +134,7 @@ button,input,select,textarea{font:inherit}
  .neir-source-verify-short{display:inline}
  .neir-source-verify-button span{flex:0 0 auto}
  .neir-source-error,.neir-source-demo-result{flex-basis:100%;margin-top:8px}
- .neir-source-hero-media{width:100%;max-width:600px;margin:0 auto;min-height:0;height:auto}
+ .neir-source-hero-media{position:relative;left:-7px;width:calc(100% + 14px);max-width:600px;margin:0 auto;padding:7px;min-height:0;height:auto}
  .neir-source-guide-section{position:relative;left:-7px;width:calc(100% + 14px);border-radius:16px;padding:28px}
  .neir-source-guide-heading{width:100%;margin:0 0 18px;text-align:center}
  .neir-source-guide-heading h2{font-size:31.5px;line-height:1.5}
