@@ -19,25 +19,163 @@ const sourceGroups: Group[] = [
     {q: 'My phone has more than one SIM. Which one should I check?', a: 'If your device supports more than one SIM, it will have multiple IMEI numbers. Each SIM slot is assigned a different IMEI. Therefore, to check the IMEI status, you must check each IMEI individually for all SIM slots.'},
   ]},
 ];
+const recoveredGroups: Record<string, Group[]> = {
+  "Registration": [
+    {
+      "title": "Understanding Special Registration",
+      "items": [
+        {
+          "q": "What is special registration?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "I am a foreign visitor. Do I need to register my phone?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    },
+    {
+      "title": "Usage Duration",
+      "items": [
+        {
+          "q": "How long can I use my phone without special registration?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "How long does Special Registration take?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    },
+    {
+      "title": "Requirements and Rules",
+      "items": [
+        {
+          "q": "What documents are required?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "Can Special Registration be rejected?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    }
+  ],
+  "Account & Help": [
+    {
+      "title": "Account Creation & Access",
+      "items": [
+        {
+          "q": "How do I create a NEIR account?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "I forgot my password. What should I do?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "Why is my account locked?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    },
+    {
+      "title": "OTP & Login Issues",
+      "items": [
+        {
+          "q": "How do I login?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "What if my OTP is not verified during registration?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "What if I don’t receive my OTP?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    },
+    {
+      "title": "Documents & Verification",
+      "items": [
+        {
+          "q": "Which documents are relevant for verification or claims?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        },
+        {
+          "q": "What if my document is blurry?",
+          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+        }
+      ]
+    }
+  ],
+  "About NEIR": [
+    {
+      "title": "About NEIR",
+      "items": [
+        {
+          "q": "What is NEIR?",
+          "a": "NEIR (National Equipment Identity Register) is a centralized system managed by BTRC to verify mobile device IMEI numbers and prevent illegal, cloned, or stolen phones from operating in Bangladesh."
+        },
+        {
+          "q": "Why is NEIR important?",
+          "a": "It protects citizens from fraud, enables law enforcement to track stolen devices, and helps ensure that only legally imported and verified devices operate on Bangladeshi networks."
+        }
+      ]
+    },
+    {
+      "title": "Users & Access",
+      "items": [
+        {
+          "q": "Who should use the NEIR Citizen Portal?",
+          "a": "Any individual who wants to check, register, or report a mobile device, including citizens, students, workers, travelers, and foreign visitors."
+        }
+      ]
+    },
+    {
+      "title": "Device Coverage & Control",
+      "items": [
+        {
+          "q": "Does NEIR block illegal or stolen devices?",
+          "a": "Yes. Devices found to be illegal, cloned, or reported as stolen may be blocked from connecting to any mobile network in Bangladesh."
+        },
+        {
+          "q": "What devices does NEIR cover?",
+          "a": "All mobile devices with IMEI numbers: Smartphones, Feature phones, Tablets with cellular connectivity, Other IMEI-enabled devices"
+        }
+      ]
+    },
+    {
+      "title": "Privacy & Security",
+      "items": [
+        {
+          "q": "Is my personal information safe?",
+          "a": "Yes, NEIR follows national data protection guidelines. Only authorized personnel can access submitted information."
+        }
+      ]
+    }
+  ]
+};
 const categories = ['IMEI Check','Registration','Account & Help','About NEIR'];
 export const FaqSection: React.FC<{language:Language}> = () => {
   const [selected,setSelected] = useState('IMEI Check');
   const [open,setOpen] = useState<string[]>([]);
+  const activeGroups = selected === 'IMEI Check' ? sourceGroups : recoveredGroups[selected] ?? [];
   const toggle = (id:string) => setOpen(v => v.includes(id) ? v.filter(k => k !== id) : [...v,id]);
   return <section id="faq-section" className="bg-[#F2F9F4] rounded-[32px] px-4 sm:px-8 lg:px-16 py-12 lg:py-16">
     <div className="text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">FAQ</h2><p className="mt-2 text-lg text-slate-700">Need help?</p></div>
     <div className="max-w-[1250px] mx-auto">
       <div className="flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
-        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => setSelected(cat)} className={selected === cat ? 'flex-1 min-w-max bg-[#00ACC1] text-white rounded-lg px-5 py-3 font-medium text-sm' : 'flex-1 min-w-max bg-white text-slate-600 rounded-lg px-5 py-3 font-medium text-sm hover:bg-cyan-50'}>{cat}</button>)}
+        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className={selected === cat ? 'flex-1 min-w-max bg-[#00ACC1] text-white rounded-lg px-5 py-3 font-medium text-sm' : 'flex-1 min-w-max bg-white text-slate-600 rounded-lg px-5 py-3 font-medium text-sm hover:bg-cyan-50'}>{cat}</button>)}
       </div>
-      {selected !== 'IMEI Check' ? <div className="bg-white rounded-3xl p-8 text-sm text-slate-600">The saved reference captures the IMEI Check category only. Content for “{selected}” is not available in this HTML snapshot and has intentionally not been invented.</div>
-      : <div className="space-y-5">{sourceGroups.map((group,g) => <div key={group.title} className="bg-white rounded-3xl p-5 sm:p-7">
+      <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="bg-white rounded-3xl p-5 sm:p-7">
           <h3 className="text-lg sm:text-xl font-bold mb-5">{group.title}</h3>
           <div className="flex flex-col gap-2">{group.items.map((item,i) => {const id=g+'-'+i;const visible=open.includes(id);return <div key={id} className="border border-[#E3DBD8] rounded-2xl px-4">
             <button aria-expanded={visible} onClick={() => toggle(id)} className="w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
             {visible && <p className="text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line pb-4">{item.a}</p>}
           </div>})}</div>
-        </div>)}</div>}
+        </div>)}</div>
     </div>
   </section>;
 };
