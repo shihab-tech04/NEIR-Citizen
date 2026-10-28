@@ -10,7 +10,7 @@ const check=async (name,fn)=>{
   catch(err){record.push({name,status:'FAIL',error:String(err)});console.error('FAIL',name,err);throw err}
 };
 async function snap(page,name){await page.screenshot({path:'acceptance-shots/'+name+'.png',fullPage:true,animations:'disabled'})}
-async function expectVisible(locator,what){assert(await locator.isVisible(),what+' should be visible')}
+async function expectVisible(locator,what){try{await locator.waitFor({state:'visible',timeout:6000})}catch(e){throw new Error(what+' should be visible: '+String(e))}}
 async function noOverflow(page,width){
   const m=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:window.innerWidth}));
   assert(m.scroll<=width+3,JSON.stringify(m));
