@@ -1,0 +1,52 @@
+name: NEIR frontend mock journey acceptance
+on:
+  push:
+    branches: [main, 'test/neir-frontend-mock-*']
+    paths:
+      - 'src/**'
+      - 'scripts/neir-mock-journeys.mjs'
+      - '.github/workflows/mock-acceptance.yml'
+      - 'public/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'scripts/neir-mock-journeys.mjs'
+      - '.github/workflows/mock-acceptance.yml'
+      - 'public/**'
+permissions:
+  contents: read
+jobs:
+  mock-journeys:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install, typecheck and build
+        run: |
+          npm install --no-audit --no-fund
+          npm run lint
+          npm run build
+      - name: Install Chromium for screenshot and journey tests
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Launch frontend-only prototype
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4567 &
+          for attempt in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4567/ >/dev/null && break || sleep 1
+          done
+      - name: Verify complete demo journeys and capture screens
+        run: node scripts/neir-mock-journeys.mjs
+      - name: Preserve screenshots and failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: neir-mock-acceptance-screenshots
+          path: acceptance-shots/
+          if-no-files-found: warn
+          retention-days: 14
