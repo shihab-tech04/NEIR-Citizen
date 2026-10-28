@@ -1,0 +1,49 @@
+name: Bundle verified original NEIR Mobile guide images
+on:
+  push:
+    branches: ['test/neir-frontend-mock-*']
+    paths: ['.github/workflows/recover-mobile-guide-assets.yml']
+permissions:
+  contents: write
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch exact PNGs from the public official NEIR asset paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          dest="public/neir-source/user-guides/acc-guide-mobile-steps"
+          mkdir -p "$dest"
+          for name in acc-guide-mobile-step-{1..5}.png acc-guide-mobile-full-process.png; do
+            url="https://neir.btrc.gov.bd/assets/user-guides/acc-guide-mobile-steps/$name"
+            file="$dest/$name"
+            curl --fail --location --retry 3 --connect-timeout 8 --max-time 35 "$url" --output "$file"
+            test "$(wc -c < "$file")" -gt 1024
+            test "$(wc -c < "$file")" -lt 6000000
+            test "$(file -b --mime-type "$file")" = "image/png"
+            python - "$file" <<'PY'
+          from pathlib import Path
+          import sys
+          b=Path(sys.argv[1]).read_bytes()
+          assert b.startswith(bytes.fromhex('89504e470d0a1a0a')), 'Not PNG'
+          print('PASS: recovered PNG',sys.argv[1],len(b))
+          PY
+          done
+      - name: Commit only reviewed original public images to source branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/neir-source/user-guides/acc-guide-mobile-steps/*.png
+          if git diff --cached --quiet; then
+            echo "No image changes"
+            exit 0
+          fi
+          git commit -m "assets: bundle six original NEIR Mobile account registration illustrations"
+          git push origin HEAD:test/neir-frontend-mock-acceptance-20261028
