@@ -84,6 +84,28 @@ for(const width of [1918,390]){
   }
  }
 }
+// Frozen exact DOM boxes recorded directly from the public original at 1918x930
+// by successful evidence run 40644762554. Use when the public original times out;
+// never treat this fallback as evidence for mobile or uncaptured FAQ states.
+const originalDesktop={
+ heading:{x:309.5,y:144.8,width:1284,height:70},
+ subtitle:{x:309.5,y:214.8,width:1284,height:48},
+ firstTab:{x:309.5,y:278.8,width:303,height:59},
+ secondTab:{x:636.5,y:278.8,width:303,height:59},
+ firstGroup:{x:349.5,y:405.8,width:1204,height:30}
+};
+const desktop=report.screens.find(x=>x.kind==='clone'&&x.width===1918);
+const deltas={};
+for(const [key,reference] of Object.entries(originalDesktop)){
+  if(!desktop?.[key])throw Error('Missing clone FAQ box '+key);
+  deltas[key]=Object.fromEntries(Object.entries(reference).map(([dimension,value])=>[dimension,Math.round((desktop[key][dimension]-value)*10)/10]));
+}
+report.summary.frozenOriginal1918=deltas;
 writeFileSync('faq-parity/metrics.json',JSON.stringify(report,null,2));
+for(const [key,coordinates] of Object.entries(deltas)){
+  for(const [dimension,delta] of Object.entries(coordinates)){
+    assert(Math.abs(delta)<=3,'Original source FAQ '+key+'.'+dimension+' offset '+delta+'px exceeds 3px tolerance');
+  }
+}
 console.log(JSON.stringify(report,null,2).slice(0,14000));
 await browser.close();
