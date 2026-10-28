@@ -12,5 +12,6 @@ export const Footer:React.FC<Props> = ({onContactUs}) => (
         <button type="button" onClick={onContactUs}>Contact Us</button>
       </nav>
     </div>
+    <p className="neir-footer-prototype-note" aria-label="Prototype disclosure">Independent NEIR UX prototype · No live BTRC services</p>
   </footer>
 );

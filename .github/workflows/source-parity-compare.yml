@@ -1,0 +1,88 @@
+name: NEIR original-site visual comparison
+on:
+  push:
+    branches: ['fix/neir-original-parity-*']
+    paths: ['.github/workflows/source-parity-compare.yml', 'src/**', 'public/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install and build current clone
+        run: |
+          npm install --no-audit --no-fund
+          npm run lint
+          npm run build
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Capture same-viewport source and clone metrics
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4567 &
+          for i in $(seq 1 25); do curl -fsS http://127.0.0.1:4567/ >/dev/null && break || sleep 1; done
+          mkdir -p parity
+          node --input-type=module <<'EOT'
+          import fs from 'node:fs';
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const all={source:'https://neir.btrc.gov.bd/',clone:'http://127.0.0.1:4567/',samples:[]};
+          const selectors={
+            source:{header:'.menubar-container',hero:'.container-card:nth-of-type(1)',heroText:'.container-card:nth-of-type(1) .container-card-header-title',heroImage:'.gif-image',form:'.container-card:nth-of-type(1) .basic-card-1',stepSection:'.container-card:nth-of-type(2)',stepHeading:'.container-card:nth-of-type(2) .container-card-header-title',stepText:'.container-card:nth-of-type(2) .font-size-2xl',stepCards:'.container-card:nth-of-type(2) .tutorial-card',imeiInput:'input[formcontrolname="imei"]',imeiSubmit:'.check-status-btn, .iemi-input-btn-addon'},
+            clone:{header:'.neir-menubar',hero:'.neir-source-hero',heroText:'.neir-source-hero-copy h1',heroImage:'.neir-source-hero-media img',form:'.neir-source-verification-card',stepSection:'.neir-source-guide-section:first-child',stepHeading:'.neir-source-guide-heading h2',stepText:'.neir-source-guide-heading p',stepCards:'.neir-source-guide-section:first-child .neir-source-step-card',imeiInput:'.neir-source-input-wrap input',imeiSubmit:'.neir-source-verify-button'}
+          };
+          function round(n){return Math.round(n*10)/10}
+          async function sample(page,kind,size) {
+            const ss=selectors[kind];
+            return await page.evaluate(({ss}) => {
+              const rect=el=>{if(!el)return null;const r=el.getBoundingClientRect();return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),width:+r.width.toFixed(1),height:+r.height.toFixed(1)}};
+              const one=sel=>rect(document.querySelector(sel));
+              const many=sel=>[...document.querySelectorAll(sel)].slice(0,3).map(rect);
+              const fonts=sel=>{const el=document.querySelector(sel);if(!el)return null;const c=getComputedStyle(el);return {font:c.font,fontSize:c.fontSize,lineHeight:c.lineHeight,color:c.color,textAlign:c.textAlign}};
+              return {hero:one(ss.hero),header:one(ss.header),heroText:one(ss.heroText),heroImage:one(ss.heroImage),form:one(ss.form),imeiInput:one(ss.imeiInput),imeiSubmit:one(ss.imeiSubmit),stepSection:one(ss.stepSection),stepHeading:one(ss.stepHeading),stepText:one(ss.stepText),stepCards:many(ss.stepCards),headingFont:fonts(ss.stepHeading),stepTextFont:fonts(ss.stepText)};
+            },{ss});
+          }
+          for(const size of [{width:1918,height:924},{width:390,height:844}]){
+            const item={viewport:size};all.samples.push(item);
+            for(const kind of ['source','clone']){
+              const page=await browser.newPage({viewport:size,deviceScaleFactor:1});
+              try{
+                await page.goto(all[kind],{waitUntil:'domcontentloaded',timeout:25000});
+                await page.waitForTimeout(1700);
+                item[kind]=await sample(page,kind,size);
+                if(kind==='source' && !item[kind].heroText) throw new Error('Official source heading did not load');
+                await page.screenshot({path:'parity/'+kind+'-'+size.width+'.png',fullPage:size.width===390});
+              }catch(e){
+                item[kind]={error:String(e)};
+              }
+              await page.close();
+            }
+            if(item.source?.heroText && item.clone?.heroText){
+              item.differences={};
+              for(const key of ['header','hero','heroText','heroImage','form','imeiInput','imeiSubmit','stepSection','stepHeading','stepText']){
+                const a=item.source[key],b=item.clone[key];
+                if(a&&b)item.differences[key]=Object.fromEntries(['x','y','width','height'].map(p=>[p,round(b[p]-a[p])]));
+              }
+              const srcCards=item.source.stepCards??[],cloneCards=item.clone.stepCards??[];
+              item.differences.stepCards=srcCards.map((src,i)=>Object.fromEntries(['x','y','width','height'].map(p=>[p,round((cloneCards[i]?.[p]??0)-src[p])])));
+              const keys=['header','hero','heroText','heroImage','imeiInput','imeiSubmit','stepHeading'];
+              const maxGeometryError=Math.max(0,...keys.flatMap(k=>Object.values(item.differences[k]??{}).map(Math.abs)),...item.differences.stepCards.flatMap(c=>Object.values(c).map(Math.abs)));
+              item.maxGeometryErrorPx=maxGeometryError;
+              item.geometryWithin3px=maxGeometryError<=3;
+            }
+          }
+          fs.writeFileSync('parity/metrics.json',JSON.stringify(all,null,2));
+          console.log(JSON.stringify(all,null,2).slice(0,14000));
+          await browser.close();
+          EOT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neir-original-vs-clone-parity
+          path: parity/
+          retention-days: 7

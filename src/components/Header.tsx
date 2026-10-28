@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {AppRoute, Language, UserSession} from '../types.ts';
-import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut} from 'lucide-react';
+import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut, ArrowRight} from 'lucide-react';
 
 type Props = {
   currentRoute: AppRoute; onRouteChange: (route:AppRoute)=>void;
@@ -41,6 +41,11 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
       <div className="neir-header-end">
         <div className="neir-language-select"><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={16} aria-hidden="true"/></div>
         {controls}
+      </div>
+      <div className="neir-source-mobile-auth">
+        <label className="neir-source-mobile-language"><span className="sr-only">Language</span><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={15} aria-hidden="true"/></label>
+        {session.isLoggedIn ? <button type="button" className="neir-source-mobile-login" onClick={onOpenDashboard}><UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ArrowRight size={18}/></button>
+          : <button type="button" className="neir-source-mobile-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'} <ArrowRight size={18}/></button>}
       </div>
       <button type="button" className="neir-mobile-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={23}/>:<Menu size={23}/>}</button>
     </div>

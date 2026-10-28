@@ -11,11 +11,11 @@
   --neir-border:#DEE0E3;
 }
 html,body,#root{min-height:100%;font-family:Poppins,Arial,sans-serif}
-html{overflow-x:hidden}
+html{overflow-x:hidden;scrollbar-gutter:stable}
 body{margin:0;overflow-x:hidden}
 button,input,select,textarea{font:inherit}
 .neir-original-header{position:sticky;top:0;z-index:40;width:100%;background:var(--neir-primary-bg);border-bottom:1px solid #fff}
-.neir-menubar{height:76px;padding:8px 28px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+.neir-menubar{height:86px;padding:8px 28px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
 .neir-logo-wrap{display:flex;align-items:center;justify-content:center;gap:5px;height:54px;min-width:114px;padding:4px 5px;background:#fff;border-radius:16px;flex-shrink:0;cursor:pointer}
 .neir-logo-wrap img{width:48px;height:48px;object-fit:contain}
 .neir-main-navigation{position:absolute;left:40%;transform:translateX(-40%);display:flex;align-items:center;gap:12px}
@@ -40,45 +40,51 @@ button,input,select,textarea{font:inherit}
 .neir-original-footer nav{display:flex;align-items:center;justify-content:flex-end;gap:20px}
 .neir-original-footer button{background:none;color:#fff;border:0;padding:4px 0;font:inherit;cursor:pointer}
 .neir-original-footer button:hover{text-decoration:underline}
+.neir-footer-prototype-note{font-size:11px;font-weight:400;line-height:1.5;text-align:center;opacity:.85;padding:0 16px 12px;color:#fff}
 @media(max-width:767px){
  .neir-original-footer-inner{width:100%;padding:18px 16px;min-height:0;flex-direction:column;align-items:flex-start}
  .neir-original-footer nav{flex-wrap:wrap;justify-content:flex-start}
 }
 .neir-home-main{background:#fff}
 .neir-home-sections{display:flex;flex-direction:column;gap:24px}
-.neir-source-hero{width:100%;padding:76px 24px 70px;background:var(--neir-primary-bg);border-radius:0 0 32px 32px}
+.neir-source-hero{width:100%;padding:81px 24px 79px;background:var(--neir-primary-bg);border-radius:0 0 32px 32px}
 .neir-source-hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:80px;align-items:center}
 .neir-source-hero-copy{min-width:0}
-.neir-source-hero-copy h1{font-size:46.4px;font-weight:700;line-height:1.37;color:#000;letter-spacing:-1.1px;margin:0 0 12px}
-.neir-source-description{font-size:20px;line-height:1.43;color:#111;margin:0 0 18px}
-.neir-source-verification-card{padding:30px;border-radius:24px;background:#fff;color:#000}
+.neir-source-hero-copy h1{font-size:46.4px;font-weight:700;line-height:1.5;color:#000;letter-spacing:-1.1px;margin:0 0 12px}
+.neir-source-description{font-size:20px;line-height:1.5;color:#111;margin:0 0 18px}
+.neir-source-verification-card{padding:32px;border-radius:24px;background:#fff;color:#000}
 .neir-source-verification-card h2{font-size:20px;font-weight:600;line-height:1.5;margin:0 0 16px}
-.neir-source-verification-card form{display:flex;flex-direction:column;gap:14px}
+.neir-source-verification-card form{display:flex;flex-direction:column;gap:16px}
 .neir-source-input-wrap{position:relative}
-.neir-source-input-wrap input{border:1px solid #cbd5e1;border-radius:32px;background:#fff;width:100%;height:56px;padding:14px 48px 14px 22px;font-size:16px;outline:none}
+.neir-source-input-wrap input{border:1px solid #cbd5e1;border-radius:32px;background:#fff;width:100%;height:59px;padding:14px 48px 14px 22px;font-size:16px;outline:none}
 .neir-source-input-wrap input:focus-visible{box-shadow:0 0 0 2px var(--neir-primary-600)}
 .neir-source-input-wrap input::placeholder{color:#637795}
 .neir-source-imei-help{position:absolute;right:24px;top:50%;transform:translateY(-50%);color:#8da3c0;pointer-events:none}
-.neir-source-verify-button{border:0;border-radius:32px;background:var(--neir-primary-600);color:#fff;height:54px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:500;cursor:pointer}
+.neir-source-verify-button{border:0;border-radius:32px;background:var(--neir-primary-600);color:#fff;height:57px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:500;cursor:pointer}
 .neir-source-verify-button:hover{background:var(--neir-primary-900)}
 .neir-source-error{color:#b91c1c;font-size:13px}
 .neir-source-demo-result{border-radius:12px;background:#ecfeff;color:#155e75;padding:12px;font-size:13px}
 .neir-source-hero-media{width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
 .neir-source-hero-media img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}
 .neir-source-steps-wrap{display:flex;flex-direction:column;gap:24px}
-.neir-source-guide-section{border-radius:32px;padding:96px 24px 64px}
+.neir-source-guide-section{border-radius:32px;padding:80px 24px 64px}
+@media(min-width:768px){
+ .neir-source-hero,.neir-source-guide-section{position:relative;left:-8px;width:calc(100% + 16px)}
+}
+.neir-source-verify-short{display:none}
+.neir-source-mobile-auth{display:none}
 .neir-source-guide-inner{max-width:1200px;margin:auto}
-.neir-source-guide-heading{text-align:left;color:#000;margin:0 0 22px}
-.neir-source-guide-heading h2{font-size:46.4px;font-weight:700;line-height:1.3;margin:0 0 4px;color:#000}
-.neir-source-guide-heading p{font-size:32px;font-weight:400;line-height:1.4;margin:0;color:#000}
+.neir-source-guide-heading{text-align:left;color:#000;margin:0 0 40px}
+.neir-source-guide-heading h2{font-size:46.4px;font-weight:700;line-height:normal;margin:0 0 4px;color:#000}
+.neir-source-guide-heading p{font-size:32px;font-weight:400;line-height:normal;margin:0;color:#000}
 .neir-source-steps-row{display:flex;align-items:stretch;gap:0}
 .neir-source-step-card{background:white;border-radius:24px;flex:1 1 0;min-width:0;overflow:hidden;display:flex;flex-direction:column}
 .neir-source-step-art{display:flex;align-items:center;justify-content:center;padding:8px;min-height:220px;border-radius:24px}
 .neir-source-step-art img{max-width:100%;width:100%;height:auto;max-height:250px;object-fit:contain}
 .neir-source-step-content{padding:30px 28px;flex:1}
 .neir-source-step-content h3{font-size:32px;font-weight:700;margin:0 0 10px;color:#111}
-.neir-source-step-content p{white-space:pre-line;font-size:16px;line-height:1.6}
-.neir-source-step-arrow{width:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:center}
+.neir-source-step-content p{white-space:pre-line;font-size:16px;line-height:1.5}
+.neir-source-step-arrow{width:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:center}
 .neir-source-step-arrow img{max-width:40px;width:100%;height:auto;object-fit:contain}
 @media(max-width:1400px){
  .neir-main-navigation{left:35%;transform:translateX(-35%)}
@@ -101,27 +107,50 @@ button,input,select,textarea{font:inherit}
  .neir-source-guide-section{padding:40px 20px}
 }
 @media(max-width:767px){
- .neir-menubar{height:76px;padding:10px 16px}
- .neir-logo-wrap{height:46px;min-width:100px}
- .neir-logo-wrap img{width:42px;height:42px}
- .neir-source-hero{padding:28px 16px 40px;border-radius:0 0 16px 16px}
- .neir-source-hero-inner{grid-template-columns:1fr;gap:28px}
- .neir-source-hero-copy h1{font-size:34px;line-height:1.25;letter-spacing:-.4px;text-align:center}
- .neir-source-description{text-align:center;font-size:16px}
- .neir-source-verification-card{padding:22px 18px}
- .neir-source-verification-card h2{font-size:18px}
- .neir-source-input-wrap input{font-size:14px}
- .neir-source-verify-button{font-size:14px}
- .neir-source-hero-media{max-width:600px;margin:auto;min-height:230px}
- .neir-source-guide-section{border-radius:16px;padding:24px 14px}
- .neir-source-guide-heading{margin-bottom:24px;text-align:center}
- .neir-source-guide-heading h2{font-size:32px}
- .neir-source-guide-heading p{font-size:23px}
- .neir-source-steps-row{flex-direction:column}
- .neir-source-step-arrow{height:45px;flex:0 0 45px;width:100%;transform:rotate(90deg)}
- .neir-source-step-art{min-height:170px}
- .neir-source-step-content{padding:22px}
- .neir-source-step-content h3{font-size:27px}
+ /* Original mobile header: logo, language and Login. No desktop nav or registration card. */
+ .neir-menubar{height:68px;padding:8px 25px 8px 21px}
+ .neir-logo-wrap{height:42px;min-width:85px;width:85px;gap:3px;padding:3px}
+ .neir-logo-wrap img{width:38px;height:38px}
+ .neir-mobile-toggle{display:none}
+ .neir-source-mobile-auth{display:flex;align-items:center;gap:13px;margin-left:auto}
+ .neir-source-mobile-language{display:flex;align-items:center;gap:4px;height:36px;width:104px;padding:0 9px;border:1px solid var(--neir-primary-600);border-radius:6px;background:transparent;color:#1c4760}
+ .neir-source-mobile-language select{min-width:0;width:100%;font-size:14px;background:transparent;appearance:none;color:inherit;outline-offset:2px}
+ .neir-source-mobile-language svg{flex:0 0 auto;pointer-events:none}
+ .neir-source-mobile-login{min-width:92px;height:46px;display:flex;gap:8px;align-items:center;justify-content:center;border:0;background:var(--neir-primary-600);color:#fff;border-radius:24px;font-size:14px;font-weight:500}
+ .neir-home-sections{gap:21px}
+ .neir-source-hero{left:-7px;position:relative;width:calc(100% + 14px);padding:28px 28px 20px;border-radius:0 0 16px 16px}
+ .neir-source-hero-inner{grid-template-columns:1fr;gap:49px;transform:none}
+ .neir-source-hero-copy h1{font-size:31.5px;line-height:1.5;letter-spacing:0;margin:0 0 7px;text-align:center}
+ .neir-source-description{text-align:center;font-size:17.5px;line-height:1.5;margin:0 0 13px}
+ .neir-source-verification-card{padding:0;background:transparent;border-radius:0}
+ .neir-source-verification-card h2{display:none}
+ .neir-source-verification-card form{display:flex;flex-direction:row;align-items:flex-start;gap:0;flex-wrap:wrap}
+ .neir-source-input-wrap{min-width:0;flex:1 1 0}
+ .neir-source-input-wrap input{width:100%;height:37px;min-height:0;padding:6px 28px 6px 12px;font-size:14px;border:1px solid #bcd6dd;border-right:0;border-radius:24px 0 0 24px}
+ .neir-source-imei-help{right:10px}
+ .neir-source-verify-button{width:88px;flex:0 0 88px;height:37px;min-height:37px;padding:0 10px;gap:6px;border-radius:0 24px 24px 0;line-height:1;font-size:14px;font-weight:500}
+ .neir-source-verify-button svg{height:18px;width:18px;flex:0 0 auto}
+ .neir-source-verify-long{display:none}
+ .neir-source-verify-short{display:inline}
+ .neir-source-verify-button span{flex:0 0 auto}
+ .neir-source-error,.neir-source-demo-result{flex-basis:100%;margin-top:8px}
+ .neir-source-hero-media{position:relative;left:-7px;width:calc(100% + 14px);max-width:600px;margin:0 auto;padding:7px;min-height:0;height:auto}
+ .neir-source-guide-section{position:relative;left:-7px;width:calc(100% + 14px);border-radius:16px;padding:28px}
+ .neir-source-guide-heading{width:100%;margin:0 0 36px;text-align:center}
+ .neir-source-guide-heading h2{font-size:31.5px;line-height:1.5}
+ .neir-source-guide-heading p{font-size:16px;line-height:24px;white-space:nowrap}
+ .neir-source-steps-row{width:100%;transform:none;flex-direction:column}
+ .neir-source-step-arrow{height:70px;flex:0 0 70px;width:100%;transform:rotate(90deg)}
+ .neir-source-step-art{min-height:170px;padding:7px}
+ .neir-source-step-content{padding:28px}
+ .neir-source-step-content h3{font-size:28px;margin-bottom:0}
+ .neir-source-step-content p{font-size:14px;line-height:1.5}
+}
+@media(max-width:360px){
+ .neir-menubar{padding-right:13px;padding-left:13px}
+ .neir-source-mobile-auth{gap:7px}
+ .neir-source-mobile-language{width:94px}
+ .neir-source-mobile-login{min-width:82px}
 }
 
 /* Reproduce the captured white PrimeNG dialog, not the invented green login. */
@@ -159,9 +188,14 @@ button,input,select,textarea{font:inherit}
 /* Final desktop alignment from captured 1780px source viewport. The source contains
    a 600px media frame and a 600px content column with a 40px gutter. */
 @media(min-width:1500px) {
- .neir-source-hero-inner{max-width:1300px;grid-template-columns:minmax(0,626px) minmax(0,626px);gap:48px;transform:none}
- .neir-source-guide-inner{max-width:1240px;transform:translateX(-26px)}
+ .neir-source-hero-inner{max-width:1300px;grid-template-columns:626px 626px;gap:64px;transform:translateX(16px)}
+ .neir-source-description{margin-bottom:13px}
+ .neir-source-hero-copy{transform:translateY(-1px)}
+ .neir-source-guide-inner{max-width:1290px;transform:translateX(11px)}
+ .neir-source-guide-heading{width:840px;max-width:100%}
+ .neir-source-steps-row{width:1284px;max-width:calc(100% + 16px);transform:translateX(-8px)}
  .neir-main-navigation{left:50%;transform:translateX(-50%)}
+ .neir-home-sections{padding-top:1px}
 }
 
 
@@ -191,16 +225,12 @@ button,input,select,textarea{font:inherit}
   .neir-source-steps-row { flex-direction:column; align-items:stretch; }
   .neir-source-step-card { flex:0 0 auto; width:100%; min-height:0; }
   .neir-source-step-art { width:100%; }
-  .neir-source-step-arrow { flex:0 0 45px; min-height:45px; }
+  .neir-source-step-arrow { flex:0 0 70px; min-height:70px; }
 }
 
-/* Small-screen adjustments, preserving the source layout on desktop. */
+/* Source mobile uses the inline placeholder and check control; do not overlay the hero. */
 .neir-source-imei-mobile-label{display:none}
 @media(max-width:767px){
- .neir-source-imei-mobile-label{display:block;font-size:13px;line-height:1.4;margin:0 0 6px;color:#334155}
- .neir-source-input-wrap input::placeholder{color:transparent}
- .neir-source-verify-button{height:auto;min-height:54px;padding:11px 16px;gap:8px;line-height:1.35}
- .neir-source-verify-button span{flex:1;min-width:0}
- .neir-source-verify-button svg{flex:0 0 auto}
+ .neir-source-input-wrap input::placeholder{color:#667b99}
  .neir-prototype-disclosure{position:static!important;display:table;margin:12px 16px 16px;box-shadow:none;max-width:calc(100% - 32px)}
 }

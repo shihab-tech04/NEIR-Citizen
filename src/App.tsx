@@ -190,11 +190,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Persistent safety disclosure, intentionally outside the source-fidelity page layout. */}
-      <p aria-label="Prototype disclosure" className="neir-prototype-disclosure fixed z-50 bottom-3 left-3 rounded-lg border border-cyan-200 bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-cyan-900 shadow-md">
-        NEIR UX Prototype · No live BTRC services
-      </p>
-
       {/* Footer */}
       <Footer language={language} onContactUs={() => {setCurrentRoute('contact'); window.scrollTo({top:0});}} />
 
