@@ -26,11 +26,11 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "What is special registration?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "This applies to devices that do not fall under the standard registration process, such as:\n* Personal imports\n* Devices purchased while traveling abroad\n* Devices belonging to foreign visitors."
         },
         {
           "q": "I am a foreign visitor. Do I need to register my phone?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Yes, if you intend to use it beyond 30 days with a local SIM."
         }
       ]
     },
@@ -39,11 +39,11 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "How long can I use my phone without special registration?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "You can use your phone on mobile networks without special registration for up to 90 days. To continue using the device beyond this period, you must complete the special registration process within these 90 days. Otherwise, your device will be blocked, and you will need to contact the regulatory authority (BTRC) to unblock it."
         },
         {
           "q": "How long does Special Registration take?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "This is a manual verification process managed by the regulatory authority (BTRC). You can expect the results within 3–5 working days."
         }
       ]
     },
@@ -52,11 +52,11 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "What documents are required?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Documents such as:\n* Passport\n* Visa\n* Entry stamp\n* Foreign purchase invoice\n* Other supporting IDs.\nThe exact list of documents can vary depending on the reason for the application."
         },
         {
           "q": "Can Special Registration be rejected?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Yes, for incorrect documents or travel information and incomplete applications."
         }
       ]
     }
@@ -67,15 +67,15 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "How do I create a NEIR account?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "To create a NEIR account:\nClick “Register” on the login screen.\nEnter your mobile number and the last 4 digits of your Document ID (NID/Smart NID/Birth Certificate/Driving License/Passport).\nClick “Request OTP” and enter the received OTP.\nSet and confirm your new password.\nClick “Create Account” to finish.\n\nYour account will be created instantly after successful verification."
         },
         {
           "q": "I forgot my password. What should I do?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Click Forgot Password on the login page\nEnter your registered mobile number or username\nVerify your identity using OTP\nSet a new password\nLog in using your new credentials"
         },
         {
           "q": "Why is my account locked?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Your account may be temporarily locked due to multiple unsuccessful login attempts. Please wait for the lock period to end or reset your password to regain access."
         }
       ]
     },
@@ -84,15 +84,15 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "How do I login?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Click “Login” on the home screen.\nEnter your mobile number linked to your Document ID (NID/Smart NID/Passport).\nEnter your password.\nClick “Login” to access your account."
         },
         {
           "q": "What if my OTP is not verified during registration?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "If the OTP verification fails or expires:\nReturn to the Login screen.\nSelect “Forgot Password”.\nEnter your registered mobile number and request a new OTP.\nVerify the OTP and set a new password."
         },
         {
           "q": "What if I don’t receive my OTP?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "Check that you have network signal, wait a few moments, and try resending the OTP. Also ensure that SMS messages are not blocked on your device."
         }
       ]
     },
@@ -101,11 +101,11 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "Which documents are relevant for verification or claims?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "The type of documents you need depends on the type of application you are submitting:\n\nReporting a Lost or Stolen Device, You typically need:\n* GD copy / Police report\n* Proof of purchase (invoice, receipt, or bank statement)\n* Photo of the device or device box (showing IMEI if possible).\n\nFor Special Registration, You generally need:\n* Passport Information\n* Passport Arrival detail seal page\n* Photo of the device or device box (showing IMEI if possible)\n* Ticket/Boarding pass/ any relevant document"
         },
         {
           "q": "What if my document is blurry?",
-          "a": "The original answer has not been captured for this presentation mock. No official response is simulated."
+          "a": "The system may reject blurry or unreadable documents. Please ensure you upload a clear and legible version to avoid delays."
         }
       ]
     }
