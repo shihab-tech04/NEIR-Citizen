@@ -22,7 +22,7 @@ The earlier homepage source-to-clone comparison measured the 1918px desktop head
 | Registered/Restricted IMEIs + Actions/Details | Supplied authenticated snapshots | 19 synthetic records, search, pagination, details, restriction demo | Journeys PASS; full data/profile pixel comparison not certified |
 | Special Registration steps 1–3 | Supplied step snapshots | Demo validation, navigation and file checks, no upload | Journey PASS; original purchase dropdown values not captured |
 | FAQ IMEI Check | Supplied source text | Full captured content | Visual component tested |
-| FAQ Registration and Account & Help | Category/group/question labels recovered from public source | Source labels; intentionally unsimulated answers | Open-answer fidelity blocked until original answers are captured |
+| FAQ Registration and Account & Help | Public source groups, 14 question/answer pairs recovered verbatim | Source questions and answers; accordion states | Browser test added; source text preserved without reinterpretation |
 | FAQ About NEIR | Public source groups, six exact answers | Source answers and accordion interactions | Test added; exact-head CI required |
 | EN/BN | Source capture primarily English | Partial Bengali UI | Full locale fidelity not source-certified |
 
@@ -42,7 +42,7 @@ The earlier homepage source-to-clone comparison measured the 1918px desktop head
 ## Blocking a truthful 100% claim
 - Not all original authenticated and modal states have comparable screenshot pairs.
 - Original values for Contact Us purpose and Special Registration purchase dropdowns are not fully captured.
-- Original answer text for Registration and Account & Help FAQ categories is missing.
+- All source FAQ answers have been captured from the current public BTRC frontend. They are presented verbatim, including any inconsistencies in the original wording.
 - Full EN/BN translations and responsive parity at intermediate widths remain unverified.
 - The existing Vercel team scope `shajib-6798` returns a 403; GitHub Pages is the verified accessible public deployment channel.
 
