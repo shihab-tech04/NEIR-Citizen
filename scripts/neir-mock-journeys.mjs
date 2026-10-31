@@ -150,6 +150,25 @@ try{
       steps:document.querySelector('.neir-source-steps-wrap')?.getBoundingClientRect().top
     }));
     assert(positions.hero < positions.guide && positions.guide < positions.steps,'guide must be between hero and steps');
+    const visual=await desktop.evaluate(()=>{
+      const section=document.querySelector('.neir-special-registration-section');
+      const step=section?.querySelector('.neir-special-registration-step');
+      const sourceStep=document.querySelector('.neir-source-step-card');
+      const button=section?.querySelector('.neir-special-registration-button');
+      const sourceButton=document.querySelector('.neir-source-verify-button');
+      return {
+        sectionWidth:section?.getBoundingClientRect().width || 0,
+        viewportWidth:window.innerWidth,
+        stepRadius:step && getComputedStyle(step).borderRadius,
+        sourceStepRadius:sourceStep && getComputedStyle(sourceStep).borderRadius,
+        actionColor:button && getComputedStyle(button).backgroundColor,
+        sourceActionColor:sourceButton && getComputedStyle(sourceButton).backgroundColor
+      };
+    });
+    assert(visual.sectionWidth>=visual.viewportWidth-40,'registration section should match full-width NEIR panels');
+    assert.equal(visual.stepRadius,visual.sourceStepRadius,'registration cards must share the NEIR card radius');
+    assert.equal(visual.actionColor,visual.sourceActionColor,'registration CTA must use the existing NEIR primary color');
+    assert.equal(await guide.locator('.neir-special-registration-step').count(),3);
     await snap(desktop,'10b-signed-in-registration-guide');
     await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
     const wizard=desktop.getByRole('dialog',{name:'Special Registration'});
@@ -248,6 +267,9 @@ try{
     await noOverflow(mobile,390);
     await snap(mobile,'18-mobile-signed-in-registration-guide');
     await expectVisible(guide.getByRole('heading',{name:'বিশেষ নিবন্ধন কী?'}),'Bengali Special Registration heading');
+    assert.equal(await guide.locator('.neir-special-registration-step').count(),3,'mobile should show all three instructions');
+    const mobileCards=await guide.locator('.neir-special-registration-step').evaluateAll(cards=>cards.map(card=>card.getBoundingClientRect().width));
+    assert(mobileCards.every(width=>width<=390),'mobile instruction cards should fit the viewport');
     await guide.getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন করুন'}).click();
     const dialog=mobile.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dialog,'mobile modal from homepage');
