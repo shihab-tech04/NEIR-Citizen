@@ -1,0 +1,36 @@
+name: Temporary NEIR pre-design-fix independent Git backup
+on:
+  push:
+    branches: ['fix/neir-special-registration-design-system-20261031']
+    paths: ['.github/workflows/neir-design-pre-release-backup.yml']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify pre-release main and restore full history from bundle
+        run: |
+          set -euo pipefail
+          expected="81ede3692bcfef461786abf5db02db3836c541d9"
+          test "$(git rev-parse HEAD)" = "$expected"
+          mkdir -p recovery
+          git bundle create recovery/NEIR-Citizen-main-before-design-alignment.bundle --all
+          git bundle verify recovery/NEIR-Citizen-main-before-design-alignment.bundle
+          git clone -q recovery/NEIR-Citizen-main-before-design-alignment.bundle /tmp/neir-restore
+          test "$(git -C /tmp/neir-restore rev-parse HEAD)" = "$expected"
+          git -C /tmp/neir-restore fsck --no-reflogs --no-progress
+          sha256sum recovery/*.bundle > recovery/SHA256SUMS
+          printf '%s\n' "source_repo=shihab-tech04/NEIR-Citizen" "pre_release_main=$expected" "restore_test=PASS" > recovery/RESTORE.txt
+      - name: Export recoverable bundle and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: neir-design-pre-release-backup
+          path: recovery/
+          retention-days: 7
+          if-no-files-found: error
