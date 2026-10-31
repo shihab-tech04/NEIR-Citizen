@@ -89,7 +89,7 @@ try{
   });
   await check('Login modal enforces two Supabase-backed demo accounts',async()=>{
     await desktop.locator('.neir-main-navigation button').first().click();
-    await desktop.locator('.neir-auth-login').click();
+    await desktop.locator('.neir-special-registration-button').click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
     await snap(desktop,'07-login');
