@@ -324,12 +324,12 @@ try{
     await expectVisible(mobile.locator('.neir-special-registration-section'),'mobile session survives refresh');
     await mobile.getByRole('button',{name:'Citizen mobile profile menu'}).click();
     const dropdown=mobile.locator('.neir-mobile-profile-dropdown');
-    await expectVisible(dropdown.getByRole('button',{name:'লগআউট'}),'mobile explicit logout action');
-    await dropdown.getByRole('button',{name:'লগআউট'}).click();
+    await expectVisible(dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}),'mobile explicit logout action');
+    await dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}).click();
     assert.equal(await mobile.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'mobile logout clears saved identity');
     await mobile.reload({waitUntil:'networkidle'});
     assert.equal(await mobile.locator('.neir-special-registration-section').count(),0,'mobile remains logged out');
-    await expectVisible(mobile.locator('.neir-source-mobile-login').filter({hasText:'লগইন'}),'mobile login restored after logout');
+    await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
   });
   await mobile.close();
 } finally{
