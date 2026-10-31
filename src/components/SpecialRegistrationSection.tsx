@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ClipboardCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import type { Language } from '../types.ts';
 
 type Props = {
@@ -25,10 +25,6 @@ export const SpecialRegistrationSection: React.FC<Props> = ({ language, onApply,
     <section className="neir-special-registration-section" aria-labelledby="neir-special-registration-heading">
       <div className="neir-source-guide-inner neir-special-registration-inner">
         <div className="neir-special-registration-content">
-          <p className="neir-special-registration-kicker">
-            <ClipboardCheck size={20} aria-hidden="true" />
-            {bn ? 'ডিভাইস নিবন্ধন' : 'Device registration'}
-          </p>
           <h2 id="neir-special-registration-heading">
             {bn ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
           </h2>
