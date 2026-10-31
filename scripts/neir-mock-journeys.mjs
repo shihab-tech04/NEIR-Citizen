@@ -205,6 +205,7 @@ try{
     assert(visual.content.right<visual.panel.left,'description and instructions should form two adjacent columns');
     assert.equal(await guide.locator('.neir-special-registration-step').count(),3);
     assert.equal(await guide.locator('.neir-special-registration-disclaimer').count(),0,'do not show prototype disclaimer');
+    assert.equal(await guide.locator('.neir-special-registration-kicker').count(),0,'redundant Device registration eyebrow must be removed');
     await expectVisible(guide.getByRole('heading',{name:'How to apply'}),'instruction panel heading');
     await snap(desktop,'10b-signed-in-registration-guide');
     await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
