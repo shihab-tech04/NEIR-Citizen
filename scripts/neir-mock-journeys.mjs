@@ -275,7 +275,7 @@ try{
     await expectVisible(guide,'mobile signed-in guide');
     await noOverflow(mobile,390);
     await snap(mobile,'18-mobile-signed-in-registration-guide');
-    await expectVisible(guide.getByRole('heading',{name:'বিশেষ নিবন্ধন কী?'}),'Bengali Special Registration heading');
+    await expectVisible(guide.getByRole('heading',{name:'বিশেষ নিবন্ধন'}),'Bengali Special Registration heading');
     assert.equal(await guide.locator('.neir-special-registration-step').count(),3,'mobile should show all three instructions');
     const mobileCards=await guide.locator('.neir-special-registration-step').evaluateAll(cards=>cards.map(card=>card.getBoundingClientRect().width));
     assert(mobileCards.every(width=>width<=390),'mobile instruction cards should fit the viewport');
