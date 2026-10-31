@@ -17,6 +17,7 @@ import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
 import { ProposedDesignView } from './components/ProposedDesignView.tsx';
 import { QueryTicket } from './utils/queryTracker.ts';
+import { CITIZEN_SESSION_KEY, restoreCitizenSession, rememberCitizenSession, forgetCitizenSession } from './utils/citizenSession.ts';
 
 export default function App() {
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -45,8 +46,8 @@ export default function App() {
   }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
 
-  // Citizen Session
-  const [session, setSession] = useState<UserSession>({
+  // Keep the existing synthetic fallback; restored sessions contain only non-sensitive identity.
+  const defaultCitizenSession: UserSession = {
     isLoggedIn: false,
     name: 'Md. Zahid Hasan',
     nameBangla: 'মো: জাহিদ হাসান',
@@ -69,11 +70,27 @@ export default function App() {
         status: 'Active',
       },
     ],
-  });
-
+  };
+  const [session, setSession] = useState<UserSession>(() => restoreCitizenSession(defaultCitizenSession));
   // Modal dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
+
+  // Sync explicit logout (and new sign-in) across other tabs of the same browser.
+  useEffect(() => {
+    const syncSession = (event: StorageEvent) => {
+      if (event.key !== CITIZEN_SESSION_KEY && event.key !== null) return;
+      const restored = restoreCitizenSession(defaultCitizenSession);
+      setSession(restored);
+      if (!restored.isLoggedIn) {
+        setCurrentRoute('home');
+        setIsLoginOpen(false);
+        setSpecialRegistrationMessage('');
+      }
+    };
+    window.addEventListener('storage', syncSession);
+    return () => window.removeEventListener('storage', syncSession);
+  }, []);
 
   // The mock citizen dashboard is only available after a successful demo login.
   useEffect(() => {
@@ -124,7 +141,10 @@ export default function App() {
         onOpenRegister={() => { setLoginInitialView('register'); setIsLoginOpen(true); }}
         onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
-          setSession((prev) => ({ ...prev, isLoggedIn: false }));
+          forgetCitizenSession();
+          setSession(defaultCitizenSession);
+          setSpecialRegistrationMessage('');
+          setIsLoginOpen(false);
           setCurrentRoute('home');
         }}
       />
@@ -232,11 +252,13 @@ export default function App() {
         onClose={() => setIsLoginOpen(false)}
         language={language}
         onLoginSuccess={(newSessionData) => {
-          setSession((prev) => ({
-            ...prev,
+          const signedInCitizen: UserSession = {
+            ...defaultCitizenSession,
             ...newSessionData,
             isLoggedIn: true,
-          }));
+          };
+          rememberCitizenSession(signedInCitizen);
+          setSession(signedInCitizen);
           setCurrentRoute('dashboard');
         }}
       />
