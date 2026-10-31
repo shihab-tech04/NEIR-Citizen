@@ -8,6 +8,7 @@ import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomeHero } from './components/HomeHero.tsx';
+import { SpecialRegistrationSection } from './components/SpecialRegistrationSection.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { LoginModal } from './components/LoginModal.tsx';
@@ -83,6 +84,9 @@ export default function App() {
     }
   }, [currentRoute, session.isLoggedIn]);
 
+  const [specialRegistrationTrigger, setSpecialRegistrationTrigger] = useState(0);
+  const [specialRegistrationMessage, setSpecialRegistrationMessage] = useState('');
+
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>([]);
   const [prefilledContactImei, setPrefilledContactImei] = useState<string>('');
@@ -139,6 +143,25 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
+
+            {/* Signed-in entry to the existing 3-step Special Registration modal. */}
+            {session.isLoggedIn && <>
+              <SpecialRegistrationSection
+                language={language}
+                completionMessage={specialRegistrationMessage}
+                onApply={() => {
+                  setSpecialRegistrationMessage('');
+                  setSpecialRegistrationTrigger(current => current + 1);
+                }}
+              />
+              <CitizenImeiListView
+                language={language}
+                session={session}
+                registrationOnly
+                registrationTrigger={specialRegistrationTrigger}
+                onRegistrationComplete={setSpecialRegistrationMessage}
+              />
+            </>}
 
             {/* 3-Step Guide */}
             <ThreeStepGuide
