@@ -15,6 +15,7 @@ const menu = [
 export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLanguageChange,session,onOpenLogin,onOpenRegister,onOpenDashboard,onLogout}) => {
   const [open,setOpen]=useState(false);
   const [profileOpen,setProfileOpen]=useState(false);
+  const [mobileProfileOpen,setMobileProfileOpen]=useState(false);
   const navigate=(route:AppRoute)=>{onRouteChange(route);setOpen(false);setProfileOpen(false);};
   const controls = <div className="neir-header-auth">
     {session.isLoggedIn ? <div className="neir-profile-container">
@@ -44,7 +45,16 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
       </div>
       <div className="neir-source-mobile-auth">
         <label className="neir-source-mobile-language"><span className="sr-only">Language</span><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={15} aria-hidden="true"/></label>
-        {session.isLoggedIn ? <button type="button" className="neir-source-mobile-login" onClick={onOpenDashboard}><UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ArrowRight size={18}/></button>
+        {session.isLoggedIn ? <div className="neir-mobile-profile-container">
+            <button type="button" className="neir-source-mobile-login" aria-label="Citizen mobile profile menu" aria-expanded={mobileProfileOpen} aria-haspopup="true" onClick={()=>setMobileProfileOpen(!mobileProfileOpen)}>
+              <UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ChevronDown size={18} aria-hidden="true"/>
+            </button>
+            {mobileProfileOpen && <div className="neir-profile-dropdown neir-mobile-profile-dropdown">
+              <p className="neir-profile-name">{session.name}</p>
+              <button type="button" onClick={()=>{setMobileProfileOpen(false);onOpenDashboard();}}><UserRound size={16}/> {language==='bn'?'আমার প্রোফাইল':'My Profile'}</button>
+              <button type="button" onClick={()=>{setMobileProfileOpen(false);onLogout();}}><LogOut size={16}/> {language==='bn'?'লগআউট':'Logout'}</button>
+            </div>}
+          </div>
           : <button type="button" className="neir-source-mobile-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'} <ArrowRight size={18}/></button>}
       </div>
       <button type="button" className="neir-mobile-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={23}/>:<Menu size={23}/>}</button>
