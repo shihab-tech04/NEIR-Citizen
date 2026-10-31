@@ -342,6 +342,10 @@ try{
     await mobile.reload({waitUntil:'networkidle'});
     await expectVisible(mobile.locator('.neir-special-registration-section'),'guest guide remains public on mobile');
     await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
+    await mobile.locator('.neir-special-registration-button').click();
+    await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest must sign in before registration');
+    await mobile.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
+    await noOverflow(mobile,390);
   });
   await mobile.close();
 } finally{
