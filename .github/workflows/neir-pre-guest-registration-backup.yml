@@ -1,0 +1,35 @@
+name: Temporary NEIR pre-guest-registration Git backup
+on:
+  push:
+    branches: ['feat/special-registration-guest-login-handoff-20261031']
+    paths: ['.github/workflows/neir-pre-guest-registration-backup.yml']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and restore exact pre-release main
+        run: |
+          set -euo pipefail
+          expected="eb1d124f3c6c605bc4872286b601fd2effa53c43"
+          test "$(git rev-parse HEAD)" = "$expected"
+          mkdir -p recovery
+          git bundle create recovery/NEIR-pre-guest-registration.bundle --all
+          git bundle verify recovery/NEIR-pre-guest-registration.bundle
+          git clone -q recovery/NEIR-pre-guest-registration.bundle /tmp/neir-restored
+          test "$(git -C /tmp/neir-restored rev-parse HEAD)" = "$expected"
+          git -C /tmp/neir-restored fsck --no-reflogs --no-progress
+          sha256sum recovery/*.bundle > recovery/SHA256SUMS
+          printf '%s\n' "pre_release_main=$expected" "restore_test=PASS" > recovery/RESTORE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neir-pre-guest-registration-history
+          path: recovery/
+          if-no-files-found: error
+          retention-days: 7
