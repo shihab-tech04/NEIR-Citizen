@@ -22,6 +22,7 @@ try{
     await desktop.goto(BASE,{waitUntil:'networkidle'});
     await expectVisible(desktop.getByRole('heading',{name:'National Equipment Identity Register (NEIR)'}),'homepage heading');
     assert.equal(await desktop.locator('.neir-source-step-card').count(),6);
+    await expectVisible(desktop.locator('.neir-special-registration-section'),'public Special Registration guide');
     const failed=await desktop.locator('.neir-logo-wrap img, .neir-source-hero-media img, .neir-source-step-card img').evaluateAll(images=>images.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src));
     assert.deepEqual(failed,[]);
     await snap(desktop,'01-home-desktop');
@@ -127,7 +128,7 @@ try{
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'Logout'}).click();
     assert.equal(await desktop.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'logout must clear saved identity');
-    await secondTab.locator('.neir-special-registration-section').waitFor({state:'hidden',timeout:6000});
+    await expectVisible(secondTab.locator('.neir-special-registration-section'),'guide remains public after logout');
     await expectVisible(secondTab.locator('.neir-auth-login'),'logout propagates to other tabs');
     await secondTab.close();
     await desktop.reload({waitUntil:'networkidle'});
@@ -329,7 +330,7 @@ try{
     await dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}).click();
     assert.equal(await mobile.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'mobile logout clears saved identity');
     await mobile.reload({waitUntil:'networkidle'});
-    assert.equal(await mobile.locator('.neir-special-registration-section').count(),0,'mobile remains logged out');
+    await expectVisible(mobile.locator('.neir-special-registration-section'),'guest guide remains public on mobile');
     await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
   });
   await mobile.close();
