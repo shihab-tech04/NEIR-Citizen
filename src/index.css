@@ -427,3 +427,17 @@ button,input,select,textarea{font:inherit}
   .neir-special-registration-step p{font-size:14px}
   .neir-special-registration-number{flex-basis:32px;width:32px;height:32px;font-size:14px}
 }
+
+
+/* Signed-in mobile account actions: reuse the desktop profile dropdown. */
+.neir-mobile-profile-container{position:relative;min-width:0}
+.neir-mobile-profile-dropdown{
+  right:0;
+  z-index:60;
+  max-width:calc(100vw - 32px);
+}
+.neir-mobile-profile-dropdown button:focus-visible{
+  outline:2px solid var(--neir-primary-900);
+  outline-offset:2px;
+  border-radius:6px;
+}

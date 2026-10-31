@@ -15,7 +15,8 @@ async function noOverflow(page,width){
   const m=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:window.innerWidth}));
   assert(m.scroll<=width+3,JSON.stringify(m));
 }
-let desktop=await browser.newPage({viewport:{width:1918,height:924}});
+const desktopContext=await browser.newContext({viewport:{width:1918,height:924}});
+let desktop=await desktopContext.newPage();
 try{
   await check('Home source structure and imagery',async()=>{
     await desktop.goto(BASE,{waitUntil:'networkidle'});
@@ -106,7 +107,31 @@ try{
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 1'}),'first test identity');
+    const saved=await desktop.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1'));
+    assert(saved,'successful demo login must be remembered');
+    assert.equal(JSON.parse(saved).mobile,'01613961501');
+    assert(!saved.includes('123456')&&!saved.includes('password')&&!saved.includes('nid'),'saved state must not contain credentials or NID');
+    await desktop.reload({waitUntil:'networkidle'});
+    await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'session survives refresh on dashboard');
+    assert.equal(new URL(desktop.url()).pathname,'/dashboard','dashboard deep link survives refresh');
+    const browserRestartState=await desktop.context().storageState();
+    const restarted=await browser.newContext({viewport:{width:1300,height:850},storageState:browserRestartState});
+    const restartedPage=await restarted.newPage();
+    await restartedPage.goto(BASE,{waitUntil:'networkidle'});
+    await expectVisible(restartedPage.locator('.neir-special-registration-section'),'session survives browser restart with retained storage');
+    assert.equal(await restartedPage.locator('.neir-auth-login').count(),0,'restored session should not display login button');
+    await restarted.close();
+    const secondTab=await desktop.context().newPage();
+    await secondTab.goto(BASE,{waitUntil:'networkidle'});
+    await expectVisible(secondTab.locator('.neir-special-registration-section'),'signed in across tabs');
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'Logout'}).click();
+    assert.equal(await desktop.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'logout must clear saved identity');
+    await secondTab.locator('.neir-special-registration-section').waitFor({state:'hidden',timeout:6000});
+    await expectVisible(secondTab.locator('.neir-auth-login'),'logout propagates to other tabs');
+    await secondTab.close();
+    await desktop.reload({waitUntil:'networkidle'});
+    await expectVisible(desktop.locator('.neir-auth-login'),'logout persists through refresh');
     await desktop.locator('.neir-auth-login').click();
     const secondDialog=desktop.getByRole('dialog',{name:'Login'});
     await secondDialog.locator('#login-mobile').fill('01673961501');
@@ -116,7 +141,10 @@ try{
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 2'}),'second test identity');
-    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await desktop.reload({waitUntil:'networkidle'});
+    await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'second test citizen survives refresh');
+    const restoredName=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('neir-citizen-demo-session-v1')||'{}').name);
+    assert.equal(restoredName,'Test Citizen 2');
     await snap(desktop,'08-dashboard');
   });
   await check('Dashboard pagination, search, details, restricted tab',async()=>{
@@ -292,6 +320,16 @@ try{
     assert(size && size.width<=390 && size.height<=844,'registration dialog fits mobile viewport');
     await dialog.getByRole('button',{name:'Close special registration'}).click();
     await noOverflow(mobile,390);
+    await mobile.reload({waitUntil:'networkidle'});
+    await expectVisible(mobile.locator('.neir-special-registration-section'),'mobile session survives refresh');
+    await mobile.getByRole('button',{name:'Citizen mobile profile menu'}).click();
+    const dropdown=mobile.locator('.neir-mobile-profile-dropdown');
+    await expectVisible(dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}),'mobile explicit logout action');
+    await dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}).click();
+    assert.equal(await mobile.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'mobile logout clears saved identity');
+    await mobile.reload({waitUntil:'networkidle'});
+    assert.equal(await mobile.locator('.neir-special-registration-section').count(),0,'mobile remains logged out');
+    await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
   });
   await mobile.close();
 } finally{
