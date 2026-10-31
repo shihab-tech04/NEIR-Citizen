@@ -22,6 +22,10 @@ try{
     await desktop.goto(BASE,{waitUntil:'networkidle'});
     await expectVisible(desktop.getByRole('heading',{name:'National Equipment Identity Register (NEIR)'}),'homepage heading');
     assert.equal(await desktop.locator('.neir-source-step-card').count(),6);
+    await expectVisible(desktop.locator('.neir-special-registration-section'),'public Special Registration guide');
+    await desktop.locator('.neir-special-registration-section button').click();
+    await expectVisible(desktop.getByRole('dialog',{name:'Login'}),'guest registration asks to log in');
+    await desktop.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
     const failed=await desktop.locator('.neir-logo-wrap img, .neir-source-hero-media img, .neir-source-step-card img').evaluateAll(images=>images.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src));
     assert.deepEqual(failed,[]);
     await snap(desktop,'01-home-desktop');
@@ -85,7 +89,7 @@ try{
   });
   await check('Login modal enforces two Supabase-backed demo accounts',async()=>{
     await desktop.locator('.neir-main-navigation button').first().click();
-    await desktop.locator('.neir-auth-login').click();
+    await desktop.locator('.neir-special-registration-button').click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
     await snap(desktop,'07-login');
@@ -103,6 +107,13 @@ try{
     await expectVisible(dialog.getByRole('alert').filter({hasText:'Incorrect mobile number or password.'}),'wrong password rejection');
     await dialog.locator('#login-password').fill('123456');
     await dialog.getByRole('button',{name:/^login$/i}).click();
+    const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
+    await expectVisible(resumedWizard,'guest login resumes Special Registration');
+    assert.equal(new URL(desktop.url()).pathname,'/');
+    assert.equal(await resumedWizard.getByPlaceholder('IMEI Number').inputValue(),'');
+    await resumedWizard.getByRole('button',{name:'Close special registration'}).click();
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await desktop.getByRole('button',{name:'My Profile'}).click();
     await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'mock IMEI list');
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
@@ -127,7 +138,7 @@ try{
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'Logout'}).click();
     assert.equal(await desktop.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'logout must clear saved identity');
-    await secondTab.locator('.neir-special-registration-section').waitFor({state:'hidden',timeout:6000});
+    await expectVisible(secondTab.locator('.neir-special-registration-section'),'guide remains public after logout');
     await expectVisible(secondTab.locator('.neir-auth-login'),'logout propagates to other tabs');
     await secondTab.close();
     await desktop.reload({waitUntil:'networkidle'});
@@ -329,8 +340,12 @@ try{
     await dropdown.getByRole('button',{name:/^(Logout|লগআউট)$/}).click();
     assert.equal(await mobile.evaluate(()=>localStorage.getItem('neir-citizen-demo-session-v1')),null,'mobile logout clears saved identity');
     await mobile.reload({waitUntil:'networkidle'});
-    assert.equal(await mobile.locator('.neir-special-registration-section').count(),0,'mobile remains logged out');
+    await expectVisible(mobile.locator('.neir-special-registration-section'),'guest guide remains public on mobile');
     await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
+    await mobile.locator('.neir-special-registration-button').click();
+    await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest must sign in before registration');
+    await mobile.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
+    await noOverflow(mobile,390);
   });
   await mobile.close();
 } finally{

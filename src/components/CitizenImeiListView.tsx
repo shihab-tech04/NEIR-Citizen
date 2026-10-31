@@ -35,8 +35,8 @@ const statusStyle: Record<DeviceStatus, string> = {
   'Restricted (demo)': 'bg-red-50 text-red-800',
 };
 
-type Props = { language: Language; session: UserSession; registrationOnly?: boolean; registrationTrigger?: number; onRegistrationComplete?: (message: string) => void };
-export const CitizenImeiListView: React.FC<Props> = ({ language, session, registrationOnly = false, registrationTrigger = 0, onRegistrationComplete }) => {
+type Props = { language: Language; session: UserSession; registrationOnly?: boolean; registrationTrigger?: number | null; onRegistrationHandled?: () => void; onRegistrationComplete?: (message: string) => void };
+export const CitizenImeiListView: React.FC<Props> = ({ language, session, registrationOnly = false, registrationTrigger = null, onRegistrationHandled, onRegistrationComplete }) => {
   const [tab, setTab] = useState<'registered' | 'restricted'>('registered');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -44,7 +44,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
   const [actionRow, setActionRow] = useState<string | null>(null);
   const [detail, setDetail] = useState<Device | null>(null);
   const [wizard, setWizard] = useState(false);
-  const observedRegistrationTrigger = useRef(registrationTrigger);
+  const observedRegistrationTrigger = useRef<number | null>(null);
   const [step, setStep] = useState<WizardStep>(1);
   const [form, setForm] = useState<FormState>(blankForm);
   const [uploads, setUploads] = useState<Uploaded>({});
@@ -67,11 +67,17 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
     setForm({ ...blankForm, imei });
     setUploads({}); setStep(1); setErrors({}); setResult(''); setActionRow(null); setWizard(true);
   };
-  // Reuse the existing wizard from the signed-in homepage without rendering the IMEI list.
+  // A one-shot request also works when a citizen signs in before the homepage wizard mounts.
   useEffect(() => {
-    // A remount after returning from another route must not reopen an old form.
-    if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) startRegistration();
-    observedRegistrationTrigger.current = registrationTrigger;
+    if (registrationTrigger === null) {
+      observedRegistrationTrigger.current = null;
+      return;
+    }
+    if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) {
+      observedRegistrationTrigger.current = registrationTrigger;
+      startRegistration();
+      onRegistrationHandled?.();
+    }
   }, [registrationOnly, registrationTrigger]);
 
   const next = () => {

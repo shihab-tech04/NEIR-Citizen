@@ -75,6 +75,8 @@ export default function App() {
   // Modal dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
+  // Keep a one-time intent when a guest asks to register a device before signing in.
+  const [loginForSpecialRegistration, setLoginForSpecialRegistration] = useState(false);
 
   // Sync explicit logout (and new sign-in) across other tabs of the same browser.
   useEffect(() => {
@@ -86,6 +88,8 @@ export default function App() {
         setCurrentRoute('home');
         setIsLoginOpen(false);
         setSpecialRegistrationMessage('');
+        setSpecialRegistrationTrigger(null);
+        setLoginForSpecialRegistration(false);
       }
     };
     window.addEventListener('storage', syncSession);
@@ -101,8 +105,19 @@ export default function App() {
     }
   }, [currentRoute, session.isLoggedIn]);
 
-  const [specialRegistrationTrigger, setSpecialRegistrationTrigger] = useState(0);
+  const [specialRegistrationTrigger, setSpecialRegistrationTrigger] = useState<number | null>(null);
   const [specialRegistrationMessage, setSpecialRegistrationMessage] = useState('');
+
+  const requestSpecialRegistration = () => {
+    setSpecialRegistrationMessage('');
+    if (session.isLoggedIn) {
+      setSpecialRegistrationTrigger(1);
+      return;
+    }
+    setLoginForSpecialRegistration(true);
+    setLoginInitialView('login');
+    setIsLoginOpen(true);
+  };
 
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>([]);
@@ -137,13 +152,15 @@ export default function App() {
         language={language}
         onLanguageChange={setLanguage}
         session={session}
-        onOpenLogin={() => { setLoginInitialView('login'); setIsLoginOpen(true); }}
-        onOpenRegister={() => { setLoginInitialView('register'); setIsLoginOpen(true); }}
+        onOpenLogin={() => { setLoginForSpecialRegistration(false); setLoginInitialView('login'); setIsLoginOpen(true); }}
+        onOpenRegister={() => { setLoginForSpecialRegistration(false); setLoginInitialView('register'); setIsLoginOpen(true); }}
         onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
           forgetCitizenSession();
           setSession(defaultCitizenSession);
           setSpecialRegistrationMessage('');
+          setSpecialRegistrationTrigger(null);
+          setLoginForSpecialRegistration(false);
           setIsLoginOpen(false);
           setCurrentRoute('home');
         }}
@@ -164,24 +181,22 @@ export default function App() {
               }}
             />
 
-            {/* Signed-in entry to the existing 3-step Special Registration modal. */}
-            {session.isLoggedIn && <>
-              <SpecialRegistrationSection
-                language={language}
-                completionMessage={specialRegistrationMessage}
-                onApply={() => {
-                  setSpecialRegistrationMessage('');
-                  setSpecialRegistrationTrigger(current => current + 1);
-                }}
-              />
+            {/* Everybody sees the guide; guests sign in before the existing 3-step wizard. */}
+            <SpecialRegistrationSection
+              language={language}
+              completionMessage={session.isLoggedIn ? specialRegistrationMessage : undefined}
+              onApply={requestSpecialRegistration}
+            />
+            {session.isLoggedIn && (
               <CitizenImeiListView
                 language={language}
                 session={session}
                 registrationOnly
                 registrationTrigger={specialRegistrationTrigger}
+                onRegistrationHandled={() => setSpecialRegistrationTrigger(null)}
                 onRegistrationComplete={setSpecialRegistrationMessage}
               />
-            </>}
+            )}
 
             {/* 3-Step Guide */}
             <ThreeStepGuide
@@ -249,7 +264,7 @@ export default function App() {
       <LoginModal
         initialView={loginInitialView}
         isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
+        onClose={() => { setIsLoginOpen(false); setLoginForSpecialRegistration(false); }}
         language={language}
         onLoginSuccess={(newSessionData) => {
           const signedInCitizen: UserSession = {
@@ -259,7 +274,13 @@ export default function App() {
           };
           rememberCitizenSession(signedInCitizen);
           setSession(signedInCitizen);
-          setCurrentRoute('dashboard');
+          if (loginForSpecialRegistration) {
+            setCurrentRoute('home');
+            setSpecialRegistrationTrigger(1);
+            setLoginForSpecialRegistration(false);
+          } else {
+            setCurrentRoute('dashboard');
+          }
         }}
       />
 
