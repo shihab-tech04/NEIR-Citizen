@@ -1,0 +1,35 @@
+name: Temporary NEIR pre-persistent-session Git backup
+on:
+  push:
+    branches: ['feat/neir-persist-demo-login-until-logout-20261031']
+    paths: ['.github/workflows/neir-pre-session-backup.yml']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and restore exact pre-release Git history
+        run: |
+          set -euo pipefail
+          expected="40f8cc9a3db052ee67bc13d9be0bfeaa586eeb01"
+          test "$(git rev-parse HEAD)" = "$expected"
+          mkdir -p recovery
+          git bundle create recovery/NEIR-Citizen-main-pre-persistent-session.bundle --all
+          git bundle verify recovery/NEIR-Citizen-main-pre-persistent-session.bundle
+          git clone -q recovery/NEIR-Citizen-main-pre-persistent-session.bundle /tmp/neir-restored
+          test "$(git -C /tmp/neir-restored rev-parse HEAD)" = "$expected"
+          git -C /tmp/neir-restored fsck --no-reflogs --no-progress
+          sha256sum recovery/*.bundle > recovery/SHA256SUMS
+          printf '%s\n' "source_repo=shihab-tech04/NEIR-Citizen" "pre_release_main=$expected" "restore_test=PASS" > recovery/RESTORE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neir-pre-persistent-session-git-history
+          path: recovery/
+          if-no-files-found: error
+          retention-days: 7
