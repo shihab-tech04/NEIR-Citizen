@@ -105,7 +105,7 @@ try{
     await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'mock IMEI list');
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
-    await expectVisible(desktop.getByText('Test Citizen 1'),'first test identity');
+    await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 1'}),'first test identity');
     await desktop.getByRole('button',{name:'Logout'}).click();
     await desktop.locator('.neir-auth-login').click();
     const secondDialog=desktop.getByRole('dialog',{name:'Login'});
@@ -114,7 +114,7 @@ try{
     await secondDialog.getByRole('button',{name:/^login$/i}).click();
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
-    await expectVisible(desktop.getByText('Test Citizen 2'),'second test identity');
+    await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 2'}),'second test identity');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await snap(desktop,'08-dashboard');
   });
