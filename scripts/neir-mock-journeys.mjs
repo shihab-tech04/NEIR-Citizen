@@ -107,6 +107,13 @@ try{
     await expectVisible(dialog.getByRole('alert').filter({hasText:'Incorrect mobile number or password.'}),'wrong password rejection');
     await dialog.locator('#login-password').fill('123456');
     await dialog.getByRole('button',{name:/^login$/i}).click();
+    const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
+    await expectVisible(resumedWizard,'guest login resumes Special Registration');
+    assert.equal(new URL(desktop.url()).pathname,'/');
+    assert.equal(await resumedWizard.getByPlaceholder('IMEI Number').inputValue(),'');
+    await resumedWizard.getByRole('button',{name:'Close special registration'}).click();
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await desktop.getByRole('button',{name:'My Profile'}).click();
     await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'mock IMEI list');
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
