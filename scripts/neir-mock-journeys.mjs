@@ -247,7 +247,8 @@ try{
     await expectVisible(guide,'mobile signed-in guide');
     await noOverflow(mobile,390);
     await snap(mobile,'18-mobile-signed-in-registration-guide');
-    await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
+    await expectVisible(guide.getByRole('heading',{name:'বিশেষ নিবন্ধন কী?'}),'Bengali Special Registration heading');
+    await guide.getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন করুন'}).click();
     const dialog=mobile.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dialog,'mobile modal from homepage');
     const size=await dialog.boundingBox();
