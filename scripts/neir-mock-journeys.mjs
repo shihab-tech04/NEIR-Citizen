@@ -164,6 +164,11 @@ try{
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'My Profile'}).click();
     await desktop.waitForURL('**/dashboard');
+    await desktop.locator('.neir-main-navigation button').first().click();
+    assert.equal(await desktop.getByRole('dialog',{name:'Special Registration'}).count(),0,'returning home should not reopen a stale registration');
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await desktop.getByRole('button',{name:'My Profile'}).click();
+    await desktop.waitForURL('**/dashboard');
   });
   await check('Special Registration mock wizard, validation, files and completion',async()=>{
     await desktop.getByRole('button',{name:/Actions for IMEI/}).first().click();
