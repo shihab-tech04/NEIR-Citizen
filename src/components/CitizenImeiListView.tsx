@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, FileText, Info, MoreVertical, Search, X } from 'lucide-react';
 import type { Language, UserSession } from '../types.ts';
 
@@ -44,6 +44,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
   const [actionRow, setActionRow] = useState<string | null>(null);
   const [detail, setDetail] = useState<Device | null>(null);
   const [wizard, setWizard] = useState(false);
+  const observedRegistrationTrigger = useRef(registrationTrigger);
   const [step, setStep] = useState<WizardStep>(1);
   const [form, setForm] = useState<FormState>(blankForm);
   const [uploads, setUploads] = useState<Uploaded>({});
@@ -68,7 +69,9 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
   };
   // Reuse the existing wizard from the signed-in homepage without rendering the IMEI list.
   useEffect(() => {
-    if (registrationOnly && registrationTrigger > 0) startRegistration();
+    // A remount after returning from another route must not reopen an old form.
+    if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) startRegistration();
+    observedRegistrationTrigger.current = registrationTrigger;
   }, [registrationOnly, registrationTrigger]);
 
   const next = () => {
