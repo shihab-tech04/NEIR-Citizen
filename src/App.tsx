@@ -74,6 +74,15 @@ export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
 
+  // The mock citizen dashboard is only available after a successful demo login.
+  useEffect(() => {
+    if (currentRoute === 'dashboard' && !session.isLoggedIn) {
+      setCurrentRoute('home');
+      setLoginInitialView('login');
+      setIsLoginOpen(true);
+    }
+  }, [currentRoute, session.isLoggedIn]);
+
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>([]);
   const [prefilledContactImei, setPrefilledContactImei] = useState<string>('');
@@ -185,7 +194,7 @@ export default function App() {
           />
         )}
         {/* Source-backed authenticated citizen IMEI list */}
-        {currentRoute === 'dashboard' && (
+        {currentRoute === 'dashboard' && session.isLoggedIn && (
           <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 pb-10"><CitizenImeiListView language={language} session={session} /></div>
         )}
       </main>
