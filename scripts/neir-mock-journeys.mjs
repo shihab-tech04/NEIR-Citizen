@@ -152,23 +152,32 @@ try{
     assert(positions.hero < positions.guide && positions.guide < positions.steps,'guide must be between hero and steps');
     const visual=await desktop.evaluate(()=>{
       const section=document.querySelector('.neir-special-registration-section');
-      const step=section?.querySelector('.neir-special-registration-step');
+      const panel=section?.querySelector('.neir-special-registration-instructions');
       const sourceStep=document.querySelector('.neir-source-step-card');
       const button=section?.querySelector('.neir-special-registration-button');
       const sourceButton=document.querySelector('.neir-source-verify-button');
+      const copy=section?.querySelector('.neir-special-registration-content');
+      const rect=(node)=>node?.getBoundingClientRect();
       return {
         sectionWidth:section?.getBoundingClientRect().width || 0,
         viewportWidth:window.innerWidth,
-        stepRadius:step && getComputedStyle(step).borderRadius,
+        panelRadius:panel && getComputedStyle(panel).borderRadius,
         sourceStepRadius:sourceStep && getComputedStyle(sourceStep).borderRadius,
         actionColor:button && getComputedStyle(button).backgroundColor,
-        sourceActionColor:sourceButton && getComputedStyle(sourceButton).backgroundColor
+        sourceActionColor:sourceButton && getComputedStyle(sourceButton).backgroundColor,
+        content:rect(copy) && {left:rect(copy).left,right:rect(copy).right,top:rect(copy).top,bottom:rect(copy).bottom},
+        action:rect(button) && {left:rect(button).left,right:rect(button).right,top:rect(button).top,bottom:rect(button).bottom},
+        panel:rect(panel) && {left:rect(panel).left,right:rect(panel).right,top:rect(panel).top,bottom:rect(panel).bottom}
       };
     });
     assert(visual.sectionWidth>=visual.viewportWidth-40,'registration section should match full-width NEIR panels');
-    assert.equal(visual.stepRadius,visual.sourceStepRadius,'registration cards must share the NEIR card radius');
+    assert.equal(visual.panelRadius,visual.sourceStepRadius,'steps panel must reuse the NEIR card radius');
     assert.equal(visual.actionColor,visual.sourceActionColor,'registration CTA must use the existing NEIR primary color');
+    assert(visual.action.left>=visual.content.left && visual.action.right<=visual.content.right,'CTA must be within its description column');
+    assert(visual.content.right<visual.panel.left,'description and instructions should form two adjacent columns');
     assert.equal(await guide.locator('.neir-special-registration-step').count(),3);
+    assert.equal(await guide.locator('.neir-special-registration-disclaimer').count(),0,'do not show prototype disclaimer');
+    await expectVisible(guide.getByRole('heading',{name:'How to apply'}),'instruction panel heading');
     await snap(desktop,'10b-signed-in-registration-guide');
     await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
     const wizard=desktop.getByRole('dialog',{name:'Special Registration'});
@@ -270,6 +279,12 @@ try{
     assert.equal(await guide.locator('.neir-special-registration-step').count(),3,'mobile should show all three instructions');
     const mobileCards=await guide.locator('.neir-special-registration-step').evaluateAll(cards=>cards.map(card=>card.getBoundingClientRect().width));
     assert(mobileCards.every(width=>width<=390),'mobile instruction cards should fit the viewport');
+    const mobileBounds=await guide.evaluate(section=>{
+      const action=section.querySelector('.neir-special-registration-button').getBoundingClientRect();
+      const panel=section.querySelector('.neir-special-registration-instructions').getBoundingClientRect();
+      return {actionBottom:action.bottom,panelTop:panel.top};
+    });
+    assert(mobileBounds.actionBottom<mobileBounds.panelTop,'mobile CTA must precede instruction panel');
     await guide.getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন করুন'}).click();
     const dialog=mobile.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dialog,'mobile modal from homepage');
