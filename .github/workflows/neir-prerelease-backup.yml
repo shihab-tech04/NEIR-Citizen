@@ -1,0 +1,36 @@
+name: Independent NEIR pre-release Git recovery bundle
+on:
+  push:
+    branches: ['feat/special-registration-home-entry-20261031']
+    paths: ['.github/workflows/neir-prerelease-backup.yml']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable baseline and build restorable Git bundle
+        run: |
+          set -euo pipefail
+          expected="5ae71f94a280eb07825a0d9d7d0c64d9047b76d1"
+          test "$(git rev-parse HEAD)" = "$expected"
+          mkdir -p recovery
+          git bundle create recovery/NEIR-Citizen-main-pre-special-registration.bundle --all
+          git bundle verify recovery/NEIR-Citizen-main-pre-special-registration.bundle
+          git clone -q recovery/NEIR-Citizen-main-pre-special-registration.bundle /tmp/neir-restored
+          test "$(git -C /tmp/neir-restored rev-parse HEAD)" = "$expected"
+          git -C /tmp/neir-restored fsck --no-reflogs --no-progress
+          sha256sum recovery/*.bundle > recovery/SHA256SUMS
+          printf '%s\n' "source_repo=shihab-tech04/NEIR-Citizen" "pre_release_main=$expected" "restore_test=PASS" > recovery/RESTORE.txt
+      - name: Publish restorable bundle as a file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neir-pre-special-registration-main-bundle
+          path: recovery/
+          if-no-files-found: error
+          retention-days: 7
