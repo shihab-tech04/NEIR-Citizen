@@ -139,6 +139,32 @@ try{
     await snap(desktop,'10-restricted-demo');
     await desktop.getByRole('button',{name:'Registered IMEIs'}).click();
   });
+  await check('Signed-in homepage Special Registration guidance reuses the citizen wizard',async()=>{
+    await desktop.locator('.neir-main-navigation button').first().click();
+    assert.equal(new URL(desktop.url()).pathname,'/');
+    const guide=desktop.locator('.neir-special-registration-section');
+    await expectVisible(guide,'Special Registration section between hero and 3 Steps');
+    const positions=await desktop.evaluate(()=>({
+      guide:document.querySelector('.neir-special-registration-section')?.getBoundingClientRect().top,
+      hero:document.querySelector('.neir-source-hero')?.getBoundingClientRect().top,
+      steps:document.querySelector('.neir-source-steps-wrap')?.getBoundingClientRect().top
+    }));
+    assert(positions.hero < positions.guide && positions.guide < positions.steps,'guide must be between hero and steps');
+    await snap(desktop,'10b-signed-in-registration-guide');
+    await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
+    const wizard=desktop.getByRole('dialog',{name:'Special Registration'});
+    await expectVisible(wizard,'same Special Registration wizard');
+    assert.equal(await wizard.getByPlaceholder('IMEI Number').inputValue(),'','home entry must start with blank IMEI');
+    await wizard.getByRole('button',{name:'Next'}).click();
+    await expectVisible(wizard.getByRole('alert').filter({hasText:'Enter the first 14 digits'}),'home entry validates IMEI');
+    await wizard.getByRole('button',{name:'Close special registration'}).click();
+    await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
+    await expectVisible(wizard,'wizard can reopen after closing');
+    await wizard.getByRole('button',{name:'Close special registration'}).click();
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await desktop.getByRole('button',{name:'My Profile'}).click();
+    await desktop.waitForURL('**/dashboard');
+  });
   await check('Special Registration mock wizard, validation, files and completion',async()=>{
     await desktop.getByRole('button',{name:/Actions for IMEI/}).first().click();
     await desktop.getByRole('button',{name:'Special Registration'}).click();
@@ -201,6 +227,28 @@ try{
     assert(box && box.width<=390 && box.height<=844,'modal must fit viewport');
     await snap(mobile,'17-mobile-login');
     await mobile.getByRole('button',{name:'Close'}).click();
+    await noOverflow(mobile,390);
+  });
+  await check('Mobile authenticated homepage guide opens responsive wizard',async()=>{
+    await mobile.locator('.neir-source-mobile-login').click();
+    const login=mobile.getByRole('dialog',{name:'Login'});
+    await login.locator('#login-mobile').fill('01613961501');
+    await login.locator('#login-password').fill('123456');
+    await login.getByRole('button',{name:/^login$/i}).click();
+    await mobile.waitForURL('**/dashboard');
+    await mobile.locator('.neir-mobile-toggle').click();
+    await mobile.locator('.neir-mobile-menu-item').first().click();
+    await mobile.waitForURL('**/');
+    const guide=mobile.locator('.neir-special-registration-section');
+    await expectVisible(guide,'mobile signed-in guide');
+    await noOverflow(mobile,390);
+    await snap(mobile,'18-mobile-signed-in-registration-guide');
+    await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
+    const dialog=mobile.getByRole('dialog',{name:'Special Registration'});
+    await expectVisible(dialog,'mobile modal from homepage');
+    const size=await dialog.boundingBox();
+    assert(size && size.width<=390 && size.height<=844,'registration dialog fits mobile viewport');
+    await dialog.getByRole('button',{name:'Close special registration'}).click();
     await noOverflow(mobile,390);
   });
   await mobile.close();
