@@ -236,8 +236,7 @@ try{
     await login.locator('#login-password').fill('123456');
     await login.getByRole('button',{name:/^login$/i}).click();
     await mobile.waitForURL('**/dashboard');
-    await mobile.locator('.neir-mobile-toggle').click();
-    await mobile.locator('.neir-mobile-menu-item').first().click();
+    await mobile.getByRole('button',{name:'NEIR Citizen home'}).click();
     await mobile.waitForURL('**/');
     const guide=mobile.locator('.neir-special-registration-section');
     await expectVisible(guide,'mobile signed-in guide');
