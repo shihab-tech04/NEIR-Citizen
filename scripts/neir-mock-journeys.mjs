@@ -82,19 +82,40 @@ try{
     await expectVisible(desktop.getByRole('status').filter({hasText:'Demo query found:'}),'demo ticket lookup');
     await snap(desktop,'06-contact-query-status');
   });
-  await check('Login modal and demo dashboard, no real credentials',async()=>{
+  await check('Login modal enforces two Supabase-backed demo accounts',async()=>{
     await desktop.locator('.neir-main-navigation button').first().click();
     await desktop.locator('.neir-auth-login').click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
     await snap(desktop,'07-login');
     await dialog.getByRole('button',{name:/^login$/i}).click();
-    await expectVisible(dialog.getByRole('alert'),'empty login validation');
+    await expectVisible(dialog.getByText('Mobile number is required'),'empty mobile validation');
+    await expectVisible(dialog.getByText('Password is required'),'empty password validation');
     await dialog.locator('#login-mobile').fill('01712345678');
-    await dialog.locator('#login-password').fill('example-demo-only');
+    await dialog.locator('#login-password').fill('123456');
     await dialog.getByRole('button',{name:/^login$/i}).click();
-    assert.equal(new URL(desktop.url()).pathname,'/dashboard');
+    await expectVisible(dialog.getByRole('alert').filter({hasText:'Incorrect mobile number or password.'}),'unknown mobile rejection');
+    assert.equal(new URL(desktop.url()).pathname,'/');
+    await dialog.locator('#login-mobile').fill('01613961501');
+    await dialog.locator('#login-password').fill('wrong-password');
+    await dialog.getByRole('button',{name:/^login$/i}).click();
+    await expectVisible(dialog.getByRole('alert').filter({hasText:'Incorrect mobile number or password.'}),'wrong password rejection');
+    await dialog.locator('#login-password').fill('123456');
+    await dialog.getByRole('button',{name:/^login$/i}).click();
     await expectVisible(desktop.getByRole('heading',{name:'Registered IMEIs (19)'}),'mock IMEI list');
+    assert.equal(new URL(desktop.url()).pathname,'/dashboard');
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await expectVisible(desktop.getByText('Test Citizen 1'),'first test identity');
+    await desktop.getByRole('button',{name:'Logout'}).click();
+    await desktop.locator('.neir-auth-login').click();
+    const secondDialog=desktop.getByRole('dialog',{name:'Login'});
+    await secondDialog.locator('#login-mobile').fill('01673961501');
+    await secondDialog.locator('#login-password').fill('123456');
+    await secondDialog.getByRole('button',{name:/^login$/i}).click();
+    assert.equal(new URL(desktop.url()).pathname,'/dashboard');
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
+    await expectVisible(desktop.getByText('Test Citizen 2'),'second test identity');
+    await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await snap(desktop,'08-dashboard');
   });
   await check('Dashboard pagination, search, details, restricted tab',async()=>{
