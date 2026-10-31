@@ -314,38 +314,41 @@ button,input,select,textarea{font:inherit}
 }
 
 
-/* Signed-in registration uses the SAME full-width panel, inner alignment, colors and
-   card/button geometry as the existing NEIR hero, guides and FAQ. */
+/* Special Registration: one focused CTA next to a compact, legible instruction panel.
+   Reuse the approved NEIR full-width section, Poppins scale, pill buttons and color tokens. */
 .neir-special-registration-section{
   box-sizing:border-box;
   width:100%;
-  padding:80px 24px 64px;
+  padding:64px 24px;
   border-radius:32px;
   background:var(--neir-tertiary);
 }
-.neir-special-registration-intro{
+.neir-special-registration-inner{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+  gap:64px;
   align-items:center;
-  gap:40px;
-  margin-bottom:36px;
 }
-.neir-special-registration-content{min-width:0;max-width:850px}
+.neir-special-registration-content{min-width:0}
 .neir-special-registration-kicker{
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:10px;
   color:var(--neir-primary-900);
-  margin:0 0 12px;font-size:16px;font-weight:600;
+  margin:0 0 16px;font-size:16px;font-weight:600;
 }
 .neir-special-registration-section h2{
-  font-size:46px;line-height:1.3;font-weight:700;
-  margin:0 0 12px;
+  font-size:46px;line-height:1.25;font-weight:700;
+  letter-spacing:-.6px;color:#000;margin:0 0 20px;
 }
-.neir-special-registration-description{font-size:20px;line-height:1.5;margin:0}
-.neir-special-registration-action{display:flex;justify-content:flex-end;align-items:center}
+.neir-special-registration-description{
+  font-size:20px;line-height:1.55;
+  margin:0 0 28px;color:#111;
+  max-width:580px;
+}
+.neir-special-registration-action{display:flex;align-items:center;justify-content:flex-start}
 .neir-special-registration-button{
   min-height:57px;max-width:100%;
-  display:inline-flex;align-items:center;justify-content:center;gap:12px;
-  padding:12px 22px;border:0;border-radius:32px;
+  display:inline-flex;align-items:center;justify-content:center;gap:16px;
+  padding:12px 24px;border:0;border-radius:32px;
   background:var(--neir-primary-600);color:#fff;
   font-size:16px;font-weight:600;text-align:center;cursor:pointer;
 }
@@ -355,26 +358,40 @@ button,input,select,textarea{font:inherit}
 }
 .neir-special-registration-button svg{flex-shrink:0}
 .neir-special-registration-instructions{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;
+  min-width:0;
+  padding:30px 34px;
+  border-radius:24px;
+  background:#fff;
+}
+.neir-special-registration-list-heading{
+  margin:0 0 20px;
+  font-size:24px;line-height:1.3;font-weight:700;color:#111;
+}
+.neir-special-registration-list{
+  list-style:none;margin:0;padding:0;
 }
 .neir-special-registration-step{
-  min-width:0;min-height:180px;
-  padding:30px 28px;background:#fff;border-radius:24px;
+  display:flex;align-items:flex-start;gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid var(--neir-border);
 }
-.neir-special-registration-step h3{
-  display:flex;align-items:center;gap:12px;margin:0 0 16px;
-  font-size:24px;font-weight:700;line-height:1.4;
-}
+.neir-special-registration-step:first-child{padding-top:0}
+.neir-special-registration-step:last-child{padding-bottom:0;border-bottom:0}
 .neir-special-registration-number{
-  display:inline-flex;flex:0 0 36px;align-items:center;justify-content:center;
+  display:flex;flex:0 0 36px;align-items:center;justify-content:center;
   width:36px;height:36px;border-radius:50%;
   background:var(--neir-primary-bg);color:var(--neir-primary-900);
   font-size:16px;font-weight:700;
 }
-.neir-special-registration-step p{font-size:16px;line-height:1.5;margin:0}
-.neir-special-registration-disclaimer{font-size:14px;line-height:1.5;margin:20px 0 0}
+.neir-special-registration-step-copy{min-width:0}
+.neir-special-registration-step h4{
+  margin:1px 0 6px;font-size:18px;font-weight:700;line-height:1.35;color:#111;
+}
+.neir-special-registration-step p{
+  font-size:16px;line-height:1.5;margin:0;color:#334155;
+}
 .neir-special-registration-status{
-  font-size:14px;line-height:1.5;margin:12px 0 0;
+  font-size:14px;line-height:1.5;margin:16px 0 0;
   padding:12px;border-radius:12px;background:var(--neir-primary-bg);
 }
 @media(min-width:768px){
@@ -383,27 +400,30 @@ button,input,select,textarea{font:inherit}
   }
 }
 @media(max-width:1400px){
-  .neir-special-registration-intro{gap:28px}
+  .neir-special-registration-inner{gap:40px}
+  .neir-special-registration-section h2{font-size:42px}
 }
 @media(max-width:1000px){
   .neir-special-registration-section{padding:40px 20px}
-  .neir-special-registration-intro{grid-template-columns:1fr;gap:20px}
-  .neir-special-registration-action{justify-content:flex-start}
-  .neir-special-registration-instructions{gap:16px}
-  .neir-special-registration-step{padding:22px;min-height:0}
-  .neir-special-registration-step h3{font-size:20px}
+  .neir-special-registration-inner{grid-template-columns:1fr;gap:28px}
+  .neir-special-registration-description{max-width:100%;font-size:17px}
   .neir-special-registration-section h2{font-size:35px}
-  .neir-special-registration-description{font-size:17px}
+  .neir-special-registration-instructions{padding:26px}
 }
 @media(max-width:767px){
   .neir-special-registration-section{
     position:relative;left:-7px;width:calc(100% + 14px);
-    padding:28px;border-radius:16px;
+    padding:32px 20px;border-radius:16px;
   }
-  .neir-special-registration-section h2{font-size:31.5px}
-  .neir-special-registration-instructions{grid-template-columns:1fr;gap:12px}
-  .neir-special-registration-step{padding:22px;border-radius:20px}
-  .neir-special-registration-step h3{font-size:20px;margin-bottom:8px}
-  .neir-special-registration-step p{font-size:14px}
+  .neir-special-registration-inner{gap:24px}
+  .neir-special-registration-section h2{font-size:32px;margin-bottom:16px}
+  .neir-special-registration-kicker{font-size:14px;margin-bottom:12px}
+  .neir-special-registration-description{font-size:16px;margin-bottom:20px}
   .neir-special-registration-action,.neir-special-registration-button{width:100%}
+  .neir-special-registration-instructions{padding:22px;border-radius:20px}
+  .neir-special-registration-list-heading{font-size:20px;margin-bottom:16px}
+  .neir-special-registration-step{gap:12px;padding:14px 0}
+  .neir-special-registration-step h4{font-size:16px}
+  .neir-special-registration-step p{font-size:14px}
+  .neir-special-registration-number{flex-basis:32px;width:32px;height:32px;font-size:14px}
 }
