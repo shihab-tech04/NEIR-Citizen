@@ -15,7 +15,8 @@ async function noOverflow(page,width){
   const m=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:window.innerWidth}));
   assert(m.scroll<=width+3,JSON.stringify(m));
 }
-let desktop=await browser.newPage({viewport:{width:1918,height:924}});
+const desktopContext=await browser.newContext({viewport:{width:1918,height:924}});
+let desktop=await desktopContext.newPage();
 try{
   await check('Home source structure and imagery',async()=>{
     await desktop.goto(BASE,{waitUntil:'networkidle'});
