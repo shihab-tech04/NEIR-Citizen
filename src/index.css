@@ -330,11 +330,6 @@ button,input,select,textarea{font:inherit}
   align-items:center;
 }
 .neir-special-registration-content{min-width:0}
-.neir-special-registration-kicker{
-  display:flex;align-items:center;gap:10px;
-  color:var(--neir-primary-900);
-  margin:0 0 16px;font-size:16px;font-weight:600;
-}
 .neir-special-registration-section h2{
   font-size:46px;line-height:1.25;font-weight:700;
   letter-spacing:-.6px;color:#000;margin:0 0 20px;
@@ -417,7 +412,6 @@ button,input,select,textarea{font:inherit}
   }
   .neir-special-registration-inner{gap:24px}
   .neir-special-registration-section h2{font-size:32px;margin-bottom:16px}
-  .neir-special-registration-kicker{font-size:14px;margin-bottom:12px}
   .neir-special-registration-description{font-size:16px;margin-bottom:20px}
   .neir-special-registration-action,.neir-special-registration-button{width:100%}
   .neir-special-registration-instructions{padding:22px;border-radius:20px}
