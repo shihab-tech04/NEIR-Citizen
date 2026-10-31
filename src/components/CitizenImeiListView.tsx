@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, FileText, Info, MoreVertical, Search, X } from 'lucide-react';
 import type { Language, UserSession } from '../types.ts';
 
@@ -35,8 +35,8 @@ const statusStyle: Record<DeviceStatus, string> = {
   'Restricted (demo)': 'bg-red-50 text-red-800',
 };
 
-type Props = { language: Language; session: UserSession };
-export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
+type Props = { language: Language; session: UserSession; registrationOnly?: boolean; registrationTrigger?: number; onRegistrationComplete?: (message: string) => void };
+export const CitizenImeiListView: React.FC<Props> = ({ language, session, registrationOnly = false, registrationTrigger = 0, onRegistrationComplete }) => {
   const [tab, setTab] = useState<'registered' | 'restricted'>('registered');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -44,6 +44,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
   const [actionRow, setActionRow] = useState<string | null>(null);
   const [detail, setDetail] = useState<Device | null>(null);
   const [wizard, setWizard] = useState(false);
+  const observedRegistrationTrigger = useRef(registrationTrigger);
   const [step, setStep] = useState<WizardStep>(1);
   const [form, setForm] = useState<FormState>(blankForm);
   const [uploads, setUploads] = useState<Uploaded>({});
@@ -66,6 +67,13 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
     setForm({ ...blankForm, imei });
     setUploads({}); setStep(1); setErrors({}); setResult(''); setActionRow(null); setWizard(true);
   };
+  // Reuse the existing wizard from the signed-in homepage without rendering the IMEI list.
+  useEffect(() => {
+    // A remount after returning from another route must not reopen an old form.
+    if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) startRegistration();
+    observedRegistrationTrigger.current = registrationTrigger;
+  }, [registrationOnly, registrationTrigger]);
+
   const next = () => {
     const e: Record<string, string> = {};
     if (step === 1) {
@@ -102,7 +110,9 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
     setErrors(e);
     if (Object.keys(e).length) return;
     setWizard(false);
-    setResult('Demo complete: Special Registration form validated locally. No documents were uploaded and no registration was submitted to BTRC.');
+    const message = 'Demo complete: Special Registration form validated locally. No documents were uploaded and no registration was submitted to BTRC.';
+    setResult(message);
+    onRegistrationComplete?.(message);
   };
   useEffect(() => {
     if (!wizard && !detail && !stolenTarget && !profileOpen) return;
@@ -123,7 +133,8 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
     </label>
   );
   return (
-    <section className="w-full space-y-5" aria-label="Citizen IMEI list">
+    <>
+    {!registrationOnly && <section className="w-full space-y-5" aria-label="Citizen IMEI list">
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white rounded-xl p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-800 font-bold" aria-hidden="true">N</div>
@@ -167,6 +178,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
         </div>
         {result && <div role="status" className="text-sm bg-sky-50 text-sky-950 p-3 rounded-lg">{result}</div>}
       </div>
+    </section>}
 
       {detail && <div className={modal} onMouseDown={e => {if (e.target === e.currentTarget) setDetail(null);}}><div role="dialog" aria-modal="true" aria-label="IMEI details" className="bg-white max-w-lg w-full rounded-xl p-6 space-y-4 shadow-xl">
         <div className="flex justify-between"><h2 className="text-lg font-semibold">IMEI Details</h2><button aria-label="Close details" onClick={() => setDetail(null)}><X /></button></div>
@@ -226,6 +238,6 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session }) => {
         <footer className="p-5 border-t flex justify-between gap-3"><div>{step > 1 && <button className="border border-slate-300 rounded-lg px-5 py-2 text-sm" onClick={() => {setStep((step - 1) as WizardStep); setErrors({});}}>Previous</button>}</div>
           {step < 3 ? <button className="bg-cyan-700 text-white rounded-lg px-5 py-2 text-sm" onClick={next}>Next</button> : <button className="bg-cyan-700 text-white rounded-lg px-5 py-2 text-sm" onClick={submit}>Submit (demo only)</button>}</footer>
       </div></div>}
-    </section>
+    </>
   );
 };
