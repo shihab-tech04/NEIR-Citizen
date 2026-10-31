@@ -11,23 +11,51 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  const [showPassword,setShowPassword]=useState(false);
  const [error,setError]=useState('');
  const [submitted,setSubmitted]=useState(false);
+ const [isAuthenticating,setIsAuthenticating]=useState(false);
  const [otp,setOtp]=useState('');
  const [regStep,setRegStep]=useState(1);
  const [newPassword,setNewPassword]=useState('');
  const [documentDigits,setDocumentDigits]=useState('');
  const [confirmPassword,setConfirmPassword]=useState('');
- useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);}},[initialView,isOpen]);
+ useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);setMobile('');setPassword('');setIsAuthenticating(false);}},[initialView,isOpen]);
  if(!isOpen)return null;
  const demoSignIn=()=>{
   const m=mobile||'01700000000';
   onLoginSuccess({isLoggedIn:true,name:'Demo NEIR Citizen',mobile:m,nid:'DEMO-NID',email:'demo@example.invalid',registeredHandsets:[]});
   onClose();
  };
- const submitLogin=(e:React.FormEvent)=>{
-   e.preventDefault();setSubmitted(true);setError('');
-   if(!/^01\d{9}$/.test(mobile)){setError('Enter a valid 11-digit mobile number for this offline prototype.');return;}
-   if(!password){setError('Password is required.');return;}
-   demoSignIn();
+ // Only the synthetic NEIR test accounts can pass this database-backed demo login.
+ const submitLogin=async(e:React.FormEvent)=>{
+   e.preventDefault();
+   if(isAuthenticating)return;
+   setSubmitted(true);setError('');
+   if(!mobile)return;
+   if(!/^01\d{9}$/.test(mobile)){setError('Enter a valid 11-digit mobile number.');return;}
+   if(!password)return;
+   setIsAuthenticating(true);
+   try{
+     const response=await fetch('https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-demo-login',{
+       method:'POST',
+       headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({mobile,password}),
+     });
+     if(!response.ok){
+       setError(response.status===401?'Incorrect mobile number or password.':'Demo sign-in is temporarily unavailable. Please try again.');
+       return;
+     }
+     const result:unknown=await response.json();
+     if(!result||typeof result!=='object'||!('mobile' in result)||!('name' in result)||
+        typeof result.mobile!=='string'||typeof result.name!=='string'){
+       setError('Demo sign-in is temporarily unavailable. Please try again.');
+       return;
+     }
+     onLoginSuccess({isLoggedIn:true,name:result.name,nameBangla:'',mobile:result.mobile,nid:'DEMO-NID',email:'',registeredHandsets:[]});
+     onClose();
+   }catch{
+     setError('Unable to reach the demo sign-in service. Please try again.');
+   }finally{
+     setIsAuthenticating(false);
+   }
  };
  const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
  const inputStyle='neir-original-dialog-input';
@@ -44,15 +72,17 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
     {view==='login' && <form onSubmit={submitLogin} noValidate>
       <hr/>
       <label htmlFor="login-mobile">Enter your mobile number <span>*</span></label>
-      <div className="neir-dialog-input-icon"><Phone size={17}/><input id="login-mobile" autoComplete="off" placeholder="Mobile Number (01XXXXXXXXX)" inputMode="numeric" maxLength={11} className={inputStyle} value={mobile} onChange={e=>{setMobile(e.target.value.replace(/\D/g,'').slice(0,11));setError('')}}/></div>
-      {submitted&&!mobile && <p className="neir-original-field-error">Mobile number is required</p>}
+      <div className="neir-dialog-input-icon"><Phone size={17}/><input id="login-mobile" autoComplete="username" placeholder="Mobile Number (01XXXXXXXXX)" inputMode="numeric" maxLength={11} className={inputStyle} value={mobile} onChange={e=>{setMobile(e.target.value.replace(/\D/g,'').slice(0,11));setError('')}} aria-invalid={submitted&&(!mobile||!/^01\d{9}$/.test(mobile))}/></div>
+      {submitted&&!mobile && <p role="alert" className="neir-original-field-error">Mobile number is required</p>}
+      {submitted&&mobile&&!/^01\d{9}$/.test(mobile)&& <p role="alert" className="neir-original-field-error">Enter a valid 11-digit mobile number.</p>}
       <label htmlFor="login-password">Enter your password</label>
-      <div className="neir-dialog-input-icon"><Lock size={17}/><input id="login-password" type={showPassword?'text':'password'} placeholder="Enter your password" autoComplete="off" className={inputStyle} value={password} onChange={e=>{setPassword(e.target.value);setError('')}}/><button type="button" aria-label={showPassword?'Hide password':'Show password'} onClick={()=>setShowPassword(!showPassword)}><Eye size={17}/></button></div>
+      <div className="neir-dialog-input-icon"><Lock size={17}/><input id="login-password" type={showPassword?'text':'password'} placeholder="Enter your password" autoComplete="current-password" className={inputStyle} value={password} onChange={e=>{setPassword(e.target.value);setError('')}} aria-invalid={submitted&&!password}/><button type="button" aria-label={showPassword?'Hide password':'Show password'} onClick={()=>setShowPassword(!showPassword)}><Eye size={17}/></button></div>
+      {submitted&&!password && <p role="alert" className="neir-original-field-error">Password is required</p>}
       <hr/>
-      <button className="neir-dialog-primary" type="submit">LOGIN <ArrowRight size={18} aria-hidden="true"/></button>
+      {error&&!(!/^01\d{9}$/.test(mobile)) && <p role="alert" className="neir-original-field-error">{error}</p>}
+      <button className="neir-dialog-primary" type="submit" disabled={isAuthenticating} aria-busy={isAuthenticating}>{isAuthenticating?'LOGGING IN…':'LOGIN'} <ArrowRight size={18} aria-hidden="true"/></button>
       <div className="neir-dialog-links"><p className="neir-dialog-switch">Did you forget your password? <button onClick={()=>{setView('forgot');setError('')}} type="button">Forgot Password</button></p>
       <p className="neir-dialog-switch">Don't have an account? <button onClick={()=>{setView('register');setError('')}} type="button">Sign Up</button></p></div>
-      {error && <p role="alert" className="neir-original-field-error">{error}</p>}
     </form>}
     {view==='register' && <form onSubmit={e=>{e.preventDefault();setError('');if(!/^01\d{9}$/.test(mobile)){setError('Enter an 11-digit demo mobile number.');return;}if(regStep===1){if(!/^\d{4}$/.test(documentDigits)){setError('Enter the last 4 digits of your document ID.');return;}setRegStep(2);return;}if(regStep===2){if(otp!=='1234'){setError('For this offline demo use 1234.');return;}setRegStep(3);return;}if(newPassword.length<4){setError('Enter a demo password of at least 4 characters.');return;}if(newPassword!==confirmPassword){setError('The confirmation password must match.');return;}demoSignIn();}}>
       <p className="neir-dialog-demo-note">Frontend-only registration demonstration. No OTP is sent.</p>
