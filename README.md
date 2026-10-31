@@ -1,6 +1,6 @@
 # NEIR Citizen — BTRC presentation prototype
 
-Frontend-only reconstruction of reference NEIR Citizen Portal screens. **Not an official service.** No government data, real authentication, IMEI lookup, OTP transmission, database, ticket submission or upload is connected.
+Frontend presentation reconstruction of reference NEIR Citizen Portal screens. **Not an official service.** No government data, real citizen authentication, IMEI lookup, OTP transmission, ticket submission or upload is connected. The two synthetic test logins now use an isolated Supabase demo table and Edge Function; this does **not** create real Supabase Auth sessions or official NEIR access.
 
 ## Source
 - React + TypeScript + Vite + Tailwind.
@@ -26,12 +26,20 @@ Open http://localhost:3000/. For an offline meeting, build in advance and test a
 2. Three-step SMS IMEI guide and three-step NID guide.
 3. User Guides → Web registration and reset steps.
 4. Contact Us → Create a DEMO ticket → Check Query Status; only works in the running session.
-5. Login → enter demonstration-only credentials → Citizen IMEI list.
+5. Login → use one of the two provisioned test mobile numbers with its test password → simulated Citizen IMEI list. Wrong numbers or passwords are rejected.
 6. Registered IMEIs → search → Details → Actions → Special Registration.
 7. Step 1 Device Information → Step 2 Verifications → Step 3 attachments → Submit (demo only).
 8. Confirm required validations, file-size/type limits, cancellation and logout.
 
-**Safety:** Do not type actual citizen identifiers or credentials; don't commit uploaded source HTML containing personal data. Every simulated submission is client-side only.
+**Safety:** Do not type actual citizen identifiers or credentials; don't commit uploaded source HTML containing personal data. All handset and support-ticket submissions remain client-side simulations. The isolated test accounts are deliberately non-production and do not grant access to real citizen records.
+
+## Isolated Supabase test login
+
+- Project: `NEIR-demo` (`wjsdylxbvdnraztktbtg`); database table `public.neir_demo_users`, with bcrypt password hashes and RLS restricting direct public reads.
+- Public Edge Function `neir-demo-login` uses a server-only service role to call `verify_neir_demo_login`; invalid credentials return HTTP 401 and a generic error. The frontend does not store passwords and no Supabase Auth token is issued.
+- Test users: `01613961501` (Test Citizen 1) and `01673961501` (Test Citizen 2), each using the supplied test password. The password is intentionally not repeated in this document.
+- Schema source: `supabase/migrations/20261031121947_create_neir_demo_login_accounts.sql`; function source: `supabase/functions/neir-demo-login/index.ts`.
+- Existing registration and password-reset forms are still frontend simulations; they do not create users in Supabase. A real citizen-auth system requires a separate design and security review.
 
 ## Published frontend-only demonstration
 
@@ -47,4 +55,4 @@ Open http://localhost:3000/. For an offline meeting, build in advance and test a
 
 **Do not call the baseline pixel-perfect or 100% reconstructed.** The image assets and mobile guides, specific registration dropdown options, login/modal parity, restricted-IMEI content and full visual comparison need further source-based review. See [docs/source-coverage.md](docs/source-coverage.md).
 
-No real BTRC backend, authentication, API, SQL, OTP, handset data or official ticket reporting is connected. The site is solely a labeled presentation prototype.
+No real BTRC citizen authentication, official registry, OTP, handset data, or official ticket reporting is connected. Only the restricted synthetic-account login is database-backed. This remains a presentation prototype.
