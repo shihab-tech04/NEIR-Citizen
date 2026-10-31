@@ -112,6 +112,7 @@ try{
     await secondDialog.locator('#login-mobile').fill('01673961501');
     await secondDialog.locator('#login-password').fill('123456');
     await secondDialog.getByRole('button',{name:/^login$/i}).click();
+    await desktop.waitForURL('**/dashboard',{timeout:12000});
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 2'}),'second test identity');
