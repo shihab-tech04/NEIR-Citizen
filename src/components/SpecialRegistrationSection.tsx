@@ -13,12 +13,12 @@ export const SpecialRegistrationSection: React.FC<Props> = ({ language, onApply,
   const bn = language === 'bn';
   const instructions = bn ? [
     { title: 'ডিভাইসের তথ্য', description: 'IMEI, ব্র্যান্ড, মডেল ও সিরিয়াল নম্বর দিন।' },
-    { title: 'যাচাইয়ের তথ্য', description: 'আবেদনের কারণ ও ভ্রমণ বা ক্রয়-সংক্রান্ত তথ্য দিন।' },
-    { title: 'প্রয়োজনীয় নথি', description: 'প্রযোজ্য ছবি বা PDF নথি সংযুক্ত করুন।' },
+    { title: 'যাচাইয়ের তথ্য', description: 'আবেদনের কারণ ও ভ্রমণ বা ক্রয়ের তথ্য দিন।' },
+    { title: 'প্রয়োজনীয় নথি', description: 'প্রয়োজনীয় ছবি বা PDF সংযুক্ত করুন।' },
   ] : [
-    { title: 'Device information', description: 'Provide your IMEI, brand, model and serial number.' },
-    { title: 'Verification details', description: 'Enter the reason for registration and relevant travel or purchase details.' },
-    { title: 'Supporting documents', description: 'Attach the applicable images or PDF documents.' },
+    { title: 'Device information', description: 'Enter IMEI, brand, model and serial number.' },
+    { title: 'Verification details', description: 'Add the reason and travel or purchase details.' },
+    { title: 'Supporting documents', description: 'Attach relevant images or PDFs.' },
   ];
 
   return (
@@ -30,8 +30,8 @@ export const SpecialRegistrationSection: React.FC<Props> = ({ language, onApply,
           </h2>
           <p className="neir-special-registration-description">
             {bn
-              ? 'বিদেশ থেকে আনা বা অতিরিক্ত যাচাই প্রয়োজন এমন মোবাইল ডিভাইস নিবন্ধনের জন্য আবেদন করুন। আবেদন করতে ডিভাইসের তথ্য, নিবন্ধনের কারণ এবং প্রয়োজনীয় নথি প্রস্তুত রাখুন।'
-              : 'Need to register a mobile device brought from abroad or one that requires additional verification? Prepare your device information, registration details and supporting documents to apply.'}
+              ? 'বিদেশ থেকে আনা বা অতিরিক্ত যাচাই প্রয়োজন এমন ডিভাইস নিবন্ধনের আবেদন করুন। ডিভাইসের তথ্য ও প্রয়োজনীয় নথি প্রস্তুত রাখুন।'
+              : 'Register a device brought from abroad or needing additional verification. Have your device details and documents ready.'}
           </p>
           <div className="neir-special-registration-action">
             <button className="neir-special-registration-button" type="button" onClick={onApply}>
