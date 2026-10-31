@@ -23,6 +23,9 @@ try{
     await expectVisible(desktop.getByRole('heading',{name:'National Equipment Identity Register (NEIR)'}),'homepage heading');
     assert.equal(await desktop.locator('.neir-source-step-card').count(),6);
     await expectVisible(desktop.locator('.neir-special-registration-section'),'public Special Registration guide');
+    await desktop.locator('.neir-special-registration-section button').click();
+    await expectVisible(desktop.getByRole('dialog',{name:'Login'}),'guest registration asks to log in');
+    await desktop.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
     const failed=await desktop.locator('.neir-logo-wrap img, .neir-source-hero-media img, .neir-source-step-card img').evaluateAll(images=>images.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src));
     assert.deepEqual(failed,[]);
     await snap(desktop,'01-home-desktop');
