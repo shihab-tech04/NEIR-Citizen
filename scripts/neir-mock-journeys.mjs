@@ -92,6 +92,7 @@ try{
     await desktop.locator('.neir-special-registration-button').click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
+    await expectVisible(dialog.getByText('Log in to apply for Special Registration'),'registration login reason is explained');
     await snap(desktop,'07-login');
     await dialog.getByRole('button',{name:/^login$/i}).click();
     await expectVisible(dialog.getByText('Mobile number is required'),'empty mobile validation');
@@ -111,6 +112,7 @@ try{
     await expectVisible(resumedWizard,'guest login resumes Special Registration');
     assert.equal(new URL(desktop.url()).pathname,'/');
     assert.equal(await resumedWizard.locator('#neir-v7-imei').inputValue(),'');
+    assert.equal(await resumedWizard.locator('#neir-v7-arrival').count(),0,'arrival must wait for Continue');
     await resumedWizard.getByRole('button',{name:'Close special registration'}).click();
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'My Profile'}).click();
@@ -230,7 +232,12 @@ try{
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(wizard.locator('#neir-v7-arrival'),'home acquisition reason reveals details');
+    assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'arrival hidden until Continue');
+    await wizard.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(wizard.locator('#neir-v7-arrival'),'Continue reveals arrival details');
+    await wizard.getByRole('button',{name:'Back'}).click();
+    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Back preserves IMEI');
+    await wizard.getByRole('button',{name:'Continue'}).click();
     await expectVisible(wizard.getByRole('button',{name:'Upload Documents'}),'document accordion from homepage');
     assert.equal(await wizard.locator('.neir-v7-upload-group').count(),4,'homepage shows PDF Air Mail checklist');
     await expectVisible(wizard.getByRole('button',{name:'View guidance for Commercial Invoice'}),'homepage document guidance');
