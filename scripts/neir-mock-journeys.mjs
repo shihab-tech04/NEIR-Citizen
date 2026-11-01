@@ -160,21 +160,24 @@ try{
     assert.equal(restoredName,'Test Citizen 2');
     await snap(desktop,'08-dashboard');
   });
-  await check('My Profile HTML v7 table, restricted actions, details and confirmation',async()=>{
-    const table=desktop.locator('.neir-profile-device-table');
-    assert.equal(await table.locator('tbody tr').count(),10,'exact 10-row reference table');
-    assert.equal((await table.locator('tbody tr').nth(3).locator('td').nth(1).innerText()).trim(),'12004089900331');
-    assert.equal((await table.locator('tbody tr').nth(3).locator('td').nth(2).innerText()).trim(),'Registration Pending');
-    await snap(desktop,'09-my-profile-reference');
-    await table.getByRole('button',{name:'Details for IMEI 49115420325851'}).click();
-    await expectVisible(desktop.getByRole('dialog',{name:'IMEI details'}),'details retained');
+  await check('My Profile: search-first details and existing local actions',async()=>{
+    await expectVisible(desktop.getByRole('img',{name:'Profile photo placeholder'}),'profile image placeholder');
+    await expectVisible(desktop.locator('.neir-profile-identity h1'),'profile account name');
+    await expectVisible(desktop.getByRole('heading',{name:'Search your device info'}),'search title');
+    await expectVisible(desktop.getByRole('heading',{name:'Your device information will appear here'}),'empty by default');
+    const form=desktop.getByRole('search');
+    await snap(desktop,'09-my-profile-empty');
+    await form.getByLabel('Device IMEI number').fill('49115420325851');
+    await form.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.locator('.neir-profile-status').getByText('Registered'),'matching reference status');
+    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).count(),0,'registered records do not register again');
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'View details'}).click();
+    await expectVisible(desktop.getByRole('dialog',{name:'IMEI details'}),'device detail modal retained');
     await desktop.getByRole('button',{name:'Close details'}).click();
-    await table.getByRole('button',{name:'Actions for IMEI 49115420325851'}).click();
-    assert.equal(await table.getByRole('menuitem',{name:'Special Registration'}).count(),0,'only pending row may register');
-    await table.getByRole('menuitem',{name:'Mark as Stolen'}).click();
-    await expectVisible(desktop.getByRole('alertdialog',{name:'Mark IMEI as stolen'}),'confirmation retained');
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Mark as Stolen'}).click();
+    await expectVisible(desktop.getByRole('alertdialog',{name:'Mark IMEI as stolen'}),'local confirmation retained');
     await desktop.getByRole('button',{name:'Confirm demo action'}).click();
-    await expectVisible(table.getByText('Restricted (demo)'),'local restricted status retained');
+    await expectVisible(desktop.locator('.neir-profile-status').getByText('Restricted (demo)'),'local status changes after confirmation');
     await snap(desktop,'10-my-profile-restricted-local');
   });
   await check('Signed-in homepage Special Registration guidance reuses the citizen wizard',async()=>{
