@@ -337,7 +337,7 @@ try{
     await dlg.getByRole('button',{name:'View demo of Gift Deed (Donor)'}).click();
     const giftSample=desktop.getByRole('dialog',{name:'Demo · Gift Deed (Donor)'});
     await expectVisible(giftSample.getByText('Example gift declaration'),'distinct gift deed sample');
-    await expectVisible(giftSample.getByText('Donor signature:',exact:false),'sample gift signature fields');
+    await expectVisible(giftSample.getByText('Donor signature:',{exact:false}),'sample gift signature fields');
     await giftSample.getByRole('button',{name:'Close document demo'}).click();
     await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
     await expectVisible(dlg.getByLabel('Passport number'),'passport input for foreign tour');
