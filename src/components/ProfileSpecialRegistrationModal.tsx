@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, FileText } from 'lucide-react';
+import { X, FileText, Plane, Gift, Package, Check } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
-type Stage = 1 | 2 | 3;
 type DocumentDefinition = { id: string; label: string; required: boolean };
 
 const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
@@ -35,7 +34,6 @@ const localDate = () => {
 
 type Props = { initialImei?: string; onClose: () => void; onComplete?: (message: string) => void };
 export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', onClose, onComplete }) => {
-  const [stage, setStage] = useState<Stage>(1);
   const [imei, setImei] = useState(initialImei);
   const [bmet, setBmet] = useState<'' | 'yes' | 'no'>('');
   const [bmetNumber, setBmetNumber] = useState('');
@@ -57,7 +55,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const oldOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    firstInputRef.current?.focus();
+    rootRef.current?.querySelector<HTMLInputElement>('input[name="application-reason"]')?.focus();
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { event.preventDefault(); closeRef.current(); return; }
       if (event.key !== 'Tab') return;
@@ -76,13 +74,14 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     ...(reason ? documentSets[reason] : []),
     ...(bmet === 'yes' ? [{ id: 'bmetCard', label: 'BMET card document', required: true }] : []),
   ];
-  const validStep1 = /^\d+$/.test(imei.trim()) && !!bmet && (bmet !== 'yes' || !!bmetNumber.trim());
+  const validImei = /^\d{14,15}$/.test(imei.trim());
+  const validDevice = validImei && !!bmet && (bmet !== 'yes' || !!bmetNumber.trim());
   const validTax = purchase === 'without-tax' || (purchase === 'with-tax' && tax.trim() !== '' && Number.isFinite(Number(tax)) && Number(tax) >= 0);
-  const validStep2 = validStep1 && !!reason && !!arrival && arrival <= localDate() &&
+  const showVerification = !!reason && validDevice;
+  const showDocuments = showVerification && !!arrival && arrival <= localDate() &&
     (reason !== 'foreign-tour' || !!passport.trim()) && !!purchase && validTax;
-  const validStep3 = validStep2 && docs.every(doc => !doc.required || !!files[doc.id]) &&
+  const enabled = showDocuments && docs.every(doc => !doc.required || !!files[doc.id]) &&
     !docs.some(doc => fileErrors[doc.id]);
-  const enabled = stage === 1 ? validStep1 : stage === 2 ? validStep2 : validStep3;
   const setFile = (id: string, file?: File) => {
     setFeedback(''); setSubmitted(false);
     if (!file) {
@@ -98,18 +97,17 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     setFiles(previous => ({ ...previous, [id]: file }));
     setFileErrors(previous => { const copy = { ...previous }; delete copy[id]; return copy; });
   };
-  const next = (event: React.FormEvent) => {
+  const chooseReason = (value: Exclude<Reason, ''>) => {
+    if (reason === value) return;
+    setReason(value); setArrival(''); setPassport(''); setPurchase(''); setTax('');
+    setFiles({}); setFileErrors({}); setFeedback(''); setSubmitted(false);
+    requestAnimationFrame(() => firstInputRef.current?.focus());
+  };
+  const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!enabled) return;
-    setFeedback('');
-    if (stage < 3) {
-      setStage((stage + 1) as Stage);
-      // Only modal content scrolls; header and actions remain fixed.
-      requestAnimationFrame(() => rootRef.current?.querySelector('.neir-v7-body')?.scrollTo({ top: 0 }));
-    } else {
-      const message = 'Prototype only — registration has not been submitted to NEIR.';
-      setFeedback(message); setSubmitted(true); onComplete?.(message);
-    }
+    if (!enabled || submitted) return;
+    const message = 'Prototype only — registration has not been submitted to NEIR.';
+    setFeedback(message); setSubmitted(true); onComplete?.(message);
   };
   const radio = (name: string, value: string, selected: boolean, onSelect: () => void, label: string) => (
     <label className={'neir-v7-radio-option' + (selected ? ' is-selected' : '')}>
@@ -117,30 +115,49 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
       <span>{label}</span>
     </label>
   );
+  const choices = [
+    { value: 'airmail' as const, label: 'Bought/Brought from Air Mail', description: 'Received through air mail or courier.', Icon: Package },
+    { value: 'gift' as const, label: 'Gift Deed from his relative/ Friends', description: 'Received as a gift from a relative or friend.', Icon: Gift },
+    { value: 'foreign-tour' as const, label: 'Purchased handset during his foreign tour', description: 'Bought during a trip abroad.', Icon: Plane },
+  ];
   return <div className="neir-v7-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) closeRef.current(); }}>
     <section className="neir-v7-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef}>
       <header className="neir-v7-header">
         <h2 id="neir-v7-title">Special Registration</h2>
         <button type="button" className="neir-v7-close" aria-label="Close special registration" onClick={onClose}><X size={23} /></button>
       </header>
-      <div className="neir-v7-progress" role="progressbar" aria-label="Registration progress" aria-valuemin={0} aria-valuemax={3} aria-valuenow={stage}>
-        {[1, 2, 3].map(n => <span key={n} className={n <= stage ? 'is-active' : ''}/>) }
-      </div>
-      <form noValidate className="neir-v7-form" onSubmit={next}>
+      <form noValidate className="neir-v7-form" onSubmit={submit}>
         <div className="neir-v7-body">
-          <section className="neir-v7-section" aria-labelledby="neir-v7-device-heading">
-            <div className="neir-v7-section-header"><span>01</span><h3 id="neir-v7-device-heading">Device Information</h3></div>
+          <fieldset className="neir-v7-reason-fieldset">
+            <legend>Application Reason <b aria-hidden="true">*</b></legend>
+            <div className="neir-v7-reason-list">
+              {choices.map(({ value, label, description, Icon }) => <label key={value}
+                className={'neir-v7-reason-card' + (reason === value ? ' is-selected' : '')}>
+                <input type="radio" name="application-reason" aria-label={label} value={value}
+                  checked={reason === value} onChange={() => chooseReason(value)} />
+                <span className="neir-v7-reason-icon" aria-hidden="true"><Icon size={23} strokeWidth={1.8} /></span>
+                <span className="neir-v7-reason-copy"><strong>{label}</strong><span>{description}</span></span>
+                <span className="neir-v7-choice-circle" aria-hidden="true">{reason === value && <Check size={13} strokeWidth={2.5} />}</span>
+              </label>)}
+            </div>
+          </fieldset>
+          {reason && <>
+            <div className="neir-v7-divider" aria-hidden="true" />
+            <section className="neir-v7-section" aria-labelledby="neir-v7-device-heading">
+            <h3 className="neir-v7-section-heading" id="neir-v7-device-heading">Device Information</h3>
             <div className="neir-v7-grid">
               <label className="neir-v7-field neir-v7-span" htmlFor="neir-v7-imei">
                 <span>IMEI Number <b aria-hidden="true">*</b></span>
-                <input id="neir-v7-imei" ref={firstInputRef} value={imei} onChange={event => { setImei(event.target.value.replace(/\D/g, '')); setSubmitted(false); }}
-                  inputMode="numeric" autoComplete="off" placeholder="Enter IMEI number" required aria-invalid={!!imei && !/^\d+$/.test(imei)} />
+                <input id="neir-v7-imei" ref={firstInputRef} value={imei} maxLength={15}
+                  onChange={event => { setImei(event.target.value.replace(/\D/g, '').slice(0,15)); setSubmitted(false); }}
+                  inputMode="numeric" autoComplete="off" placeholder="Enter IMEI number" required aria-invalid={!!imei && !validImei} />
+                {!!imei && !validImei && <small className="neir-v7-error" role="alert">Enter a 14- or 15-digit IMEI number.</small>}
               </label>
               <fieldset className="neir-v7-field neir-v7-span">
                 <legend>Do you have a BMET card? <b aria-hidden="true">*</b></legend>
                 <div className="neir-v7-radio-group" aria-label="BMET card availability">
                   {radio('bmet','yes',bmet === 'yes',() => { setBmet('yes'); setSubmitted(false); },'Yes')}
-                  {radio('bmet','no',bmet === 'no',() => { setBmet('no'); setBmetNumber(''); setSubmitted(false); },'No')}
+                  {radio('bmet','no',bmet === 'no',() => { setBmet('no'); setBmetNumber(''); setFiles(previous => { const copy = { ...previous }; delete copy.bmetCard; return copy; }); setSubmitted(false); },'No')}
                 </div>
               </fieldset>
               {bmet === 'yes' && <label className="neir-v7-field neir-v7-span" htmlFor="neir-v7-bmet">
@@ -149,19 +166,11 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               </label>}
             </div>
           </section>
-          {stage >= 2 && <>
+          </>}
+          {showVerification && <>
             <div className="neir-v7-divider" aria-hidden="true" />
             <section className="neir-v7-section" aria-labelledby="neir-v7-verification-heading">
-              <div className="neir-v7-section-header"><span>02</span><h3 id="neir-v7-verification-heading">Verifications</h3></div>
-              <label className="neir-v7-field" htmlFor="neir-v7-reason">
-                <span>Application Reason <b aria-hidden="true">*</b></span>
-                <select id="neir-v7-reason" value={reason} onChange={event => { setReason(event.target.value as Reason); setSubmitted(false); }} required>
-                  <option value="">Select application reason</option>
-                  <option value="airmail">Bought/Brought from Air Mail</option>
-                  <option value="gift">Gift Deed from his relative/ Friends</option>
-                  <option value="foreign-tour">Purchased handset during his foreign tour</option>
-                </select>
-              </label>
+              <h3 className="neir-v7-section-heading" id="neir-v7-verification-heading">Verification Details</h3>
               <div className="neir-v7-grid neir-v7-verify-grid">
                 <label className={'neir-v7-field' + (reason !== 'foreign-tour' ? ' neir-v7-span' : '')} htmlFor="neir-v7-arrival">
                   <span>Select arrival date <b aria-hidden="true">*</b></span>
@@ -187,10 +196,10 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               </div>
             </section>
           </>}
-          {stage >= 3 && <>
+          {showDocuments && <>
             <div className="neir-v7-divider" aria-hidden="true" />
             <section className="neir-v7-section" aria-labelledby="neir-v7-docs-heading">
-              <div className="neir-v7-section-header"><span>03</span><h3 id="neir-v7-docs-heading">Attachments &amp; Finalize</h3></div>
+              <h3 className="neir-v7-section-heading" id="neir-v7-docs-heading">Required Documents</h3>
               <p className="neir-v7-doc-intro">Upload the documents required for your application reason.</p>
               <p className="neir-v7-doc-limits">Each file must be 1 MB or smaller. Supported formats: PNG, JPG, PDF.</p>
               <div className="neir-v7-document-grid">
@@ -211,7 +220,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
           <button className="neir-v7-cancel" type="button" onClick={onClose}>Cancel</button>
-          <button className="neir-v7-next" disabled={!enabled || submitted} type="submit">{stage === 3 ? 'Submit' : 'Next →'}</button>
+          <button className="neir-v7-next" disabled={!enabled || submitted} type="submit">Submit</button>
         </footer>
       </form>
     </section>
