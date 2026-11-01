@@ -1,26 +1,12 @@
 /* Illustration-only document samples shown from the shared NEIR Special Registration dialog.
    All styles are locally scoped; never replace global typography or modal tokens. */
-.neir-v7-dialog{position:relative}
-.neir-v7-demo-overlay{
-  position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-  padding:18px;background:rgba(15,24,35,.48);box-sizing:border-box;
+.neir-v7-sample-view{display:flex;flex:0 1 auto;flex-direction:column;min-height:0;overflow:hidden}
+.neir-v7-sample-view .neir-v7-demo-content{
+  flex:0 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;padding:20px 24px 12px;scrollbar-width:thin
 }
-.neir-v7-demo-dialog{
-  display:flex;flex-direction:column;min-width:0;width:min(640px,100%);max-height:100%;
-  overflow:hidden;border:1px solid #d6e0e4;border-radius:16px;background:#fff;
-  box-shadow:0 12px 36px rgba(13,29,41,.22);font-family:inherit;color:#202c3c;
-}
-.neir-v7-demo-header{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;
-  border-bottom:1px solid #e3dbd8;flex:none;
-}
-.neir-v7-demo-header h3{margin:0;font-family:inherit;font-size:20px;line-height:1.4;font-weight:500;color:#202c3c}
-.neir-v7-demo-close{
-  display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid #d6e0e4;
-  border-radius:9px;background:#fff;color:#202c3c;cursor:pointer;
-}
-.neir-v7-demo-close:hover{border-color:#00acc1;background:#edf9fb}
-.neir-v7-demo-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 20px 22px}
+.neir-v7-sample-footer{justify-content:flex-end}
+.neir-v7-sample-footer .neir-v7-cancel{display:inline-flex;align-items:center;justify-content:center;gap:10px}
 .neir-demo-explanation{margin:0 0 16px;color:#65768b;font-size:14px;line-height:1.5}
 .neir-demo-paper{
   position:relative;overflow:hidden;max-width:100%;padding:20px 22px;background:#fff;border:1px solid #c8d6e0;
@@ -72,11 +58,7 @@
   border:1px solid #cce8ec;color:#31505d;font-size:14px;line-height:1.55}
 .neir-demo-upload-tip strong{font-weight:600}
 @media(max-width:700px){
-  .neir-v7-demo-overlay{padding:8px;align-items:center}
-  .neir-v7-demo-dialog{border-radius:12px;max-height:100%}
-  .neir-v7-demo-header{padding:12px 14px}
-  .neir-v7-demo-header h3{font-size:17px}
-  .neir-v7-demo-content{padding:12px}
+  .neir-v7-sample-view .neir-v7-demo-content{padding:16px 16px 12px}
   .neir-demo-paper{padding:14px}
   .neir-demo-paper-fields{gap:10px}
   .neir-demo-paper-fields dd{font-size:13px}
@@ -85,5 +67,5 @@
 @media(max-width:359px){
   .neir-demo-paper-fields{grid-template-columns:1fr}
   .neir-demo-paper-header span{font-size:10px}
-  .neir-v7-demo-close{width:32px;height:32px}
+
 }
