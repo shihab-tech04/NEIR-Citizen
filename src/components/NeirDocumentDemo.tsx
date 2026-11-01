@@ -122,9 +122,9 @@ export const NeirDocumentDemo: React.FC<{ documentId: string; documentName: stri
 
   return (
     <div className="neir-demo-document-area">
-      <p className="neir-demo-explanation">Illustrative sample only. This is not an official document, a valid template, or an acceptable upload.</p>
-      <article className={'neir-demo-paper neir-demo-paper--' + sample.category} aria-label={'Demo copy of ' + documentName}>
-        <div className="neir-demo-watermark" aria-hidden="true">DEMO ONLY</div>
+      <p className="neir-demo-explanation">Document format example.</p>
+      <article className={'neir-demo-paper neir-demo-paper--' + sample.category} aria-label={'Example of ' + documentName}>
+        <div className="neir-demo-watermark" aria-hidden="true">SAMPLE</div>
         <header className="neir-demo-paper-header">
           <div className="neir-demo-paper-icon"><FileText size={22} strokeWidth={1.6} aria-hidden="true" /></div>
           <div>
@@ -148,7 +148,7 @@ export const NeirDocumentDemo: React.FC<{ documentId: string; documentName: stri
           <tbody>{sample.rows.map(([number, item, detail]) => <tr key={number}><td>{number}</td><td>{item}</td><td>{detail}</td></tr>)}</tbody>
         </table></div>}
         {sample.category === 'gift' && <div className="neir-demo-signatures"><span>Donor signature: __________</span><span>Recipient signature: __________</span></div>}
-        <footer className="neir-demo-paper-footer"><ShieldAlert size={16} aria-hidden="true" /> SAMPLE ONLY · NOT VALID FOR IDENTIFICATION OR SUBMISSION</footer>
+        <footer className="neir-demo-paper-footer"><ShieldAlert size={16} aria-hidden="true" /> SAMPLE DOCUMENT</footer>
       </article>
       <p className="neir-demo-upload-tip"><strong>What to upload:</strong> {sample.note}</p>
     </div>
