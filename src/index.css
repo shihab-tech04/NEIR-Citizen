@@ -435,3 +435,17 @@ button,input,select,textarea{font:inherit}
   outline-offset:2px;
   border-radius:6px;
 }
+
+/* Contextual Special Registration sign-in: retain the shared NEIR login shell. */
+.neir-auth-for-registration .neir-original-dialog{animation:neir-auth-enter .22s cubic-bezier(.2,.7,.3,1) both}
+.neir-login-registration-message{display:flex;align-items:flex-start;gap:12px;margin:0 24px 16px;padding:14px 16px;border:1px solid #cbdfe3;border-radius:10px;background:#f4fafb;color:#284552}
+.neir-login-registration-message svg{flex:none;margin-top:2px;color:#087b8b}
+.neir-login-registration-message strong{display:block;margin:0 0 5px;font-size:15px;line-height:1.5;font-weight:600}
+.neir-login-registration-message p{margin:0;font-size:14px;line-height:1.55}
+.neir-login-transition-status{margin:0 24px 12px;color:#087b8b;font-size:14px}
+.neir-auth-handoff-exit{pointer-events:none}
+.neir-auth-handoff-exit .neir-original-dialog{animation:neir-auth-leave .22s ease-in both}
+@keyframes neir-auth-enter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes neir-auth-leave{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-10px) scale(.985)}}
+@media(max-width:359px){.neir-login-registration-message{margin:0 16px 12px;padding:12px;gap:9px}}
+@media(prefers-reduced-motion:reduce){.neir-auth-for-registration .neir-original-dialog,.neir-auth-handoff-exit .neir-original-dialog{animation:none!important}}

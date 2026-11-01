@@ -77,6 +77,7 @@ export default function App() {
   const [loginInitialView, setLoginInitialView] = useState<'login' | 'register'>('login');
   // Keep a one-time intent when a guest asks to register a device before signing in.
   const [loginForSpecialRegistration, setLoginForSpecialRegistration] = useState(false);
+  const [registrationHandoffPending, setRegistrationHandoffPending] = useState(false);
 
   // Sync explicit logout (and new sign-in) across other tabs of the same browser.
   useEffect(() => {
@@ -90,6 +91,7 @@ export default function App() {
         setSpecialRegistrationMessage('');
         setSpecialRegistrationTrigger(null);
         setLoginForSpecialRegistration(false);
+        setRegistrationHandoffPending(false);
       }
     };
     window.addEventListener('storage', syncSession);
@@ -108,8 +110,21 @@ export default function App() {
   const [specialRegistrationTrigger, setSpecialRegistrationTrigger] = useState<number | null>(null);
   const [specialRegistrationMessage, setSpecialRegistrationMessage] = useState('');
 
+  // Keep the login overlay mounted for its exit animation before opening the form.
+  useEffect(() => {
+    if (!registrationHandoffPending) return;
+    const timer = window.setTimeout(() => {
+      setIsLoginOpen(false);
+      setLoginForSpecialRegistration(false);
+      setSpecialRegistrationTrigger(1);
+      setRegistrationHandoffPending(false);
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [registrationHandoffPending]);
+
   const requestSpecialRegistration = () => {
     setSpecialRegistrationMessage('');
+    setRegistrationHandoffPending(false);
     if (session.isLoggedIn) {
       setSpecialRegistrationTrigger(1);
       return;
@@ -152,8 +167,8 @@ export default function App() {
         language={language}
         onLanguageChange={setLanguage}
         session={session}
-        onOpenLogin={() => { setLoginForSpecialRegistration(false); setLoginInitialView('login'); setIsLoginOpen(true); }}
-        onOpenRegister={() => { setLoginForSpecialRegistration(false); setLoginInitialView('register'); setIsLoginOpen(true); }}
+        onOpenLogin={() => { setLoginForSpecialRegistration(false); setRegistrationHandoffPending(false); setLoginInitialView('login'); setIsLoginOpen(true); }}
+        onOpenRegister={() => { setLoginForSpecialRegistration(false); setRegistrationHandoffPending(false); setLoginInitialView('register'); setIsLoginOpen(true); }}
         onOpenDashboard={() => setCurrentRoute('dashboard')}
         onLogout={() => {
           forgetCitizenSession();
@@ -161,6 +176,7 @@ export default function App() {
           setSpecialRegistrationMessage('');
           setSpecialRegistrationTrigger(null);
           setLoginForSpecialRegistration(false);
+          setRegistrationHandoffPending(false);
           setIsLoginOpen(false);
           setCurrentRoute('home');
         }}
@@ -264,7 +280,9 @@ export default function App() {
       <LoginModal
         initialView={loginInitialView}
         isOpen={isLoginOpen}
-        onClose={() => { setIsLoginOpen(false); setLoginForSpecialRegistration(false); }}
+        registrationIntent={loginForSpecialRegistration}
+        handoffPending={registrationHandoffPending}
+        onClose={() => { if (registrationHandoffPending) return; setIsLoginOpen(false); setLoginForSpecialRegistration(false); }}
         language={language}
         onLoginSuccess={(newSessionData) => {
           const signedInCitizen: UserSession = {
@@ -276,8 +294,7 @@ export default function App() {
           setSession(signedInCitizen);
           if (loginForSpecialRegistration) {
             setCurrentRoute('home');
-            setSpecialRegistrationTrigger(1);
-            setLoginForSpecialRegistration(false);
+            setRegistrationHandoffPending(true);
           } else {
             setCurrentRoute('dashboard');
           }
