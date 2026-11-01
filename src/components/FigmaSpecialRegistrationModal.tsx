@@ -263,7 +263,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
 
           {stage === 4 && <div className="neir-sr-review">
             <div className="neir-sr-review-panel">
-              <div className="neir-sr-review-heading">Device Status <span>Not verified</span></div>
+              <div className="neir-sr-review-heading">Device Status <span>Pending verification</span></div>
               <p className="neir-sr-review-note"><Info size={20} /> This prototype cannot retrieve BTRC status or tax-free registration eligibility.</p>
             </div>
             <div className="neir-sr-review-grid">
