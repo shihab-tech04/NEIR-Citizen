@@ -1,0 +1,39 @@
+name: NEIR Citizen UI library pre-release recovery
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  independent-restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Back up full previous production Git history and test independent restore
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags
+          BEFORE="f744dd70450f5dcd3072a9ae3982b4e2b63f4891"
+          test "$(git rev-parse origin/main)" = "$BEFORE"
+          mkdir -p neir-ui-recovery
+          git bundle create neir-ui-recovery/pre-release-f744dd70.bundle --all
+          git bundle verify neir-ui-recovery/pre-release-f744dd70.bundle
+          git clone neir-ui-recovery/pre-release-f744dd70.bundle /tmp/neir-ui-restore
+          git -C /tmp/neir-ui-restore cat-file -e "$BEFORE^{commit}"
+          for path in src/App.tsx src/components/LoginModal.tsx src/components/NeirSharedModal.css src/components/CitizenImeiListView.tsx src/index.css; do
+            git show "$BEFORE:$path" > /tmp/neir-source
+            git -C /tmp/neir-ui-restore show "$BEFORE:$path" > /tmp/neir-restored
+            cmp /tmp/neir-source /tmp/neir-restored
+          done
+          git archive --format=tar.gz -o neir-ui-recovery/source-f744dd70.tar.gz "$BEFORE"
+          (cd neir-ui-recovery && sha256sum *.bundle *.tar.gz > SHA256SUMS)
+          printf 'source=f744dd70\nrestore=PASS\nchecksum=PASS\n' > neir-ui-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-Citizen-unified-ui-pre-release-f744dd70
+          path: neir-ui-recovery/
+          retention-days: 7
