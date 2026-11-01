@@ -136,3 +136,10 @@
  .neir-shared-button{padding:0 10px;font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){.neir-shared-dialog *{scroll-behavior:auto!important}}
+
+/* Explanation modal stays inside the approved NEIR shared dialog. */
+.neir-registration-intro{display:grid;gap:12px}
+.neir-registration-intro h3{font-size:18px;line-height:1.4;font-weight:600;margin:4px 0 0;color:#202c3c}
+.neir-registration-intro p{font-size:16px;line-height:1.65;margin:0;color:#344054}
+.neir-registration-intro .neir-registration-intro-note{padding:14px 16px;background:#f5fcfd;border:1px solid #cce8ec;border-radius:10px;color:#31505d}
+@media(max-width:767px){.neir-registration-intro h3{font-size:16px}.neir-registration-intro p{font-size:14px}}
