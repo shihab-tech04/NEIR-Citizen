@@ -52,6 +52,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const rootRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const arrivalRef = useRef<HTMLInputElement>(null);
+  const arrivalSectionRef = useRef<HTMLElement>(null);
   const imeiRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -94,9 +95,20 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   }, []);
 
   useEffect(() => {
-    bodyRef.current?.scrollTo({ top: 0 });
-    if (stage === 2) arrivalRef.current?.focus();
-    else imeiRef.current?.focus();
+    const body = bodyRef.current;
+    if (stage === 2) {
+      // Reveal details under the existing fields and scroll only the modal body.
+      const arrivalSection = arrivalSectionRef.current;
+      arrivalRef.current?.focus({ preventScroll: true });
+      if (body && arrivalSection) {
+        const top = body.scrollTop + arrivalSection.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        body.scrollTo({ top: Math.max(0, top), behavior: reducedMotion ? 'instant' : 'smooth' });
+      }
+    } else {
+      body?.scrollTo({ top: 0, behavior: 'instant' });
+      imeiRef.current?.focus({ preventScroll: true });
+    }
   }, [stage]);
 
   const validImei = /^\d{14,15}$/.test(imei.trim());
@@ -191,7 +203,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
       </header>
       <form noValidate className="neir-v7-form" onSubmit={submit} aria-hidden={!!demoDoc}>
         <div className="neir-v7-body" ref={bodyRef}>
-          {stage === 1 && <div className="neir-v7-stage" key="device">
+          <div className="neir-v7-stage" key="device">
           <section className="neir-v7-section neir-v7-imei-section" aria-labelledby="neir-v7-imei-heading">
             <h3 className="neir-v7-section-heading" id="neir-v7-imei-heading">Enter the IMEI number of the device you want to register</h3>
             <label className="neir-v7-field" htmlFor="neir-v7-imei">
@@ -218,10 +230,10 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               </div>
             </fieldset>
           </>}
-          </div>}
+          </div>
           {showDetails && <div className="neir-v7-stage" key="arrival">
             <div className="neir-v7-divider" aria-hidden="true" />
-            <section className="neir-v7-section" aria-labelledby="neir-v7-verification-heading">
+            <section className="neir-v7-section" ref={arrivalSectionRef} aria-labelledby="neir-v7-verification-heading">
               <h3 className="neir-v7-section-heading" id="neir-v7-verification-heading">Arrival information</h3>
               <div className="neir-v7-grid">
                 <label className={'neir-v7-field' + (reason !== 'foreign-tour' ? ' neir-v7-span' : '')} htmlFor="neir-v7-arrival">
