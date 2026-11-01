@@ -1,0 +1,39 @@
+name: NEIR deployed custom dropdown version fingerprint
+on:
+  push:
+    branches: ['fix/neir-special-registration-custom-dropdown-mobile-20261101']
+    paths: ['.github/workflows/neir-dropdown-production-proof.yml']
+permissions:
+  contents: read
+jobs:
+  fingerprint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify actual production HTML, JS and CSS include new dropdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re, hashlib
+          from urllib.request import urlopen
+          origin="https://shihab-tech04.github.io"
+          url=origin+"/NEIR-Citizen/"
+          html=urlopen(url,timeout=30).read().decode("utf-8")
+          scripts=re.findall(r'<script[^>]+src="([^"]+\.js)"',html)
+          styles=re.findall(r'<link[^>]+href="([^"]+\.css)"',html)
+          assert scripts and styles, "Public Pages does not serve compiled Vite HTML"
+          js_url=origin+scripts[0]
+          css_url=origin+styles[0]
+          js=urlopen(js_url,timeout=30).read()
+          css=urlopen(css_url,timeout=30).read()
+          assert b"neir-sr-dropdown-popup" in js, "Custom dropdown is absent from live JS"
+          assert b"neir-sr-dropdown-option" in js, "Custom option component is absent from live JS"
+          assert b"neir-sr-dropdown-popup" in css, "Custom dropdown styling is absent from live CSS"
+          assert b"neir-sr-stepper" in css, "Registration stepper styling is missing"
+          print("PASS: production URL",url)
+          print("PASS: deployed custom dropdown and stepper in public JS/CSS")
+          print("LIVE JS:",js_url)
+          print("LIVE CSS:",css_url)
+          print("LIVE JS SHA256:",hashlib.sha256(js).hexdigest())
+          print("LIVE CSS SHA256:",hashlib.sha256(css).hexdigest())
+          PY
