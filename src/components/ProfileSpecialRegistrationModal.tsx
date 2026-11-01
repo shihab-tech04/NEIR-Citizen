@@ -37,6 +37,7 @@ const localDate = () => {
 type Props = { initialImei?: string; onClose: () => void; onComplete?: (message: string) => void };
 export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', onClose, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
+  const [stage, setStage] = useState<1 | 2>(1);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
   const [passport, setPassport] = useState('');
@@ -48,6 +49,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const arrivalRef = useRef<HTMLInputElement>(null);
   const imeiRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -80,9 +83,16 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     };
   }, []);
 
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: 0 });
+    if (stage === 2) arrivalRef.current?.focus();
+    else imeiRef.current?.focus();
+  }, [stage]);
+
   const validImei = /^\d{14,15}$/.test(imei.trim());
   const showReason = true;
-  const showDetails = validImei && !!reason;
+  const canContinue = validImei && !!reason;
+  const showDetails = stage === 2 && canContinue;
   const reasonDocs: DocumentDefinition[] = reason ? documentSets[reason] : [];
   const validDocs = reasonDocs.every(doc => !fileErrors[doc.id] && (!doc.required || !!files[doc.id]));
   const enabled = showDetails && !!arrival && arrival <= localDate() &&
@@ -111,6 +121,10 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   };
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (stage === 1) {
+      if (canContinue) { setStage(2); setHelpDoc(null); setFeedback(''); }
+      return;
+    }
     if (!enabled || submitted) return;
     const message = 'Prototype only — registration has not been submitted to NEIR.';
     setFeedback(message); setSubmitted(true); onComplete?.(message);
@@ -172,7 +186,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         <button type="button" className="neir-v7-close" aria-label="Close special registration" onClick={onClose}><X size={24} /></button>
       </header>
       <form noValidate className="neir-v7-form" onSubmit={submit}>
-        <div className="neir-v7-body">
+        <div className="neir-v7-body" ref={bodyRef}>
+          {stage === 1 && <div className="neir-v7-stage" key="device">
           <section className="neir-v7-section neir-v7-imei-section" aria-labelledby="neir-v7-imei-heading">
             <h3 className="neir-v7-section-heading" id="neir-v7-imei-heading">Enter the IMEI number of the device you want to register</h3>
             <label className="neir-v7-field" htmlFor="neir-v7-imei">
@@ -199,14 +214,15 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               </div>
             </fieldset>
           </>}
-          {showDetails && <>
+          </div>}
+          {showDetails && <div className="neir-v7-stage" key="arrival">
             <div className="neir-v7-divider" aria-hidden="true" />
             <section className="neir-v7-section" aria-labelledby="neir-v7-verification-heading">
               <h3 className="neir-v7-section-heading" id="neir-v7-verification-heading">Arrival information</h3>
               <div className="neir-v7-grid">
                 <label className={'neir-v7-field' + (reason !== 'foreign-tour' ? ' neir-v7-span' : '')} htmlFor="neir-v7-arrival">
                   <span>Select arrival date <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-arrival" type="date" max={localDate()} value={arrival}
+                  <input id="neir-v7-arrival" ref={arrivalRef} type="date" max={localDate()} value={arrival}
                     onChange={event => { setArrival(event.target.value); setSubmitted(false); }}
                     required aria-invalid={!!arrival && arrival > localDate()} />
                   {arrival && arrival > localDate() && <small className="neir-v7-error" role="alert">Future dates are not allowed.</small>}
@@ -231,12 +247,12 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
                 {reasonDocs.map(uploadField)}
               </div>}
             </section>
-          </>}
+          </div>}
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <button className="neir-v7-cancel" type="button" onClick={onClose}>Cancel</button>
-          <button className="neir-v7-next" disabled={!enabled || submitted} type="submit">Submit</button>
+          <button className="neir-v7-cancel" type="button" onClick={stage === 1 ? onClose : () => { setStage(1); setHelpDoc(null); setFeedback(''); }}>{stage === 1 ? 'Cancel' : 'Back'}</button>
+          <button className="neir-v7-next" disabled={stage === 1 ? !canContinue : !enabled || submitted} type="submit">{stage === 1 ? 'Continue' : 'Submit'}</button>
         </footer>
       </form>
     </section>
