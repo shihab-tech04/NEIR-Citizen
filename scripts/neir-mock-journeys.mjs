@@ -235,6 +235,9 @@ try{
     assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'arrival hidden until Continue');
     await wizard.getByRole('button',{name:'Continue'}).click();
     await expectVisible(wizard.locator('#neir-v7-arrival'),'Continue reveals arrival details');
+    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Continue retains IMEI in the same form');
+    assert(await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).isChecked(),'Continue keeps acquisition choice mounted');
+    assert.equal(await wizard.locator('.neir-v7-imei-section').count(),1,'first section remains mounted during arrival');
     await wizard.getByRole('button',{name:'Back'}).click();
     assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Back preserves IMEI');
     await wizard.getByRole('button',{name:'Continue'}).click();
@@ -282,6 +285,10 @@ try{
     assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'arrival waits until Continue');
     await dlg.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival follows Continue');
+    assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','Continue retains profile IMEI');
+    assert.equal(await dlg.locator('.neir-v7-reason-fieldset').count(),1,'Continue keeps acquisition cards');
+    const continuousOrder=await dlg.evaluate(el=>['.neir-v7-imei-section','.neir-v7-reason-fieldset','#neir-v7-arrival'].map(sel=>el.querySelector(sel)?.getBoundingClientRect().top));
+    assert(continuousOrder.every((v,i)=>i===0||v>continuousOrder[i-1]),'IMEI, acquisition and arrival stay in one vertical scroll');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
     assert.equal(await dlg.getByRole('radio',{name:'Without Tax'}).count(),0,'remove Without Tax radio');
     assert.equal(await dlg.locator('#neir-v7-tax,#neir-v7-bmet,.neir-v7-bmet-section,.neir-v7-bmet-conditional').count(),0,'remove tax/BMET inputs and sections');
@@ -433,6 +440,10 @@ try{
     assert.equal(await dialog.locator('#neir-v7-arrival').count(),0,'mobile requires Continue');
     await dialog.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dialog.locator('#neir-v7-arrival'),'arrival after Continue');
+    assert.equal(await dialog.locator('#neir-v7-imei').inputValue(),'99000100000001','320px Continue preserves IMEI');
+    assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'320px Continue preserves acquisition options');
+    await mobile.waitForFunction(()=>document.querySelector('.neir-v7-body')?.scrollTop>0);
+    assert(await dialog.locator('.neir-v7-body').evaluate(el=>el.scrollTop>0),'Continue scrolls modal body rather than replacing fields');
     assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
@@ -458,6 +469,8 @@ try{
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await profileModal.getByRole('button',{name:'Continue'}).click();
     await expectVisible(profileModal.locator('#neir-v7-arrival'),'arrival after Continue on mobile');
+    assert.equal(await profileModal.locator('#neir-v7-imei').inputValue(),'12004089900331','profile 320px retains IMEI after Continue');
+    assert.equal(await profileModal.locator('.neir-v7-reason-card').count(),3,'profile 320px retains acquisition cards');
     await expectVisible(profileModal.getByRole('button',{name:'View demo of Commercial Invoice'}),'mobile View demo action');
     assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),4,'four responsive document rows');
     assert.equal(await profileModal.locator('.neir-v7-upload-pick').count(),4,'four mobile file pickers');
