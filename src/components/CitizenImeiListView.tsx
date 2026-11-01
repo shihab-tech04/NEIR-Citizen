@@ -16,8 +16,8 @@ type Device = { imei: string; status: DeviceStatus; brand?: string; model?: stri
 
 // Device entries for the IMEI search examples.
 const referenceDevices: Device[] = [
-  { imei: '12345678901234', status: 'Registered', brand:'Sample', model:'Handset A' },
-  { imei: '23456789012345', status: 'Greylisted', brand:'Sample', model:'Handset B' },
+  { imei: '12345678901234', status: 'Registered', brand:'', model:'Handset A' },
+  { imei: '23456789012345', status: 'Greylisted', brand:'', model:'Handset B' },
   { imei: '49115420325851', status: 'Registered' },
   { imei: '12104089900331', status: 'Applied for registration' },
   { imei: '12304089900331', status: 'Registered' },
@@ -41,32 +41,32 @@ const requiresSpecialRegistration = (status: DeviceStatus) =>
 
 const explanations: Record<DeviceStatus, { en: string; bn: string }> = {
   Registered: {
-    en: 'This device is shown as registered in the reference data. No special registration action is required.',
-    bn: 'রেফারেন্স তথ্যে ডিভাইসটি নিবন্ধিত। বিশেষ নিবন্ধন প্রয়োজন নেই।',
+    en: 'This device is registered. No further registration is required.',
+    bn: 'ডিভাইসটি নিবন্ধিত। বিশেষ নিবন্ধনের প্রয়োজন নেই।',
   },
   'Applied for registration': {
-    en: 'A registration application is already shown for this reference device.',
-    bn: 'এই রেফারেন্স ডিভাইসের জন্য নিবন্ধনের আবেদন রয়েছে।',
+    en: 'A Special Registration application has already been submitted for this device.',
+    bn: 'এই ডিভাইসের জন্য বিশেষ নিবন্ধনের আবেদন জমা দেওয়া হয়েছে।',
   },
   'Registration Pending': {
-    en: 'Registration is pending in the reference data. You can continue with Special Registration.',
-    bn: 'রেফারেন্স তথ্যে নিবন্ধন অপেক্ষমাণ। বিশেষ নিবন্ধন চালিয়ে যেতে পারেন।',
+    en: 'Registration is pending. Continue with Special Registration.',
+    bn: 'নিবন্ধন অপেক্ষমাণ। বিশেষ নিবন্ধন চালিয়ে যেতে পারেন।',
   },
   'Restricted': {
-    en: 'The reference device was locally marked as restricted. No report was sent to NEIR.',
-    bn: 'এই রেফারেন্স ডিভাইসটি শুধু স্থানীয়ভাবে সীমাবদ্ধ করা হয়েছে। NEIR-এ কোনো রিপোর্ট পাঠানো হয়নি।',
+    en: 'This device is marked as restricted.',
+    bn: 'এই ডিভাইসটি সীমাবদ্ধ হিসেবে চিহ্নিত।',
   },
   Whitelisted: {
     en: 'This handset is registered. Special Registration is not needed.',
-    bn: 'নমুনা তথ্য অনুযায়ী ডিভাইসটি অনুমোদিত। বিশেষ নিবন্ধন প্রয়োজন নেই।',
+    bn: 'ডিভাইসটি অনুমোদিত। বিশেষ নিবন্ধনের প্রয়োজন নেই।',
   },
   Greylisted: {
-    en: 'The sample record shows a greylisted handset. Special Registration is required to complete its registration.',
-    bn: 'নমুনা তথ্যে ডিভাইসটি গ্রেলিস্টেড। নিবন্ধন সম্পূর্ণ করতে বিশেষ নিবন্ধন প্রয়োজন।',
+    en: 'This handset is greylisted. Apply for Special Registration to complete registration.',
+    bn: 'ডিভাইসটি গ্রেলিস্টেড। নিবন্ধন সম্পূর্ণ করতে বিশেষ নিবন্ধন প্রয়োজন।',
   },
   Unregistered: {
-    en: 'The sample record is unregistered. Check with the appropriate help desk; this is not proof of greylisting.',
-    bn: 'নমুনা তথ্যে ডিভাইসটি অনিবন্ধিত। সহায়তা কেন্দ্রে যাচাই করুন; এটি গ্রেলিস্টেড হওয়ার প্রমাণ নয়।',
+    en: 'This handset is unregistered. Please check the IMEI and registration details.',
+    bn: 'ডিভাইসটি অনিবন্ধিত। আইএমইআই ও নিবন্ধনের তথ্য যাচাই করুন।',
   },
   Blacklisted: {
     en: 'This handset is blacklisted. Contact the responsible authority.',
@@ -77,7 +77,7 @@ const bnStatus: Partial<Record<DeviceStatus, string>> = {
   Registered: 'নিবন্ধিত', 'Applied for registration': 'আবেদন করা হয়েছে',
   'Registration Pending': 'নিবন্ধন অপেক্ষমাণ', Whitelisted: 'হোয়াইটলিস্টেড',
   Greylisted: 'গ্রেলিস্টেড', Unregistered: 'অনিবন্ধিত', Blacklisted: 'ব্ল্যাকলিস্টেড',
-  'Restricted': 'সীমাবদ্ধ (স্থানীয়)',
+  'Restricted': 'সীমাবদ্ধ',
 };
 const statusClass = (status: DeviceStatus) => {
   if (status === 'Whitelisted' || status === 'Registered') return 'is-approved';

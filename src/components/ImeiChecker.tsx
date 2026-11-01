@@ -204,10 +204,10 @@ export const ImeiChecker: React.FC<ImeiCheckerProps> = ({
             </div>
           </div>
 
-          {/* Quick Sample IMEI Preset Selector for UX Demonstration */}
+          {/* Quick IMEI preset selector */}
           <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
             <span className="font-semibold text-slate-700 block mb-1.5">
-              {isBn ? 'পরীক্ষার জন্য নমুনা আইএমইআই (ক্লিক করুন):' : 'Sample Test IMEIs (Click to populate):'}
+              {isBn ? 'আইএমইআই নম্বর (বেছে নিন):' : 'IMEI numbers (click to enter):'}
             </span>
             <div className="flex flex-wrap gap-2">
               <button
