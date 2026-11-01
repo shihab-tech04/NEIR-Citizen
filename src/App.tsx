@@ -121,7 +121,7 @@ export default function App() {
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
           <div className="neir-home-sections">
-            {/* Saved NEIR homepage hero and its built-in first-14-digit IMEI checker */}
+            {/* Homepage hero and IMEI checker */}
             <HomeHero
               language={language}
               onScrollToVerifier={handleScrollToVerifier}
@@ -131,7 +131,7 @@ export default function App() {
               }}
             />
 
-            {/* Everybody sees the guide; guests sign in before the existing 3-step wizard. */}
+            {/* Direct Special Registration entry from the public homepage. */}
             <SpecialRegistrationSection
               language={language}
               completionMessage={specialRegistrationMessage}
@@ -200,7 +200,7 @@ export default function App() {
             }}
           />
         )}
-        {/* Source-backed authenticated citizen IMEI list */}
+        {/* Citizen device list */}
         {currentRoute === 'dashboard' && (
           <div className="w-full"><CitizenImeiListView language={language} session={session} /></div>
         )}
