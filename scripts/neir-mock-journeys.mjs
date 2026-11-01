@@ -353,6 +353,12 @@ try{
     await mobile.setViewportSize({width:320,height:640});
     const narrow=await dialog.boundingBox();
     assert(narrow && narrow.width<=320 && narrow.height<=640,'registration dialog fits 320px viewport');
+    await dialog.getByRole('combobox',{name:'Select Device'}).click();
+    const popup=dialog.getByRole('listbox',{name:'Select Device'});
+    await expectVisible(popup,'320px custom dropdown');
+    const popupBox=await popup.boundingBox();
+    assert(popupBox && popupBox.x>=0 && popupBox.x+popupBox.width<=320.5,'dropdown remains inside 320px viewport');
+    await dialog.getByRole('option',{name:'Feature Phone'}).click();
     await mobile.setViewportSize({width:390,height:844});
     await dialog.getByRole('button',{name:'Close special registration'}).click();
     await noOverflow(mobile,390);
