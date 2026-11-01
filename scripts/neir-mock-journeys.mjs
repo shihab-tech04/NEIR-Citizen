@@ -257,7 +257,8 @@ try{
     await dlg.getByRole('button',{name:/Next Step/}).click();
     await expectVisible(dlg.getByRole('combobox',{name:'Application Reason'}),'verification reason');
     await snap(desktop,'13-registration-verifications');
-    await dlg.getByRole('combobox',{name:'Application Reason'}).selectOption('tour');
+    await dlg.getByRole('combobox',{name:'Application Reason'}).click();
+    await dlg.getByRole('option',{name:'Purchased handset during his foreign tour'}).click();
     await dlg.locator('input[type=date]').fill('2026-10-20');
     await dlg.getByPlaceholder('Type Passport number').fill('TEST-PASSPORT');
     await dlg.getByRole('button',{name:/Next Step/}).click();
