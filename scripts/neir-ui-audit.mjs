@@ -33,9 +33,11 @@ const library = requireText('src/ui/NeirUI.tsx', [
 ]);
 requireText('src/ui/index.ts', ['UiButton', 'UiInput', 'UiDialog', 'UiDataTable', 'UiStatusBadge']);
 requireText('src/main.tsx', ["import './ui/neir-ui.css';"]);
-requireText('src/App.tsx', ['<UiDialog', '<UiButton', 'registrationLoginSuccessOpen']);
+const app = read('src/App.tsx');
+assert(!app.includes('LoginModal') && !app.includes('registrationLoginSuccessOpen') &&
+  !app.includes('isLoginOpen'), 'Citizen entry must have no account/login gates');
 requireText('src/components/HomeHero.tsx', ['<UiInput', '<UiButton']);
-requireText('src/components/LoginModal.tsx', ['<UiInput', '<UiButton', 'neir-original-dialog']);
+
 const contact = requireText('src/components/ContactUsView.tsx', ['<UiInput', '<UiSelect', '<UiTextarea', '<UiButton', 'neir-ui-choice-tab']);
 assert(!contact.includes('border-[8px]'), 'Contact tabs must not have oversized independent selection borders');
 const profile = requireText('src/components/CitizenImeiListView.tsx', [
