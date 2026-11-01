@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight} from 'lucide-react';
+import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight,Info} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
-interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'}
+interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
 type View='login'|'register'|'forgot';
-export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initialView='login'}) => {
+export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initialView='login',language,registrationIntent=false,handoffPending=false}) => {
  const [view,setView]=useState<View>(initialView);
  const [expanded,setExpanded]=useState(false);
  const [mobile,setMobile]=useState('');
@@ -43,7 +43,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  const demoSignIn=()=>{
   const m=mobile||'01700000000';
   onLoginSuccess({isLoggedIn:true,name:'Demo NEIR Citizen',mobile:m,nid:'DEMO-NID',email:'demo@example.invalid',registeredHandsets:[]});
-  onClose();
+  if(!registrationIntent)onClose();
  };
  // Only the synthetic NEIR test accounts can pass this database-backed demo login.
  const submitLogin=async(e:React.FormEvent)=>{
@@ -71,7 +71,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
        return;
      }
      onLoginSuccess({isLoggedIn:true,name:result.name,nameBangla:'',mobile:result.mobile,nid:'DEMO-NID',email:'',registeredHandsets:[]});
-     onClose();
+     if(!registrationIntent)onClose();
    }catch{
      setError('Unable to reach the demo sign-in service. Please try again.');
    }finally{
@@ -80,7 +80,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  };
  const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
  const inputStyle='neir-original-dialog-input';
- return <div className="neir-dialog-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
+ return <div className={"neir-dialog-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
   <div ref={dialogRef} className={'neir-original-dialog'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading">
    <div className="neir-original-dialog-top">
     <h2 id="neir-dialog-heading">{modalTitle}</h2>
@@ -89,6 +89,14 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
       <button aria-label="Close" onClick={onClose} type="button"><X size={16}/></button>
     </div>
    </div>
+   {registrationIntent && <div className="neir-login-registration-message" role="note">
+     <Info size={20} aria-hidden="true"/>
+     <div>
+       <strong>{language === 'bn' ? 'বিশেষ নিবন্ধনের আবেদন করতে আগে লগইন করুন' : 'Log in to apply for Special Registration'}</strong>
+       <p>{language === 'bn' ? 'লগইন বা অ্যাকাউন্ট তৈরি করার পর আপনার বিশেষ নিবন্ধন ফর্ম স্বয়ংক্রিয়ভাবে খুলবে।' : 'Once you sign in or create an account, your Special Registration form will open automatically.'}</p>
+     </div>
+   </div>}
+   {handoffPending && <p className="neir-login-transition-status" role="status">{language === 'bn' ? 'আবেদন ফর্ম খোলা হচ্ছে…' : 'Opening your Special Registration form…'}</p>}
    <div className="neir-original-dialog-body">
     {view==='login' && <form onSubmit={submitLogin} noValidate>
       <hr/>
