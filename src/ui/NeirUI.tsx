@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo, useState } from 'react';
+import React, { forwardRef, useId, useMemo, useState } from 'react';
 import type { ButtonHTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes, ReactNode, TableHTMLAttributes } from 'react';
 import { NeirModalFrame } from '../components/NeirModalFrame.tsx';
 
@@ -83,6 +83,7 @@ export function UiDataTable<Row>({
   searchPlaceholder = 'Search table', emptyText = 'No records found',
   className, ...tableProps
 }: UiDataTableProps<Row>) {
+  const searchId = useId();
   const [query, setQuery] = useState('');
   const [sorting, setSorting] = useState<{ key: string; ascending: boolean } | null>(null);
   const visibleRows = useMemo(() => {
@@ -98,8 +99,8 @@ export function UiDataTable<Row>({
   }, [rows, columns, searchable, query, sorting]);
   return <div className="neir-ui-table-container">
     {searchable && <div className="neir-ui-table-tools">
-      <label htmlFor="neir-ui-table-search" className="neir-ui-table-search-label">Search
-        <UiInput id="neir-ui-table-search" uiSize="compact" type="search" value={query} placeholder={searchPlaceholder}
+      <label htmlFor={searchId} className="neir-ui-table-search-label">Search
+        <UiInput id={searchId} uiSize="compact" type="search" value={query} placeholder={searchPlaceholder}
           onChange={event => setQuery(event.target.value)} />
       </label>
       <span className="neir-ui-table-count" role="status">{visibleRows.length} {visibleRows.length === 1 ? 'record' : 'records'}</span>
