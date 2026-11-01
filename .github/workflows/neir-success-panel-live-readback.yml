@@ -1,0 +1,42 @@
+name: Verify NEIR success next-panel removal on public Pages
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  public-production-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check exact live assets and absent obsolete content
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://shihab-tech04.github.io/NEIR-Citizen"
+          JS="index-CnKD-TGI.js"
+          CSS="index-DnTzLvht.css"
+          echo "Release f744dd70450f5dcd3072a9ae3982b4e2b63f4891"
+          for i in $(seq 1 65); do
+            if curl -fsSL --max-time 15 "$BASE/" -o /tmp/public.html && grep -Fq "$JS" /tmp/public.html && grep -Fq "$CSS" /tmp/public.html; then
+              echo "PASS: public site references exact compiled release assets"
+              break
+            fi
+            if [[ "$i" -eq 65 ]]; then echo "FAIL: public site has different release assets"; exit 1; fi
+            sleep 5
+          done
+          curl -fsSL --max-time 30 "$BASE/assets/$JS" -o /tmp/public.js
+          curl -fsSL --max-time 30 "$BASE/assets/$CSS" -o /tmp/public.css
+          test "$(wc -c </tmp/public.js)" -gt 100000
+          grep -Fq "You are ready to apply!" /tmp/public.js
+          grep -Fq "Proceed to special registration" /tmp/public.js
+          grep -Fq ".neir-registration-success" /tmp/public.css
+          if grep -Fq "Next: Enter your device IMEI and how you received it" /tmp/public.js; then
+            echo "FAIL: obsolete next-step copy still in production"; exit 1
+          fi
+          if grep -Fq ".neir-registration-success-next" /tmp/public.css; then
+            echo "FAIL: obsolete next-step styles still in production"; exit 1
+          fi
+          echo "PASS: Success state intact, obsolete panel text and styles absent"
+          sha256sum /tmp/public.js /tmp/public.css
+          echo "PASS: verified exact live public release f744dd70450f5dcd3072a9ae3982b4e2b63f4891"
