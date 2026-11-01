@@ -9,6 +9,10 @@
 .neir-v7-close{width:28px;height:28px;flex:none;display:grid;place-items:center;padding:0;background:transparent;border:0;color:#202020;cursor:pointer}
 .neir-v7-form{min-height:0;display:flex;flex:0 1 auto;flex-direction:column;overflow:hidden}
 .neir-v7-body{min-height:0;flex:0 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:24px 24px 12px;scrollbar-width:thin}
+.neir-v7-stage{min-width:0;animation:neir-v7-stage-in .24s cubic-bezier(.2,.75,.3,1) both}
+@keyframes neir-v7-stage-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.neir-v7-backdrop{animation:neir-v7-overlay-in .22s ease-out both}
+@keyframes neir-v7-overlay-in{from{opacity:0}to{opacity:1}}
 .neir-v7-section{min-width:0}
 .neir-v7-section-heading{font-size:18px;line-height:28px;font-weight:600;color:#202c3c;margin:0 0 16px}
 .neir-v7-divider{height:1px;background:var(--neir-dialog-stroke,#e3dbd8);margin:24px 0}
@@ -109,7 +113,7 @@
  .neir-v7-upload-filename{max-width:22%}
  .neir-v7-footer button{padding:0 12px;font-size:14px}
 }
-@media(prefers-reduced-motion:reduce){.neir-v7-dialog *{scroll-behavior:auto!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){.neir-v7-dialog *{scroll-behavior:auto!important;transition:none!important;animation:none!important}.neir-v7-backdrop{animation:none!important}}
 
 /* Document checklist: adapt the supplied Upload Documents row hierarchy
    without replacing NEIR's existing Poppins typography, color or modal tokens. */
