@@ -114,8 +114,9 @@ try{
     await resumedWizard.getByRole('button',{name:'Close special registration'}).click();
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'My Profile'}).click();
-    await expectVisible(desktop.locator('.neir-profile-device-table'),'reference device table from HTML v7');
-    assert.equal(await desktop.locator('.neir-profile-device-table tbody tr').count(),10,'v7 reference has 10 rows');
+    await expectVisible(desktop.locator('.neir-profile-identity'),'profile identity card');
+    await expectVisible(desktop.getByRole('heading',{name:'Your device information will appear here'}),'initial device empty state');
+    assert.equal(await desktop.locator('.neir-profile-device-result').count(),0,'no device prefilled');
     assert.equal(new URL(desktop.url()).pathname,'/dashboard');
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 1'}),'first test identity');
@@ -124,7 +125,7 @@ try{
     assert.equal(JSON.parse(saved).mobile,'01613961501');
     assert(!saved.includes('123456')&&!saved.includes('password')&&!saved.includes('nid'),'saved state must not contain credentials or NID');
     await desktop.reload({waitUntil:'networkidle'});
-    await expectVisible(desktop.locator('.neir-profile-device-table'),'session survives refresh on profile');
+    await expectVisible(desktop.locator('.neir-profile-identity'),'session survives refresh on profile');
     assert.equal(new URL(desktop.url()).pathname,'/dashboard','dashboard deep link survives refresh');
     const browserRestartState=await desktop.context().storageState();
     const restarted=await browser.newContext({viewport:{width:1300,height:850},storageState:browserRestartState});
@@ -154,7 +155,7 @@ try{
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await expectVisible(desktop.locator('.neir-profile-name').filter({hasText:'Test Citizen 2'}),'second test identity');
     await desktop.reload({waitUntil:'networkidle'});
-    await expectVisible(desktop.locator('.neir-profile-device-table'),'second test citizen survives refresh');
+    await expectVisible(desktop.locator('.neir-profile-identity'),'second test citizen survives refresh');
     const restoredName=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('neir-citizen-demo-session-v1')||'{}').name);
     assert.equal(restoredName,'Test Citizen 2');
     await snap(desktop,'08-dashboard');
