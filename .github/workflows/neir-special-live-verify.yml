@@ -1,0 +1,49 @@
+name: Verify NEIR Citizen SQL Admin production handoff
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  public-cross-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Verify deployed Citizen and Admin code plus API role gate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request,urllib.error,re,json,time
+          sites=[
+            ('Citizen','https://shihab-tech04.github.io/NEIR-Citizen/', ['12345678901234','23456789012345','neir-special-applications','Apply for Special Registration','neir-special-registration']),
+            ('Admin','https://shihab-tech04.github.io/NEIR/', ['Access Special Registration','neir-special-registration','Reviewer password'])
+          ]
+          for name,url,markers in sites:
+            for i in range(18):
+              try:
+                html=urllib.request.urlopen(url,timeout=25).read().decode('utf-8')
+                paths=re.findall(r'src="([^"]+\.js)"',html)
+                paths=[p for p in paths if '/assets/' in p]
+                assert paths,name+' public HTML does not include built JS'
+                js=''.join(urllib.request.urlopen(urllib.request.urljoin(url,p),timeout=30).read().decode('utf-8') for p in paths)
+                missing=[m for m in markers if m not in js]
+                if missing: raise AssertionError(name+' deployed JS missing: '+', '.join(missing))
+                print('PASS '+name+' public page and Special Registration compiled JS: '+url)
+                break
+              except Exception as exc:
+                if i==17: raise
+                print('Retry '+name+': '+str(exc)[:150])
+                time.sleep(6)
+          version=json.load(urllib.request.urlopen('https://shihab-tech04.github.io/NEIR/version.json',timeout=20))
+          assert version.get('build')=='f56579b95a8b22f2af9fd6db7f02da394c5c70a0',version
+          print('PASS Admin public build is exact merged source f56579b9')
+          request=urllib.request.Request('https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-special-registration',
+            data=json.dumps({'action':'admin_list'}).encode('utf-8'),method='POST',
+            headers={'Content-Type':'application/json','Origin':'https://shihab-tech04.github.io'})
+          try:
+            urllib.request.urlopen(request,timeout=30)
+            raise AssertionError('Anonymous access to reviewer records must be rejected')
+          except urllib.error.HTTPError as ex:
+            assert ex.code==401,ex.code
+            print('PASS Backend rejects unauthenticated application list (HTTP 401)')
+          PY
