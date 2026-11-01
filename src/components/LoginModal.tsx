@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
 interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'}
@@ -17,7 +17,28 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  const [newPassword,setNewPassword]=useState('');
  const [documentDigits,setDocumentDigits]=useState('');
  const [confirmPassword,setConfirmPassword]=useState('');
+ const dialogRef=useRef<HTMLDivElement>(null);
+ const closeRef=useRef(onClose);
+ closeRef.current=onClose;
  useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);setMobile('');setPassword('');setIsAuthenticating(false);}},[initialView,isOpen]);
+ useEffect(()=>{
+  if(!isOpen)return;
+  const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+  const previousOverflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  dialogRef.current?.querySelector<HTMLButtonElement>('[aria-label="Close"]')?.focus();
+  const onKeyDown=(event:KeyboardEvent)=>{
+   if(event.key==='Escape'){event.preventDefault();closeRef.current();return;}
+   if(event.key!=='Tab')return;
+   const elements=dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href]');
+   if(!elements?.length)return;
+   const first=elements[0],last=elements[elements.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  };
+  document.addEventListener('keydown',onKeyDown);
+  return()=>{document.body.style.overflow=previousOverflow;document.removeEventListener('keydown',onKeyDown);previousFocus?.focus();};
+ },[isOpen]);
  if(!isOpen)return null;
  const demoSignIn=()=>{
   const m=mobile||'01700000000';
@@ -60,7 +81,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
  const inputStyle='neir-original-dialog-input';
  return <div className="neir-dialog-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose();}}>
-  <div className={'neir-original-dialog'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading">
+  <div ref={dialogRef} className={'neir-original-dialog'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading">
    <div className="neir-original-dialog-top">
     <h2 id="neir-dialog-heading">{modalTitle}</h2>
     <div className="neir-original-dialog-actions">
