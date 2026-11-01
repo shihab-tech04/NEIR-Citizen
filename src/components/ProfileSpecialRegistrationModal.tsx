@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
+import { NeirDocumentDemo } from './NeirDocumentDemo';
 
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
@@ -9,22 +10,22 @@ type DocumentDefinition = { id: string; label: string; required: boolean; purpos
 // These remain prototype UI requirements, not a certified BTRC checklist.
 const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
   'foreign-tour': [
-    { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Upload the passport identity page showing the applicant’s name, photograph and passport number.' },
-    { id: 'arrivalSeal', label: 'Passport Arrival Date Seal', required: true, purpose: 'Upload the passport page showing the arrival-date stamp for this trip.' },
-    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Upload a clear image of the IMEI printed on the handset box or packaging.' },
-    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Optional travel evidence showing the journey associated with the device.' },
+    { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Passport page showing name, photo and number.' },
+    { id: 'arrivalSeal', label: 'Passport Arrival Date Seal', required: true, purpose: 'Passport page showing the arrival stamp.' },
+    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Clear photo of the box label showing the IMEI.' },
+    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Ticket or boarding pass for this trip.' },
   ],
   gift: [
-    { id: 'donorPassport', label: 'Passport Info Page (Donor)', required: true, purpose: 'Upload the passport identity page of the person who gave you the handset.' },
-    { id: 'donorArrivalSeal', label: 'Passport Arrival Date Seal (Donor)', required: true, purpose: 'Upload the donor’s passport page showing the arrival-date stamp.' },
-    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Upload a clear image of the handset packaging with the IMEI visible.' },
-    { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Upload the gift declaration identifying the donor, recipient and handset.' },
+    { id: 'donorPassport', label: 'Passport Info Page (Donor)', required: true, purpose: 'Donor’s passport page with identity details.' },
+    { id: 'donorArrivalSeal', label: 'Passport Arrival Date Seal (Donor)', required: true, purpose: 'Donor’s passport page with arrival stamp.' },
+    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Box label showing the handset IMEI.' },
+    { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Declaration naming donor, recipient and handset.' },
   ],
   airmail: [
-    { id: 'courierBill', label: 'Courier Bill', required: true, purpose: 'Upload the shipment or courier receipt showing the sender, recipient and shipment reference.' },
-    { id: 'packingList', label: 'Packing List', required: true, purpose: 'Upload the itemized packing list describing the handset included in the parcel.' },
-    { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Upload the invoice identifying the sender or seller and the device supplied.' },
-    { id: 'applicantTax', label: 'Applicant Tax Document', required: true, purpose: 'Upload the applicant’s customs or tax-payment document referenced by the registration checklist.' },
+    { id: 'courierBill', label: 'Courier Bill', required: true, purpose: 'Courier receipt with tracking and recipient details.' },
+    { id: 'packingList', label: 'Packing List', required: true, purpose: 'Item list showing the handset in the parcel.' },
+    { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Invoice identifying the seller and handset.' },
+    { id: 'applicantTax', label: 'Applicant Tax Document', required: true, purpose: 'Applicant’s customs or tax payment receipt.' },
   ],
 };
 const maxFileSize = 1024 * 1024;
@@ -44,7 +45,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
 
   const [files, setFiles] = useState<Record<string, File>>({});
   const [fileErrors, setFileErrors] = useState<Record<string, string>>({});
-  const [helpDoc, setHelpDoc] = useState<string | null>(null);
+  const [demoDoc, setDemoDoc] = useState<DocumentDefinition | null>(null);
   const [documentsExpanded, setDocumentsExpanded] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -54,8 +55,16 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const imeiRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
-  const helpRef = useRef(helpDoc);
-  helpRef.current = helpDoc;
+  const demoDocRef = useRef(demoDoc);
+  demoDocRef.current = demoDoc;
+  const demoRef = useRef<HTMLElement>(null);
+  const demoCloseRef = useRef<HTMLButtonElement>(null);
+  const demoReturnFocusRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (!demoDoc) return;
+    demoCloseRef.current?.focus();
+    return () => { demoReturnFocusRef.current?.focus(); };
+  }, [demoDoc]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -64,11 +73,12 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     imeiRef.current?.focus();
     const keyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        if (helpRef.current) { setHelpDoc(null); event.preventDefault(); return; }
+        if (demoDocRef.current) { setDemoDoc(null); event.preventDefault(); return; }
         event.preventDefault(); closeRef.current(); return;
       }
       if (event.key !== 'Tab') return;
-      const tabbable = Array.from(rootRef.current?.querySelectorAll<HTMLElement>(
+      const focusRoot = demoRef.current || rootRef.current;
+      const tabbable = Array.from(focusRoot?.querySelectorAll<HTMLElement>(
         'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex="0"]',
       ) || []).filter(node => node.getClientRects().length > 0 && !node.closest('[hidden]'));
       if (!tabbable.length) return;
@@ -117,12 +127,12 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     if (reason === value) return;
     setReason(value); setArrival(''); setPassport('');
     setFiles({}); setFileErrors({}); setDocumentsExpanded(true);
-    setFeedback(''); setSubmitted(false); setHelpDoc(null);
+    setFeedback(''); setSubmitted(false); setDemoDoc(null);
   };
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     if (stage === 1) {
-      if (canContinue) { setStage(2); setHelpDoc(null); setFeedback(''); }
+      if (canContinue) { setStage(2); setDemoDoc(null); setFeedback(''); }
       return;
     }
     if (!enabled || submitted) return;
@@ -138,7 +148,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         <div className="neir-v7-upload-title">{doc.label} {doc.required
           ? <b className="neir-v7-required" aria-hidden="true">*</b>
           : <span className="neir-v7-optional">(optional)</span>}</div>
-        <p className="neir-v7-upload-desc">{doc.purpose} Maximum allowed size: 1 MB (JPG, PNG, PDF).</p>
+        <p className="neir-v7-upload-desc">{doc.purpose}</p>
         {files[doc.id] && <p className="neir-v7-upload-selected">
           <FileText size={15} aria-hidden="true" />
           <span>Attached: {files[doc.id].name}</span>
@@ -147,11 +157,9 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
       </div>
       <div className="neir-v7-upload-actions">
         <button type="button" className="neir-v7-help-trigger"
-          aria-label={'View guidance for ' + doc.label}
-          aria-controls={'neir-v7-guide-' + doc.id}
-          aria-expanded={helpDoc === doc.id}
-          onClick={() => setHelpDoc(current => current === doc.id ? null : doc.id)}>
-          <Eye size={16} aria-hidden="true" /> <span>View guidance</span>
+          aria-label={'View demo of ' + doc.label} aria-haspopup="dialog"
+          onClick={event => { demoReturnFocusRef.current = event.currentTarget; setDemoDoc(doc); }}>
+          <Eye size={16} aria-hidden="true" /> <span>View demo</span>
         </button>
         <input type="file" className="neir-v7-file-input"
           id={'neir-v7-file-' + doc.id} aria-label={'Upload ' + doc.label}
@@ -167,10 +175,6 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </label>
       </div>
     </div>
-    {helpDoc === doc.id && <div id={'neir-v7-guide-' + doc.id} className="neir-v7-upload-guidance" role="note">
-      <strong>{doc.label}</strong>: {doc.purpose}
-      <span> This is upload guidance, not an official sample document.</span>
-    </div>}
     {fileErrors[doc.id] && <p className="neir-v7-error" role="alert">{fileErrors[doc.id]}</p>}
   </div>;
 
@@ -185,7 +189,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         <h2 id="neir-v7-title">Special Registration</h2>
         <button type="button" className="neir-v7-close" aria-label="Close special registration" onClick={onClose}><X size={24} /></button>
       </header>
-      <form noValidate className="neir-v7-form" onSubmit={submit}>
+      <form noValidate className="neir-v7-form" onSubmit={submit} aria-hidden={!!demoDoc}>
         <div className="neir-v7-body" ref={bodyRef}>
           {stage === 1 && <div className="neir-v7-stage" key="device">
           <section className="neir-v7-section neir-v7-imei-section" aria-labelledby="neir-v7-imei-heading">
@@ -244,6 +248,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
                 <ChevronDown size={19} className={documentsExpanded ? 'is-open' : ''} aria-hidden="true" />
               </button>
               {documentsExpanded && <div id="neir-v7-document-list" className="neir-v7-document-grid">
+                <p className="neir-v7-doc-panel-hint">JPG, PNG or PDF · Max 1 MB per file.</p>
                 {reasonDocs.map(uploadField)}
               </div>}
             </section>
@@ -251,10 +256,27 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <button className="neir-v7-cancel" type="button" onClick={stage === 1 ? onClose : () => { setStage(1); setHelpDoc(null); setFeedback(''); }}>{stage === 1 ? 'Cancel' : 'Back'}</button>
+          <button className="neir-v7-cancel" type="button" onClick={stage === 1 ? onClose : () => { setStage(1); setDemoDoc(null); setFeedback(''); }}>{stage === 1 ? 'Cancel' : 'Back'}</button>
           <button className="neir-v7-next" disabled={stage === 1 ? !canContinue : !enabled || submitted} type="submit">{stage === 1 ? 'Continue' : 'Submit'}</button>
         </footer>
       </form>
+      {demoDoc && <div className="neir-v7-demo-overlay" onMouseDown={event => {
+        if (event.target === event.currentTarget) setDemoDoc(null);
+      }}>
+        <section className="neir-v7-demo-dialog" role="dialog" aria-modal="true"
+          aria-labelledby="neir-v7-demo-title" ref={demoRef}>
+          <header className="neir-v7-demo-header">
+            <h3 id="neir-v7-demo-title">Demo · {demoDoc.label}</h3>
+            <button className="neir-v7-demo-close" ref={demoCloseRef} type="button"
+              aria-label="Close document demo" onClick={() => setDemoDoc(null)}>
+              <X size={20} aria-hidden="true" />
+            </button>
+          </header>
+          <div className="neir-v7-demo-content">
+            <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
+          </div>
+        </section>
+      </div>}
     </section>
   </div>;
 };
