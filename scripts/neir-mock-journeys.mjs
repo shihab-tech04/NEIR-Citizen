@@ -386,8 +386,19 @@ try{
     await inputs.first().setInputFiles([]); // Clear the rejected optional upload.
     const file={name:'sample.png',mimeType:'image/png',buffer:Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082','hex')};
     await inputs.nth(2).setInputFiles(file);
+    const invoiceRow=dlg.getByRole('group',{name:'Attached Commercial Invoice'});
+    await expectVisible(invoiceRow,'uploaded invoice appears as a separate document file row');
+    assert.equal((await invoiceRow.locator('.neir-v7-uploaded-file-name').innerText()),'sample.png','file name remains visible');
+    assert.equal(await dlg.locator('.neir-v7-upload-group.is-complete').count(),1,'uploaded document receives completion state');
+    assert.equal(await dlg.locator('.neir-v7-upload-pick').count(),2,'uploaded invoice hides redundant Choose/Replace button');
     assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'arrival and invoice alone allow submission');
+    await dlg.getByRole('button',{name:'Remove Commercial Invoice'}).click();
+    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'removing required invoice blocks submission');
+    assert.equal(await dlg.locator('.neir-v7-upload-pick').count(),3,'removing a file restores Choose file');
+    await inputs.nth(2).setInputFiles(file);
+    assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'re-uploading the required invoice restores submission');
     await inputs.first().setInputFiles(file);
+    assert.equal(await dlg.locator('.neir-v7-upload-group.is-complete').count(),2,'optional and required attachments each show completion');
     await dlg.getByRole('button',{name:'Remove Courier Bill'}).click();
     assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'removing optional courier receipt does not disable Submit');
     const gap=await dlg.locator('.neir-v7-body').evaluate(el=>{

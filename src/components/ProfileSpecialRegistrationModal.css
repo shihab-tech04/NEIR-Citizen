@@ -174,9 +174,14 @@
   cursor:pointer;
 }
 .neir-v7-doc-panel .neir-v7-upload-pick:hover{border-color:#00acc1;background:#edf9fb}
-.neir-v7-upload-selected{display:flex;align-items:center;gap:6px;min-width:0;margin:6px 0 0;font-size:13px;color:#00838f}
-.neir-v7-upload-selected span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.neir-v7-upload-selected button{flex:none;padding:0 4px;border:0;background:transparent;color:#a83232;font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+/* An uploaded document becomes a separate, stable file row. */
+.neir-v7-doc-panel .neir-v7-upload-group.is-complete .neir-v7-document-icon{color:#20995a}
+.neir-v7-uploaded-file{display:flex;align-items:center;gap:10px;min-width:0;min-height:44px;margin:10px 0 0 32px;padding:8px 10px;border:1px solid #dce4e9;border-radius:7px;background:#f8fafb;color:#3e6277}
+.neir-v7-uploaded-file>svg{flex:none;color:#587b91}
+.neir-v7-uploaded-file-name{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:13px;line-height:1.5}
+.neir-v7-uploaded-remove{flex:none;display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:6px;background:transparent;color:#8d9eaa;cursor:pointer}
+.neir-v7-uploaded-remove:hover{color:#b42318;background:#feeeee}
+.neir-v7-uploaded-remove:focus-visible{outline:2px solid #00838f;outline-offset:2px}
 .neir-v7-upload-guidance{margin:12px 0 0 32px;padding:10px 12px;border:1px solid #b6e2e8;border-radius:8px;background:#f5fcfd;color:#31505d;font-size:14px;line-height:1.55}
 .neir-v7-upload-guidance span{font-style:italic;color:#65768b}
 .neir-v7-doc-panel .neir-v7-error{margin:8px 0 0 32px}
@@ -188,6 +193,7 @@
   }
   .neir-v7-upload-actions{grid-column:2;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:10px}
   .neir-v7-doc-panel .neir-v7-help-trigger,.neir-v7-doc-panel .neir-v7-upload-pick{min-height:42px;height:42px}
+  .neir-v7-uploaded-file{margin-left:28px}
   .neir-v7-upload-guidance{margin-left:28px}
   .neir-v7-doc-panel .neir-v7-error{margin-left:28px}
 }
