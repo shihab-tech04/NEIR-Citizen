@@ -12,7 +12,6 @@ const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
     { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Upload the passport identity page showing the applicant’s name, photograph and passport number.' },
     { id: 'arrivalSeal', label: 'Passport Arrival Date Seal', required: true, purpose: 'Upload the passport page showing the arrival-date stamp for this trip.' },
     { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Upload a clear image of the IMEI printed on the handset box or packaging.' },
-    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Optional travel evidence showing the journey associated with the device.' },
   ],
   gift: [
     { id: 'donorPassport', label: 'Passport Info Page (Donor)', required: true, purpose: 'Upload the passport identity page of the person who gave you the handset.' },
@@ -21,8 +20,6 @@ const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
     { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Upload the gift declaration identifying the donor, recipient and handset.' },
   ],
   airmail: [
-    { id: 'courierBill', label: 'Courier Bill', required: true, purpose: 'Upload the shipment or courier receipt showing the sender, recipient and shipment reference.' },
-    { id: 'packingList', label: 'Packing List', required: true, purpose: 'Upload the itemized packing list describing the handset included in the parcel.' },
     { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Upload the invoice identifying the sender or seller and the device supplied.' },
     { id: 'applicantTax', label: 'Applicant Tax Document', required: true, purpose: 'Upload the applicant’s customs or tax-payment document referenced by the registration checklist.' },
   ],
