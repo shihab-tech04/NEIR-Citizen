@@ -1,0 +1,39 @@
+name: NEIR Citizen login-success pre-release recovery
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  restore-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify full Git history, source and independent restoration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags
+          BEFORE="d9804e755a1f54277e3619ad2ae2b23666bd9b79"
+          test "$(git rev-parse origin/main)" = "$BEFORE"
+          mkdir -p neir-recovery
+          git bundle create neir-recovery/pre-release-d9804e75.bundle --all
+          git bundle verify neir-recovery/pre-release-d9804e75.bundle
+          git clone neir-recovery/pre-release-d9804e75.bundle /tmp/neir-independent-restore
+          git -C /tmp/neir-independent-restore cat-file -e "$BEFORE^{commit}"
+          for path in src/App.tsx src/components/NeirSharedModal.css scripts/neir-mock-journeys.mjs; do
+            git show "$BEFORE:$path" > /tmp/neir-original
+            git -C /tmp/neir-independent-restore show "$BEFORE:$path" > /tmp/neir-restored
+            cmp /tmp/neir-original /tmp/neir-restored
+          done
+          git archive --format=tar.gz -o neir-recovery/source-d9804e75.tar.gz "$BEFORE"
+          (cd neir-recovery && sha256sum *.bundle *.tar.gz > SHA256SUMS)
+          printf 'repo=shihab-tech04/NEIR-Citizen\npre_release_commit=%s\nfull_history_bundle=PASS\nsource_archive=PASS\nrestore=PASS\n' "$BEFORE" > neir-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-Citizen-pre-success-panel-removal-d9804e75
+          path: neir-recovery/
+          retention-days: 7
