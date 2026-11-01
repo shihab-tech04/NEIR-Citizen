@@ -3,7 +3,7 @@ import { FileText, ShieldAlert } from 'lucide-react';
 import './NeirDocumentDemo.css';
 
 type Sample = {
-  category: 'identity' | 'arrival' | 'shipping' | 'invoice' | 'packing' | 'box' | 'travel' | 'gift' | 'tax';
+  category: 'identity' | 'arrival' | 'shipping' | 'invoice' | 'packing' | 'box' | 'travel' | 'gift';
   heading: string;
   reference: string;
   fields: Array<[string, string]>;
@@ -74,12 +74,7 @@ const samples: Record<string, Sample> = {
     rows: [['1', 'Example mobile handset', 'SAMPLE VALUE']],
     note: 'The invoice should identify the seller and the handset supplied.',
   },
-  applicantTax: {
-    category: 'tax', heading: 'Example customs payment record', reference: 'PAYMENT-SAMPLE',
-    fields: [['Applicant', 'EXAMPLE APPLICANT'], ['Payment ref.', 'SAMPLE-REF-001'],
-      ['Document date', 'DD MMM YYYY'], ['Purpose', 'Handset-related customs / tax payment']],
-    note: 'Use the applicant’s payment evidence identified by the registration document checklist.',
-  },
+
 };
 
 export const NeirDocumentDemo: React.FC<{ documentId: string; documentName: string }> = ({ documentId, documentName }) => {
