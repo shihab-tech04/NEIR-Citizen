@@ -1,0 +1,45 @@
+name: Verify exact NEIR Citizen Special Registration public release
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  release-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Read back exact deployed Pages build and Special Registration flow
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://shihab-tech04.github.io/NEIR-Citizen"
+          EXPECTED_JS="index-ZFcIzBeE.js"
+          EXPECTED_CSS="index-BWFR9lij.css"
+          echo "Expected production main commit: 7643697b71d100b6f27f668c1cb617d45f2c951c"
+          for i in $(seq 1 45); do
+            if curl -fsSL --max-time 15 "$BASE/" -o /tmp/production.html && grep -Fq "$EXPECTED_JS" /tmp/production.html && grep -Fq "$EXPECTED_CSS" /tmp/production.html; then
+              echo "PASS: public HTML references exact JS and CSS emitted by compiled 7643697b71d100b6f27f668c1cb617d45f2c951c"
+              break
+            fi
+            if [[ "$i" -eq 45 ]]; then echo "FAIL: exact release assets are not on public Pages"; exit 1; fi
+            sleep 5
+          done
+          curl -fsSL --max-time 30 "$BASE/assets/$EXPECTED_JS" -o /tmp/neir-public.js
+          curl -fsSL --max-time 30 "$BASE/assets/$EXPECTED_CSS" -o /tmp/neir-public.css
+          test "$(wc -c </tmp/neir-public.js)" -gt 100000
+          for copy in "Proceed to login" "Proceed to special registration" "Download sample" "Who may need to apply?" "You have successfully logged in"; do
+            if ! grep -Fq "$copy" /tmp/neir-public.js; then
+              echo "FAIL: production JS missing required Special Registration flow text: $copy"; exit 1
+            fi
+            echo "PASS: $copy"
+          done
+          for selector in ".neir-v7-form--swap-back" ".neir-v7-back" ".neir-registration-intro"; do
+            if ! grep -Fq "$selector" /tmp/neir-public.css; then
+              echo "FAIL: production CSS missing sample-swap or explanation selector: $selector"; exit 1
+            fi
+            echo "PASS: $selector"
+          done
+          echo "Production asset checksum:"
+          sha256sum /tmp/neir-public.js /tmp/neir-public.css
+          echo "PASS: exact compiled asset hashes and feature strings verified at public URL"
