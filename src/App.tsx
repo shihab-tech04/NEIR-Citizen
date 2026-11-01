@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
@@ -306,11 +306,6 @@ export default function App() {
             <p>{language === 'bn'
               ? 'আপনি সফলভাবে লগইন করেছেন। এখন আপনার ডিভাইসের বিশেষ নিবন্ধনের আবেদন শুরু করতে পারেন।'
               : 'You have successfully logged in. Your Special Registration application is ready to start.'}</p>
-            <div className="neir-registration-success-next">
-              <span className="neir-registration-success-step" aria-hidden="true">1</span>
-              <span>{language === 'bn' ? 'পরবর্তী ধাপ: ডিভাইসের IMEI এবং ক্রয়ের তথ্য দিন' : 'Next: Enter your device IMEI and how you received it'}</span>
-              <ArrowRight size={18} aria-hidden="true" />
-            </div>
           </div>
         </NeirModalFrame>
       )}
