@@ -1,0 +1,39 @@
+name: NEIR PR35 pre-release full-history recovery
+on:
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  full-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Archive pre-release Git history and independently restore
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags
+          PRE_RELEASE=19e3d5afca76685250bee1deb0c9b2b008e868a8
+          test "$(git rev-parse origin/main)" = "$PRE_RELEASE"
+          mkdir -p neir-recovery
+          git bundle create neir-recovery/NEIR-Citizen-pre-PR35-19e3d5af.bundle --all
+          git bundle verify neir-recovery/NEIR-Citizen-pre-PR35-19e3d5af.bundle
+          git clone neir-recovery/NEIR-Citizen-pre-PR35-19e3d5af.bundle /tmp/neir-restore
+          git -C /tmp/neir-restore cat-file -e "$PRE_RELEASE^{commit}"
+          for source in src/components/ProfileSpecialRegistrationModal.tsx src/components/ProfileSpecialRegistrationModal.css scripts/neir-mock-journeys.mjs src/App.tsx; do
+            git show "$PRE_RELEASE:$source" > /tmp/original
+            git -C /tmp/neir-restore show "$PRE_RELEASE:$source" > /tmp/restored
+            cmp /tmp/original /tmp/restored
+          done
+          (cd neir-recovery && sha256sum NEIR-Citizen-pre-PR35-19e3d5af.bundle > NEIR-Citizen-pre-PR35-19e3d5af.bundle.sha256)
+          printf 'pre_release_commit=%s\nrestore_test=PASS\nsource_file_byte_comparison=PASS\n' "$PRE_RELEASE" > neir-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-Citizen-pre-PR35-full-Git-restore-tested
+          path: neir-recovery/
+          retention-days: 7
