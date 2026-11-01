@@ -234,20 +234,29 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
             <label className="neir-v7-field" htmlFor="neir-v7-imei">
               <span>IMEI Number <b aria-hidden="true">*</b></span>
               <input id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15}
-                onChange={event => { setImei(event.target.value.replace(/\D/g, '').slice(0,15)); setSubmitted(false); }}
+                onChange={event => {
+                  const nextImei = event.target.value.replace(/\D/g, '').slice(0,15);
+                  setImei(nextImei);
+                  setSubmitted(false);
+                  if (!/^\d{14,15}$/.test(nextImei)) {
+                    // A partial IMEI must never retain a previously selected acquisition method.
+                    setReason(''); setStage(1); setArrival(''); setPassport('');
+                    setFiles({}); setFileErrors({}); setFeedback('');
+                  }
+                }}
                 inputMode="numeric" autoComplete="off" placeholder="Enter 14 or 15 IMEI digits to continue."
                 aria-description="The IMEI number must contain 14 or 15 digits." required aria-invalid={!!imei && !validImei} />
             </label>
           </section>
           {showReason && <>
             <div className="neir-v7-divider" aria-hidden="true" />
-            <fieldset className="neir-v7-reason-fieldset">
+            <fieldset className="neir-v7-reason-fieldset" disabled={!validImei} aria-disabled={!validImei}>
               <legend>Select how you purchased or received the device <b aria-hidden="true">*</b></legend>
               <div className="neir-v7-reason-list">
                 {choices.map(({ value, label, Icon }) => <label key={value}
-                  className={'neir-v7-reason-card' + (reason === value ? ' is-selected' : '')}>
+                  className={'neir-v7-reason-card' + (!validImei ? ' is-disabled' : '') + (reason === value ? ' is-selected' : '')}>
                   <input type="radio" name="application-reason" aria-label={label} value={value}
-                    checked={reason === value} onChange={() => chooseReason(value)} />
+                    checked={reason === value} disabled={!validImei} onChange={() => { if (validImei) chooseReason(value); }} />
                   <span className="neir-v7-reason-icon" aria-hidden="true"><Icon size={23} strokeWidth={1.8} /></span>
                   <span className="neir-v7-reason-copy"><strong>{label}</strong></span>
                   <span className="neir-v7-choice-circle" aria-hidden="true">{reason === value && <Check size={13} strokeWidth={2.5} />}</span>
