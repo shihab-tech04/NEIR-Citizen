@@ -1,0 +1,138 @@
+/* NEIR Citizen shared dialog styling.
+ * Approved source: Special Registration modal, Figma NEIR-Public page 3
+ * (820px white dialog, 16px radius, Poppins, 24px header, #e3dbd8 separators,
+ * #00acc1 / #00838f actions, responsive mobile bottom sheet).
+ * The Special Registration modal retains its pixel-specific .neir-sr-* rules.
+ */
+:root{
+  --neir-dialog-stroke:#e3dbd8;
+  --neir-dialog-ink:#202020;
+  --neir-dialog-action:#00acc1;
+  --neir-dialog-action-dark:#00838f;
+}
+.neir-shared-backdrop{
+  position:fixed;inset:0;z-index:100;display:flex;justify-content:center;align-items:center;
+  padding:16px;box-sizing:border-box;background:rgba(14,18,25,.55);
+}
+.neir-shared-dialog{
+  display:flex;flex-direction:column;box-sizing:border-box;
+  width:min(820px,100%);max-height:min(92dvh,1020px);
+  min-width:0;overflow:hidden;border-radius:16px;background:#fff;
+  color:var(--neir-dialog-ink);font-family:Poppins,Arial,sans-serif;
+  box-shadow:0 14px 54px rgba(20,35,52,.16);
+}
+.neir-shared-dialog--compact{width:min(480px,100%)}
+.neir-shared-dialog--medium{width:min(560px,100%)}
+.neir-shared-header{
+  box-sizing:border-box;flex:none;display:flex;align-items:center;justify-content:space-between;
+  min-height:86px;gap:16px;margin:0 24px;padding:24px 0 30px;
+  border-bottom:1px solid var(--neir-dialog-stroke);
+}
+.neir-shared-header h2{font-size:24px;font-weight:400;line-height:30px;letter-spacing:0;margin:0;color:#000}
+.neir-shared-close,.neir-shared-icon-action{
+  border:0;flex:none;width:28px;height:28px;padding:0;color:#000;
+  background:transparent;cursor:pointer;display:grid;place-items:center;
+}
+.neir-shared-header-actions{display:flex;align-items:center;gap:16px}
+.neir-shared-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:24px}
+.neir-shared-body>p{font-size:16px;line-height:1.55;color:#323232}
+.neir-shared-footer{
+  flex:none;display:flex;align-items:center;justify-content:flex-end;gap:24px;
+  margin:0 24px;padding:23px 0 24px;border-top:1px solid var(--neir-dialog-stroke);
+}
+.neir-shared-button{
+  border:1px solid var(--neir-dialog-action);background:transparent;
+  color:var(--neir-dialog-action-dark);border-radius:150px;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:60px;padding:0 28px;font-size:16px;font-weight:400;
+  line-height:24px;text-align:center;cursor:pointer;
+}
+.neir-shared-button:hover{background:#def6fa}
+.neir-shared-button--text{
+  border-color:transparent;background:transparent;color:var(--neir-dialog-action);
+  min-height:48px;padding:0 8px;
+}
+.neir-shared-button--danger{border-color:#b42318;color:#b42318}
+.neir-shared-button--danger:hover{background:#fff0ed}
+.neir-shared-field{
+  display:block;box-sizing:border-box;width:100%;min-width:0;min-height:60px;
+  border:1px solid var(--neir-dialog-stroke);border-radius:12px;
+  background:#fff;color:var(--neir-dialog-ink);
+  padding:11px 28px;font-size:16px;font-weight:400;line-height:24px;
+}
+.neir-shared-field:focus-visible,.neir-shared-close:focus-visible,
+.neir-shared-button:focus-visible,.neir-shared-icon-action:focus-visible{
+  outline:2px solid var(--neir-dialog-action-dark);outline-offset:2px;
+}
+.neir-shared-field[aria-invalid="true"]{border-color:#b42318}
+.neir-shared-note{font-size:14px!important;line-height:1.5!important;color:#64748b!important;margin:0}
+.neir-shared-error{font-size:13px;color:#b42318}
+.neir-shared-kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:12px;align-items:start}
+.neir-shared-kv dt{font-size:14px;color:#64748b}
+.neir-shared-kv dd{font-size:16px;font-weight:500;overflow-wrap:anywhere;margin:0;color:#202020}
+.neir-shared-dialog button:disabled{opacity:.5;cursor:not-allowed}
+.neir-dialog-backdrop{
+  background:rgba(14,18,25,.55);align-items:center;justify-content:center;padding:16px;
+}
+.neir-original-dialog{
+  width:min(480px,100%);min-width:0;max-width:100%;max-height:min(92dvh,1020px);
+  border-radius:16px;box-shadow:0 14px 54px rgba(20,35,52,.16);color:#202020;
+  font-family:Poppins,Arial,sans-serif;overflow:hidden;
+}
+.neir-dialog-maximized{width:min(820px,calc(100vw - 32px));height:min(92dvh,960px)}
+.neir-original-dialog-top{
+  margin:0 24px;min-height:86px;padding:24px 0 30px;
+  border-bottom:1px solid var(--neir-dialog-stroke);gap:16px;
+}
+.neir-original-dialog-top h2{font-size:24px;line-height:30px;font-weight:400;color:#000;margin:0}
+.neir-original-dialog-actions{gap:12px}
+.neir-original-dialog-actions button{width:28px;height:28px;color:#202020}
+.neir-original-dialog-actions button svg{width:24px;height:24px}
+.neir-original-dialog-body{padding:24px;min-height:0;overflow-y:auto}
+.neir-original-dialog-body form{gap:12px}
+.neir-original-dialog-body label{font-size:14px;font-weight:400;color:#323232;line-height:30px;margin:0}
+.neir-original-dialog-body hr{border-color:var(--neir-dialog-stroke)}
+.neir-original-dialog-input{
+  box-sizing:border-box;width:100%;height:60px;min-height:60px;border:1px solid var(--neir-dialog-stroke);
+  border-radius:12px;padding:11px 28px;font-size:16px;color:#202020;background:#fff;
+}
+.neir-original-dialog-input:focus-visible{outline:2px solid var(--neir-dialog-action-dark);outline-offset:2px}
+.neir-original-dialog-input[aria-invalid="true"]{border-color:#b42318}
+.neir-dialog-input-icon>svg{color:#757575}
+.neir-dialog-input-icon .neir-original-dialog-input{padding-left:42px}
+.neir-dialog-primary{
+  width:100%;height:60px;min-height:60px;border-radius:150px;
+  border:1px solid var(--neir-dialog-action);background:white;
+  color:var(--neir-dialog-action-dark);font-size:16px;font-weight:400;margin-top:12px;
+}
+.neir-dialog-primary:hover{background:#def6fa}
+.neir-dialog-primary:focus-visible{outline:2px solid var(--neir-dialog-action-dark);outline-offset:2px}
+.neir-dialog-switch{font-size:14px;line-height:1.5}
+.neir-dialog-switch button{color:var(--neir-dialog-action-dark)}
+.neir-dialog-demo-note{background:#f8fafc;border:1px solid var(--neir-dialog-stroke);border-radius:12px}
+@media(max-width:767px){
+ .neir-shared-backdrop,.neir-dialog-backdrop{padding:0;align-items:flex-end}
+ .neir-shared-dialog,.neir-original-dialog{
+   width:100%;min-width:0;max-width:100%;max-height:90dvh;
+   border-radius:16px 16px 0 0;
+ }
+ .neir-dialog-maximized{width:100%;height:90dvh}
+ .neir-shared-header,.neir-original-dialog-top{
+   min-height:64px;margin:0 16px;padding:16px 0 18px;
+ }
+ .neir-shared-header h2,.neir-original-dialog-top h2{font-size:21px;line-height:28px}
+ .neir-shared-body,.neir-original-dialog-body{padding:16px}
+ .neir-shared-footer{margin:0 16px;padding:12px 0 max(16px,env(safe-area-inset-bottom));gap:10px}
+ .neir-shared-button{min-height:48px;padding:0 13px;font-size:14px;line-height:20px}
+ .neir-shared-field,.neir-original-dialog-input{height:54px;min-height:54px;padding:10px 16px}
+ .neir-dialog-input-icon .neir-original-dialog-input{padding-left:42px}
+ .neir-dialog-primary{min-height:48px;height:48px}
+ .neir-shared-body>p{font-size:14px}
+}
+@media(max-width:359px){
+ .neir-shared-header,.neir-original-dialog-top{margin-left:12px;margin-right:12px}
+ .neir-shared-body,.neir-original-dialog-body{padding-left:12px;padding-right:12px}
+ .neir-shared-footer{margin-left:12px;margin-right:12px;gap:6px}
+ .neir-shared-button{padding:0 10px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.neir-shared-dialog *{scroll-behavior:auto!important}}

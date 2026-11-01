@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight, FileText, Info, MoreVertical, Search, X } from 'lucide-react';
 import type { Language, UserSession } from '../types.ts';
 import { FigmaSpecialRegistrationModal } from './FigmaSpecialRegistrationModal.tsx';
+import { NeirModalFrame } from './NeirModalFrame.tsx';
 
 type DeviceStatus = 'Registered' | 'Applied for registration' | 'Registration Pending' | 'Restricted (demo)';
 type Device = { imei: string; status: DeviceStatus };
@@ -129,7 +130,6 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [wizard, detail, stolenTarget, profileOpen]);
-  const modal = 'fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-3 sm:p-6';
   const fieldClass = 'mt-1 w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-600';
   const inputField = (label: string, name: keyof FormState, placeholder = '', numeric = false) => (
     <label className="text-sm font-medium text-slate-800 block" key={name}>
@@ -187,22 +187,53 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
       </div>
     </section>}
 
-      {detail && <div className={modal} onMouseDown={e => {if (e.target === e.currentTarget) setDetail(null);}}><div role="dialog" aria-modal="true" aria-label="IMEI details" className="bg-white max-w-lg w-full rounded-xl p-6 space-y-4 shadow-xl">
-        <div className="flex justify-between"><h2 className="text-lg font-semibold">IMEI Details</h2><button aria-label="Close details" onClick={() => setDetail(null)}><X /></button></div>
-        <p className="text-sm"><strong>IMEI Number:</strong> {detail.imei}</p><p className="text-sm"><strong>Device Status:</strong> {detail.status}</p>
-        <p className="text-xs text-slate-500">Sample data only. No government record has been retrieved.</p>
-        <button className="bg-cyan-700 rounded-lg text-white px-4 py-2" onClick={() => { setDetail(null); startRegistration(detail.imei); }}>Special Registration</button>
-      </div></div>}
-      {stolenTarget && <div className={modal}><div role="alertdialog" aria-modal="true" aria-label="Mark IMEI as stolen" className="bg-white max-w-md w-full rounded-xl p-6 space-y-4 shadow-xl">
-        <h2 className="font-semibold text-lg">Mark as Stolen</h2><p className="text-sm">This demonstration changes only the local sample status for IMEI {stolenTarget.imei}. It does not report a device to BTRC.</p>
-        <div className="flex justify-end gap-2"><button className="border rounded px-4 py-2" onClick={() => setStolenTarget(null)}>Cancel</button><button className="bg-red-700 text-white rounded px-4 py-2" onClick={() => { setDevices(prev => prev.map(d => d.imei === stolenTarget.imei ? { ...d, status: 'Restricted (demo)' } : d)); setStolenTarget(null); }}>Confirm demo action</button></div>
-      </div></div>}
-      {profileOpen && <div className={modal}><div role="dialog" aria-modal="true" aria-label="Edit profile information" className="bg-white max-w-md w-full rounded-xl p-6 space-y-4 shadow-xl">
-        <div className="flex justify-between"><h2 className="font-semibold text-lg">Edit Profile Informations</h2><button aria-label="Close profile" onClick={() => setProfileOpen(false)}><X /></button></div>
-        <label className="block text-sm">Full Name<input className={fieldClass} value={profileName} onChange={e => setProfileName(e.target.value)} /></label>
-        <p className="text-xs text-slate-500">Demo-only profile label. No identity data is updated on a server.</p>
-        <button className="bg-cyan-700 text-white rounded px-4 py-2" onClick={() => setProfileOpen(false)}>Save demo changes</button>
-      </div></div>}
+      {detail && (
+        <NeirModalFrame title="IMEI Details" ariaLabel="IMEI details" size="medium"
+          closeLabel="Close details" onClose={() => setDetail(null)}
+          footer={<button type="button" className="neir-shared-button"
+            onClick={() => { const imei = detail.imei; setDetail(null); startRegistration(imei); }}>
+            Special Registration
+          </button>}>
+          <dl className="neir-shared-kv">
+            <dt>IMEI Number</dt><dd>{detail.imei}</dd>
+            <dt>Device Status</dt><dd>{detail.status}</dd>
+          </dl>
+          <p className="neir-shared-note" style={{ marginTop: 16 }}>
+            Sample data only. No government record has been retrieved.
+          </p>
+        </NeirModalFrame>
+      )}
+      {stolenTarget && (
+        <NeirModalFrame title="Mark as Stolen" ariaLabel="Mark IMEI as stolen"
+          role="alertdialog" size="compact" closeLabel="Close stolen status confirmation"
+          onClose={() => setStolenTarget(null)}
+          footer={<>
+            <button type="button" className="neir-shared-button neir-shared-button--text"
+              onClick={() => setStolenTarget(null)}>Cancel</button>
+            <button type="button" className="neir-shared-button neir-shared-button--danger"
+              onClick={() => {
+                setDevices(prev => prev.map(d => d.imei === stolenTarget.imei
+                  ? { ...d, status: 'Restricted (demo)' } : d));
+                setStolenTarget(null);
+              }}>Confirm demo action</button>
+          </>}>
+          <p>This demonstration changes only the local sample status for IMEI <strong>{stolenTarget.imei}</strong>.
+            It does not report a device to BTRC.</p>
+        </NeirModalFrame>
+      )}
+      {profileOpen && (
+        <NeirModalFrame title="Edit Profile Informations" ariaLabel="Edit profile information"
+          size="compact" closeLabel="Close profile" onClose={() => setProfileOpen(false)}
+          footer={<button type="button" className="neir-shared-button"
+            onClick={() => setProfileOpen(false)}>Save demo changes</button>}>
+          <label className="block text-sm" htmlFor="neir-profile-name-field">Full Name</label>
+          <input id="neir-profile-name-field" className="neir-shared-field"
+            value={profileName} onChange={e => setProfileName(e.target.value)} />
+          <p className="neir-shared-note" style={{ marginTop: 14 }}>
+            Demo-only profile label. No identity data is updated on a server.
+          </p>
+        </NeirModalFrame>
+      )}
       {wizard && <FigmaSpecialRegistrationModal
         initialImei={form.imei}
         onClose={() => setWizard(false)}
