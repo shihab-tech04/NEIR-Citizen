@@ -13,7 +13,7 @@ import { SpecialRegistrationSection } from './components/SpecialRegistrationSect
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { LoginModal } from './components/LoginModal.tsx';
-import { NeirModalFrame } from './components/NeirModalFrame.tsx';
+import { UiButton, UiDialog } from './ui/index.ts';
 import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
 import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
@@ -267,15 +267,15 @@ export default function App() {
 
       {/* Guest explanation and explicit successful-login handoff precede the existing wizard. */}
       {guestRegistrationIntroOpen && !session.isLoggedIn && (
-        <NeirModalFrame title={language === 'bn' ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
+        <UiDialog title={language === 'bn' ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের তথ্য' : 'About Special Registration'}
           onClose={() => setGuestRegistrationIntroOpen(false)}
-          footer={<button type="button" className="neir-shared-button neir-registration-full-width" onClick={() => {
+          footer={<UiButton variant="secondary" fullWidth className="neir-shared-button neir-registration-full-width" onClick={() => {
             setGuestRegistrationIntroOpen(false);
             setLoginForSpecialRegistration(true);
             setLoginInitialView('login');
             setIsLoginOpen(true);
-          }}>{language === 'bn' ? 'লগইনে এগিয়ে যান' : 'Proceed to login'}</button>}>
+          }}>{language === 'bn' ? 'লগইনে এগিয়ে যান' : 'Proceed to login'}</UiButton>}>
           <div className="neir-registration-intro">
             <h3>{language === 'bn' ? 'বিশেষ নিবন্ধন কী?' : 'What is Special Registration?'}</h3>
             <p>{language === 'bn'
@@ -289,17 +289,17 @@ export default function App() {
               ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আবেদন করতে আপনার অ্যাকাউন্টে লগইন করতে হবে।'
               : 'Eligibility and approval depend on verification. You must log in to your account before applying for Special Registration.'}</p>
           </div>
-        </NeirModalFrame>
+        </UiDialog>
       )}
       {registrationLoginSuccessOpen && session.isLoggedIn && (
-        <NeirModalFrame title={language === 'bn' ? 'লগইন সফল' : 'Login successful'}
+        <UiDialog title={language === 'bn' ? 'লগইন সফল' : 'Login successful'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের জন্য লগইন সফল' : 'Special Registration login successful'}
           onClose={() => setRegistrationLoginSuccessOpen(false)}
-          footer={<button type="button" className="neir-shared-button neir-registration-full-width neir-registration-success-cta" onClick={() => {
+          footer={<UiButton variant="primary" fullWidth className="neir-shared-button neir-registration-full-width neir-registration-success-cta" onClick={() => {
             setRegistrationLoginSuccessOpen(false);
             setCurrentRoute('home');
             setSpecialRegistrationTrigger(Date.now());
-          }}>{language === 'bn' ? 'বিশেষ নিবন্ধন শুরু করুন' : 'Proceed to special registration'}</button>}>
+          }}>{language === 'bn' ? 'বিশেষ নিবন্ধন শুরু করুন' : 'Proceed to special registration'}</UiButton>}>
           <div className="neir-registration-success" role="status">
             <div className="neir-registration-success-mark" aria-hidden="true"><CheckCircle2 size={38} strokeWidth={1.8} /></div>
             <h3>{language === 'bn' ? 'আবেদন শুরু করার জন্য প্রস্তুত!' : 'You are ready to apply!'}</h3>
@@ -307,7 +307,7 @@ export default function App() {
               ? 'আপনি সফলভাবে লগইন করেছেন। এখন আপনার ডিভাইসের বিশেষ নিবন্ধনের আবেদন শুরু করতে পারেন।'
               : 'You have successfully logged in. Your Special Registration application is ready to start.'}</p>
           </div>
-        </NeirModalFrame>
+        </UiDialog>
       )}
       <LoginModal
         initialView={loginInitialView}
