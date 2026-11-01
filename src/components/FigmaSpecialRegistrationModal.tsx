@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, CalendarDays, Check, ChevronDown, ChevronsRight,
+  ArrowLeft, ArrowRight, CalendarDays, Check, ChevronsRight,
   CircleHelp, FileText, Info, Plus, Smartphone, Upload, X,
 } from 'lucide-react';
 import './FigmaSpecialRegistrationModal.css';
+import { SpecialRegistrationDropdown } from './SpecialRegistrationDropdown.tsx';
 
 type Stage = 0 | 1 | 2 | 3 | 4;
 type Eligibility = 'local' | 'foreigner' | '';
@@ -73,7 +74,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
       if (event.key === 'Escape') onClose();
       if (event.key === 'Tab') {
         const elements = dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+          'button:not([disabled]):not([tabindex="-1"]), input:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
         );
         if (!elements?.length) return;
         const first = elements[0];
@@ -145,17 +146,15 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
   );
 
   const selectField = (label: string, id: string, value: string, onChange: (value: string) => void, choices: { value: string; label: string }[]) => (
-    <label className="neir-sr-field" htmlFor={'neir-sr-' + id}>
-      <span className="neir-sr-label">{label}</span>
-      <span className="neir-sr-control neir-sr-select">
-        <select id={'neir-sr-' + id} value={value} onChange={event => change(id, onChange, event.target.value)}
-          aria-invalid={!!errors[id]} aria-describedby={errors[id] ? 'neir-sr-error-' + id : undefined}>
-          {choices.map(choice => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
-        </select>
-        <ChevronDown size={18} aria-hidden="true" />
-      </span>
-      {errors[id] && <span className="neir-sr-error" id={'neir-sr-error-' + id} role="alert">{errors[id]}</span>}
-    </label>
+    <SpecialRegistrationDropdown
+      id={'neir-sr-' + id}
+      label={label}
+      value={value}
+      options={choices}
+      onChange={choice => change(id, onChange, choice)}
+      error={errors[id]}
+      portalRoot={dialogRef}
+    />
   );
 
   return (
