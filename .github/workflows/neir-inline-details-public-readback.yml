@@ -1,0 +1,40 @@
+name: Verify exact NEIR Citizen inline registration public release
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  deployed-asset-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check actual compiled production assets and requested copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://shihab-tech04.github.io/NEIR-Citizen"
+          EXPECTED_JS="index-fblb1sGg.js"
+          EXPECTED_CSS="index-DWsMEC1t.css"
+          echo "Source merge SHA: aebaa72879ec9d3b85bed6b89c02ca74dc16ed68"
+          for i in $(seq 1 65); do
+            if curl -fsSL --max-time 15 "$BASE/" -o /tmp/public.html && grep -Fq "$EXPECTED_JS" /tmp/public.html && grep -Fq "$EXPECTED_CSS" /tmp/public.html; then
+              echo "PASS: public HTML references exact JS and CSS from merge aebaa72879ec9d3b85bed6b89c02ca74dc16ed68"
+              break
+            fi
+            if [[ "$i" -eq 65 ]]; then echo "FAIL: exact release assets not on public site"; exit 1; fi
+            sleep 5
+          done
+          curl -fsSL --max-time 30 "$BASE/assets/$EXPECTED_JS" -o /tmp/public.js
+          curl -fsSL --max-time 30 "$BASE/assets/$EXPECTED_CSS" -o /tmp/public.css
+          test "$(wc -c </tmp/public.js)" -gt 100000
+          for copy in "Proceed to login" "Proceed to special registration" "You are ready to apply!" "Next: Enter your device IMEI" "Enter 14 or 15 IMEI digits." "Download sample"; do
+            grep -Fq "$copy" /tmp/public.js || { echo "FAIL missing copy: $copy"; exit 1; }
+            echo "PASS: $copy"
+          done
+          for sel in ".neir-registration-full-width" ".neir-registration-success-mark" ".neir-v7-reason-card" ".neir-v7-doc-panel"; do
+            grep -Fq "$sel" /tmp/public.css || { echo "FAIL missing selector: $sel"; exit 1; }
+            echo "PASS: $sel"
+          done
+          sha256sum /tmp/public.js /tmp/public.css
+          echo "PASS: exact release on public Pages"
