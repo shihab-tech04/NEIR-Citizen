@@ -1,0 +1,38 @@
+name: NEIR citizen pre-public full Git recovery
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  git-restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Archive independent full history and restore exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE="f744dd70450f5dcd3072a9ae3982b4e2b63f4891"
+          git fetch origin main --tags
+          test "$(git rev-parse origin/main)" = "$BEFORE"
+          mkdir -p recovery
+          git bundle create recovery/NEIR-citizen-pre-public-f744dd70.bundle --all
+          git bundle verify recovery/NEIR-citizen-pre-public-f744dd70.bundle
+          git clone recovery/NEIR-citizen-pre-public-f744dd70.bundle /tmp/neir-restore
+          git -C /tmp/neir-restore cat-file -e "$BEFORE^{commit}"
+          for path in src/App.tsx src/components/CitizenImeiListView.tsx src/components/ProfileSpecialRegistrationModal.tsx src/utils/neirSpecialRegistrationApi.ts; do
+            git show "$BEFORE:$path" > /tmp/original
+            git -C /tmp/neir-restore show "$BEFORE:$path" > /tmp/restored
+            cmp /tmp/original /tmp/restored
+          done
+          (cd recovery && sha256sum NEIR-citizen-pre-public-f744dd70.bundle > bundle.sha256)
+          printf 'commit=%s\nrestore_test=PASS\nsource_byte_compare=PASS\n' "$BEFORE" > recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-citizen-pre-public-restore-tested
+          path: recovery/
+          retention-days: 7
