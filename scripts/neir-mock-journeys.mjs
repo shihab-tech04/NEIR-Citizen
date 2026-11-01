@@ -350,6 +350,10 @@ try{
     await expectVisible(dialog,'mobile modal from homepage');
     const size=await dialog.boundingBox();
     assert(size && size.width<=390 && size.height<=844,'registration dialog fits mobile viewport');
+    await mobile.setViewportSize({width:320,height:640});
+    const narrow=await dialog.boundingBox();
+    assert(narrow && narrow.width<=320 && narrow.height<=640,'registration dialog fits 320px viewport');
+    await mobile.setViewportSize({width:390,height:844});
     await dialog.getByRole('button',{name:'Close special registration'}).click();
     await noOverflow(mobile,390);
     await mobile.reload({waitUntil:'networkidle'});
