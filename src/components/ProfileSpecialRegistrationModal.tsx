@@ -1,36 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Check, Info, FileText, Gift, Package, Plane, X } from 'lucide-react';
+import { Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
 
-// Keep the established reason-specific prototype document rules. Descriptions are UI
-// explanations, not claims of an official BTRC document checklist.
-// These are prototype upload prompts, not a legal declaration of BTRC requirements.
-// Arrival-stamp uploads were removed at the user’s request.
+// Document names are based on the earlier 11-page Special Registration reference.
+// These remain prototype UI requirements, not a certified BTRC checklist.
 const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
   'foreign-tour': [
-    { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Upload the passport identity page showing the applicant’s name, photograph and passport number. An arrival-date stamp is not required.' },
-    { id: 'imeiBox', label: 'Handset Box Showing IMEI', required: true, purpose: 'Upload a clear photo of the original handset packaging or label where the IMEI is visible and matches the IMEI entered in this form.' },
-    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Optional: an airline ticket, boarding pass or similar travel document associated with bringing the handset into the country.' },
+    { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Upload the passport identity page showing the applicant’s name, photograph and passport number.' },
+    { id: 'arrivalSeal', label: 'Passport Arrival Date Seal', required: true, purpose: 'Upload the passport page showing the arrival-date stamp for this trip.' },
+    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Upload a clear image of the IMEI printed on the handset box or packaging.' },
+    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Optional travel evidence showing the journey associated with the device.' },
   ],
   gift: [
-    { id: 'donorPassport', label: 'Passport Info Page', required: true, purpose: 'Upload the identity page of the passport belonging to the person who gave you the handset. An arrival-date seal is not needed.' },
-    { id: 'giftDeed', label: 'Gift Deed', required: true, purpose: 'Upload a written gift declaration or deed identifying the donor, recipient and transferred handset.' },
-    { id: 'imeiBox', label: 'Handset Box Showing IMEI', required: true, purpose: 'Upload a clear photo of the handset box label displaying the IMEI that matches this device.' },
+    { id: 'donorPassport', label: 'Passport Info Page (Donor)', required: true, purpose: 'Upload the passport identity page of the person who gave you the handset.' },
+    { id: 'donorArrivalSeal', label: 'Passport Arrival Date Seal (Donor)', required: true, purpose: 'Upload the donor’s passport page showing the arrival-date stamp.' },
+    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Upload a clear image of the handset packaging with the IMEI visible.' },
+    { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Upload the gift declaration identifying the donor, recipient and handset.' },
   ],
   airmail: [
-    { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Upload the invoice or seller document showing the air-mailed handset, sender and item details. Packing lists and courier bills are not requested separately.' },
+    { id: 'courierBill', label: 'Courier Bill', required: true, purpose: 'Upload the shipment or courier receipt showing the sender, recipient and shipment reference.' },
+    { id: 'packingList', label: 'Packing List', required: true, purpose: 'Upload the itemized packing list describing the handset included in the parcel.' },
+    { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Upload the invoice identifying the sender or seller and the device supplied.' },
+    { id: 'applicantTax', label: 'Applicant Tax Document', required: true, purpose: 'Upload the applicant’s customs or tax-payment document referenced by the registration checklist.' },
   ],
-};
-const airmailTaxDocument: DocumentDefinition = {
-  id: 'applicantTax', label: 'Tax Payment Document', required: true,
-  purpose: 'Upload a tax or customs payment receipt for the handset only when you select With Tax. No tax-payment document is requested for Without Tax.',
-};
-const bmetDocument: DocumentDefinition = {
-  id: 'bmetCard', label: 'BMET Card', required: true,
-  purpose: 'Upload a clear image of your BMET card showing the card number entered above. This is needed only when you select Yes for the BMET card question.',
 };
 const maxFileSize = 1024 * 1024;
 const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
@@ -45,13 +40,11 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
   const [passport, setPassport] = useState('');
-  const [purchase, setPurchase] = useState<'' | 'with-tax' | 'without-tax'>('');
-  const [tax, setTax] = useState('');
-  const [bmet, setBmet] = useState<'' | 'yes' | 'no'>('');
-  const [bmetNumber, setBmetNumber] = useState('');
+
   const [files, setFiles] = useState<Record<string, File>>({});
   const [fileErrors, setFileErrors] = useState<Record<string, string>>({});
   const [helpDoc, setHelpDoc] = useState<string | null>(null);
+  const [documentsExpanded, setDocumentsExpanded] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
@@ -88,19 +81,12 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   }, []);
 
   const validImei = /^\d{14,15}$/.test(imei.trim());
-  const showReason = true; // IMEI and acquisition choices share the opening modal view.
+  const showReason = true;
   const showDetails = validImei && !!reason;
-  const validTax = purchase === 'without-tax' || (
-    purchase === 'with-tax' && tax.trim() !== '' && Number.isFinite(Number(tax)) && Number(tax) >= 0
-  );
-  const validBmet = !!bmet && (bmet === 'no' || (!!bmetNumber.trim() && !!files.bmetCard && !fileErrors.bmetCard));
-  const reasonDocs: DocumentDefinition[] = reason ? [
-    ...documentSets[reason],
-    ...(reason === 'airmail' && purchase === 'with-tax' ? [airmailTaxDocument] : []),
-  ] : [];
+  const reasonDocs: DocumentDefinition[] = reason ? documentSets[reason] : [];
   const validDocs = reasonDocs.every(doc => !fileErrors[doc.id] && (!doc.required || !!files[doc.id]));
   const enabled = showDetails && !!arrival && arrival <= localDate() &&
-    (reason !== 'foreign-tour' || !!passport.trim()) && !!purchase && validTax && validDocs && validBmet;
+    (reason !== 'foreign-tour' || !!passport.trim()) && validDocs;
 
   const setFile = (id: string, file?: File) => {
     setFeedback(''); setSubmitted(false);
@@ -119,8 +105,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   };
   const chooseReason = (value: Exclude<Reason, ''>) => {
     if (reason === value) return;
-    setReason(value); setArrival(''); setPassport(''); setPurchase(''); setTax('');
-    setFiles({}); setFileErrors({}); setBmet(''); setBmetNumber('');
+    setReason(value); setArrival(''); setPassport('');
+    setFiles({}); setFileErrors({}); setDocumentsExpanded(true);
     setFeedback(''); setSubmitted(false); setHelpDoc(null);
   };
   const submit = (event: React.FormEvent) => {
@@ -129,44 +115,48 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     const message = 'Prototype only — registration has not been submitted to NEIR.';
     setFeedback(message); setSubmitted(true); onComplete?.(message);
   };
-  const radio = (name: string, value: string, selected: boolean, onSelect: () => void, label: string) => (
-    <label className={'neir-v7-radio-option' + (selected ? ' is-selected' : '')}>
-      <input type="radio" name={name} value={value} checked={selected} onChange={onSelect} />
-      <span>{label}</span>
-    </label>
-  );
-  // One compact upload row per document, matching the approved reference UI.
-  // The purpose icon stays separate from the file upload action.
+  // Document checklist uses the existing NEIR design tokens, with the row
+  // hierarchy and separate file-picker action from the supplied UX reference.
   const uploadField = (doc: DocumentDefinition) => <div key={doc.id} className="neir-v7-upload-group">
     <div className="neir-v7-upload-line">
-      <input type="file" className="neir-v7-file-input" id={'neir-v7-file-' + doc.id}
-        aria-label={'Upload ' + doc.label}
-        accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
-        onChange={event => {
-          const selected = event.target.files?.[0];
-          setFile(doc.id, selected);
-          if (selected && (selected.size > maxFileSize || !allowedTypes.includes(selected.type))) event.target.value = '';
-        }} />
-      <label className={'neir-v7-upload-pick' + (files[doc.id] ? ' is-uploaded' : '')}
-        htmlFor={'neir-v7-file-' + doc.id}>
-        {files[doc.id] ? <FileText size={17} aria-hidden="true" /> : <span className="neir-v7-upload-plus" aria-hidden="true">+</span>}
-        <span className="neir-v7-upload-title">{doc.label}</span>
-        {doc.required ? <b className="neir-v7-required" aria-hidden="true">*</b> : <span className="neir-v7-optional">(optional)</span>}
-        {files[doc.id] && <span className="neir-v7-upload-filename">{files[doc.id].name}</span>}
-      </label>
-      {files[doc.id] && <button type="button" className="neir-v7-upload-remove"
-        aria-label={'Remove ' + doc.label} onClick={() => setFile(doc.id)}>×</button>}
-      <span className="neir-v7-help-wrap">
+      <Paperclip className="neir-v7-document-icon" size={18} aria-hidden="true" />
+      <div className="neir-v7-upload-text">
+        <div className="neir-v7-upload-title">{doc.label} {doc.required
+          ? <b className="neir-v7-required" aria-hidden="true">*</b>
+          : <span className="neir-v7-optional">(optional)</span>}</div>
+        <p className="neir-v7-upload-desc">{doc.purpose} Maximum allowed size: 1 MB (JPG, PNG, PDF).</p>
+        {files[doc.id] && <p className="neir-v7-upload-selected">
+          <FileText size={15} aria-hidden="true" />
+          <span>Attached: {files[doc.id].name}</span>
+          <button type="button" aria-label={'Remove ' + doc.label} onClick={() => setFile(doc.id)}>Remove</button>
+        </p>}
+      </div>
+      <div className="neir-v7-upload-actions">
         <button type="button" className="neir-v7-help-trigger"
-          aria-label={'About ' + doc.label + ' attachment'}
-          aria-describedby={'neir-v7-help-' + doc.id} aria-expanded={helpDoc === doc.id}
+          aria-label={'View guidance for ' + doc.label}
+          aria-controls={'neir-v7-guide-' + doc.id}
+          aria-expanded={helpDoc === doc.id}
           onClick={() => setHelpDoc(current => current === doc.id ? null : doc.id)}>
-          <Info size={17} strokeWidth={1.5} aria-hidden="true" />
+          <Eye size={16} aria-hidden="true" /> <span>View guidance</span>
         </button>
-        <span role="tooltip" id={'neir-v7-help-' + doc.id}
-          className={'neir-v7-help-tooltip' + (helpDoc === doc.id ? ' is-open' : '')}>{doc.purpose}</span>
-      </span>
+        <input type="file" className="neir-v7-file-input"
+          id={'neir-v7-file-' + doc.id} aria-label={'Upload ' + doc.label}
+          accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
+          onChange={event => {
+            const selected = event.target.files?.[0];
+            setFile(doc.id, selected);
+            if (selected && (selected.size > maxFileSize || !allowedTypes.includes(selected.type))) event.target.value = '';
+          }} />
+        <label className="neir-v7-upload-pick" htmlFor={'neir-v7-file-' + doc.id}>
+          <Upload size={16} aria-hidden="true" />
+          <span>{files[doc.id] ? 'Replace file' : 'Choose file'}</span>
+        </label>
+      </div>
     </div>
+    {helpDoc === doc.id && <div id={'neir-v7-guide-' + doc.id} className="neir-v7-upload-guidance" role="note">
+      <strong>{doc.label}</strong>: {doc.purpose}
+      <span> This is upload guidance, not an official sample document.</span>
+    </div>}
     {fileErrors[doc.id] && <p className="neir-v7-error" role="alert">{fileErrors[doc.id]}</p>}
   </div>;
 
@@ -212,58 +202,33 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
           {showDetails && <>
             <div className="neir-v7-divider" aria-hidden="true" />
             <section className="neir-v7-section" aria-labelledby="neir-v7-verification-heading">
-              <h3 className="neir-v7-section-heading" id="neir-v7-verification-heading">Provide the device's arrival date and tax details.</h3>
+              <h3 className="neir-v7-section-heading" id="neir-v7-verification-heading">Arrival information</h3>
               <div className="neir-v7-grid">
                 <label className={'neir-v7-field' + (reason !== 'foreign-tour' ? ' neir-v7-span' : '')} htmlFor="neir-v7-arrival">
                   <span>Select arrival date <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-arrival" type="date" max={localDate()} value={arrival} onChange={event => { setArrival(event.target.value); setSubmitted(false); }} required aria-invalid={!!arrival && arrival > localDate()} />
+                  <input id="neir-v7-arrival" type="date" max={localDate()} value={arrival}
+                    onChange={event => { setArrival(event.target.value); setSubmitted(false); }}
+                    required aria-invalid={!!arrival && arrival > localDate()} />
                   {arrival && arrival > localDate() && <small className="neir-v7-error" role="alert">Future dates are not allowed.</small>}
                 </label>
                 {reason === 'foreign-tour' && <label className="neir-v7-field" htmlFor="neir-v7-passport">
                   <span>Passport number <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-passport" value={passport} onChange={event => { setPassport(event.target.value); setSubmitted(false); }} placeholder="Enter passport number" required />
-                </label>}
-                <fieldset className="neir-v7-field neir-v7-span">
-                  <legend>How you purchased the device? <b aria-hidden="true">*</b></legend>
-                  <div className="neir-v7-radio-group" aria-label="Purchase tax status">
-                    {radio('purchase', 'with-tax', purchase === 'with-tax', () => { setPurchase('with-tax'); setTax(''); setSubmitted(false); }, 'With Tax')}
-                    {radio('purchase', 'without-tax', purchase === 'without-tax', () => { setPurchase('without-tax'); setTax(''); setFiles(prev => { const next = { ...prev }; delete next.applicantTax; return next; }); setFileErrors(prev => { const next = { ...prev }; delete next.applicantTax; return next; }); setSubmitted(false); }, 'Without Tax')}
-                  </div>
-                </fieldset>
-                {purchase === 'with-tax' && <label className="neir-v7-field neir-v7-span" htmlFor="neir-v7-tax">
-                  <span>Tax amount <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-tax" type="number" min="0" step="any" inputMode="decimal" value={tax} onChange={event => { setTax(event.target.value); setSubmitted(false); }} placeholder="Enter tax amount" required />
-                  {tax !== '' && !validTax && <small className="neir-v7-error" role="alert">Enter a valid tax amount.</small>}
+                  <input id="neir-v7-passport" value={passport}
+                    onChange={event => { setPassport(event.target.value); setSubmitted(false); }}
+                    placeholder="Enter passport number" required />
                 </label>}
               </div>
             </section>
             <div className="neir-v7-divider" aria-hidden="true" />
-            <section className="neir-v7-section" aria-labelledby="neir-v7-docs-heading">
-              <h3 className="neir-v7-section-heading" id="neir-v7-docs-heading">Upload the required documents for verification.</h3>
-              <p className="neir-v7-doc-limits">PNG, JPG or PDF · Maximum 1 MB per attachment. Select the info icon for upload guidance.</p>
-              <div className="neir-v7-document-grid">{reasonDocs.map(uploadField)}</div>
-            </section>
-            <div className="neir-v7-divider" aria-hidden="true" />
-            <section className="neir-v7-section neir-v7-bmet-section" aria-labelledby="neir-v7-bmet-heading">
-              <h3 className="neir-v7-section-heading" id="neir-v7-bmet-heading">BMET card information</h3>
-              <fieldset className="neir-v7-field neir-v7-span">
-                <legend>Do you have a BMET card? <b aria-hidden="true">*</b></legend>
-                <div className="neir-v7-radio-group" aria-label="BMET card availability">
-                  {radio('bmet', 'yes', bmet === 'yes', () => { setBmet('yes'); setSubmitted(false); }, 'Yes')}
-                  {radio('bmet', 'no', bmet === 'no', () => {
-                    setBmet('no'); setBmetNumber('');
-                    setFiles(previous => { const copy = { ...previous }; delete copy.bmetCard; return copy; });
-                    setFileErrors(previous => { const copy = { ...previous }; delete copy.bmetCard; return copy; });
-                    setSubmitted(false);
-                  }, 'No')}
-                </div>
-              </fieldset>
-              {bmet === 'yes' && <div className="neir-v7-bmet-conditional">
-                <label className="neir-v7-field" htmlFor="neir-v7-bmet">
-                  <span>BMET Card Number <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-bmet" value={bmetNumber} onChange={event => { setBmetNumber(event.target.value); setSubmitted(false); }} placeholder="Enter BMET card number" required />
-                </label>
-                {uploadField(bmetDocument)}
+            <section className="neir-v7-section neir-v7-doc-panel" aria-labelledby="neir-v7-docs-heading">
+              <button type="button" className="neir-v7-doc-panel-header"
+                aria-expanded={documentsExpanded} aria-controls="neir-v7-document-list"
+                onClick={() => setDocumentsExpanded(expanded => !expanded)}>
+                <span id="neir-v7-docs-heading">Upload Documents</span>
+                <ChevronDown size={19} className={documentsExpanded ? 'is-open' : ''} aria-hidden="true" />
+              </button>
+              {documentsExpanded && <div id="neir-v7-document-list" className="neir-v7-document-grid">
+                {reasonDocs.map(uploadField)}
               </div>}
             </section>
           </>}
