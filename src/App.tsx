@@ -44,7 +44,7 @@ export default function App() {
   }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
 
-  // Keep the existing synthetic fallback; restored sessions contain only non-sensitive identity.
+  // Static profile display data; no account login is required.
   const defaultCitizenSession: UserSession = {
     isLoggedIn: true,
     name: 'Md. Zahid Hasan',
@@ -168,10 +168,7 @@ export default function App() {
 
         {/* ROUTE 2: User Guides */}
         {currentRoute === 'guides' && (
-          <UserGuidesView
-            language={language}
-            onOpenLogin={() => setCurrentRoute('dashboard')}
-          />
+          <UserGuidesView language={language} />
         )}
 
         {/* ROUTE 3: FAQ */}
