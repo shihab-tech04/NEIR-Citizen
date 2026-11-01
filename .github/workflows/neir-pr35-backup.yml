@@ -18,19 +18,19 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin main --tags
-          PRE_RELEASE=92dd64893a835ba736d5d915793de598b52e2004
+          PRE_RELEASE=4547dc39cacdea3cb41530ba400bbec721c9d67e
           test "$(git rev-parse origin/main)" = "$PRE_RELEASE"
           mkdir -p neir-recovery
-          git bundle create neir-recovery/NEIR-Citizen-pre-PR35-92dd6489.bundle --all
-          git bundle verify neir-recovery/NEIR-Citizen-pre-PR35-92dd6489.bundle
-          git clone neir-recovery/NEIR-Citizen-pre-PR35-92dd6489.bundle /tmp/neir-restore
+          git bundle create neir-recovery/NEIR-Citizen-pre-PR38-4547dc39.bundle --all
+          git bundle verify neir-recovery/NEIR-Citizen-pre-PR38-4547dc39.bundle
+          git clone neir-recovery/NEIR-Citizen-pre-PR38-4547dc39.bundle /tmp/neir-restore
           git -C /tmp/neir-restore cat-file -e "$PRE_RELEASE^{commit}"
           for source in src/components/ProfileSpecialRegistrationModal.tsx src/components/ProfileSpecialRegistrationModal.css scripts/neir-mock-journeys.mjs src/App.tsx; do
             git show "$PRE_RELEASE:$source" > /tmp/original
             git -C /tmp/neir-restore show "$PRE_RELEASE:$source" > /tmp/restored
             cmp /tmp/original /tmp/restored
           done
-          (cd neir-recovery && sha256sum NEIR-Citizen-pre-PR35-92dd6489.bundle > NEIR-Citizen-pre-PR35-92dd6489.bundle.sha256)
+          (cd neir-recovery && sha256sum NEIR-Citizen-pre-PR38-4547dc39.bundle > NEIR-Citizen-pre-PR38-4547dc39.bundle.sha256)
           printf 'pre_release_commit=%s\nrestore_test=PASS\nsource_file_byte_comparison=PASS\n' "$PRE_RELEASE" > neir-recovery/manifest.txt
       - uses: actions/upload-artifact@v4
         with:
