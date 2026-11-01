@@ -507,3 +507,29 @@ textarea.neir-special-reg-field{height:auto;min-height:96px;resize:vertical}
  .neir-special-reg-footer button{min-height:48px;font-size:13px}
  .neir-special-reg-next{padding:10px 12px}
 }
+
+
+/* Figma modal geometry refinements: fixed 820px layout, 3-card stepper and responsive footer. */
+.neir-special-reg-steps{padding-bottom:24px;border-bottom:1px solid var(--neir-reg-border);margin:0 24px}
+.neir-special-reg-step{position:relative;margin-right:28px;flex:1 1 0}
+.neir-special-reg-step:last-child{margin-right:0}
+.neir-special-reg-step:not(:last-child)::after{content:'»';position:absolute;right:-29px;top:50%;transform:translateY(-50%);font-size:30px;line-height:1;color:var(--neir-primary-600)}
+.neir-special-reg-step:last-child::after{display:none}
+.neir-special-reg-step>svg{display:none}
+.neir-special-reg-step.is-complete{background:#fff}
+.neir-special-reg-device{display:flex;flex-direction:column;gap:16px}
+.neir-special-reg-device>label{display:block;font-size:14px;line-height:30px}
+.neir-special-reg-readonly{background:#e4e4e4;cursor:default}
+.neir-special-reg-device>.neir-special-reg-span{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.neir-special-reg-grid>.neir-special-reg-span{grid-column:1/-1}
+.neir-special-reg-footer:not(.is-intro) .neir-special-reg-next{flex:0 0 auto;min-width:155px}
+.neir-special-reg-footer .neir-special-reg-previous{margin-right:auto;border:1px solid var(--neir-primary-600);border-radius:150px;padding:8px 24px}
+.neir-special-reg-footer.is-intro .neir-special-reg-next{flex:1}
+.neir-special-reg-grid>.neir-special-reg-date{padding:16px 0;border-top:1px solid var(--neir-reg-border)}
+@media(max-width:767px){
+ .neir-special-reg-steps{padding:12px 0;margin:0 16px;gap:2px}
+ .neir-special-reg-step{margin-right:8px;padding:8px 4px}
+ .neir-special-reg-step:not(:last-child)::after{right:-11px;font-size:18px}
+ .neir-special-reg-footer:not(.is-intro) .neir-special-reg-next{min-width:110px}
+ .neir-special-reg-footer .neir-special-reg-previous{padding:8px 10px}
+}
