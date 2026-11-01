@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Info, MoreVertical } from 'lucide-react';
 import type { Language, UserSession } from '../types.ts';
-import { FigmaSpecialRegistrationModal } from './FigmaSpecialRegistrationModal.tsx';
 import { ProfileSpecialRegistrationModal } from './ProfileSpecialRegistrationModal.tsx';
 import { NeirModalFrame } from './NeirModalFrame.tsx';
 import './CitizenImeiListView.css';
@@ -45,7 +44,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [result, setResult] = useState('');
   const observedRegistrationTrigger = useRef<number | null>(null);
 
-  // The public/homepage sign-in handoff continues to open the approved Figma dialog.
+  // Both homepage and My Profile use the same progressive registration modal after authentication.
   useEffect(() => {
     if (registrationTrigger === null) { observedRegistrationTrigger.current = null; return; }
     if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) {
@@ -133,10 +132,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
       <input id="neir-profile-name-field" className="neir-shared-field" value={profileName} onChange={event => setProfileName(event.target.value)} />
       <p className="neir-shared-note" style={{ marginTop: 14 }}>Demonstration-only profile label. No identity data is updated on a server.</p>
     </NeirModalFrame>}
-    {wizard && (wizard.source === 'home' ? <FigmaSpecialRegistrationModal
-      initialImei={wizard.imei} onClose={() => setWizard(null)}
-      onComplete={message => { setWizard(null); completeRegistration(message); }} /> :
-      <ProfileSpecialRegistrationModal initialImei={wizard.imei}
-        onClose={() => setWizard(null)} onComplete={completeRegistration} />)}
+    {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei}
+      onClose={() => setWizard(null)} onComplete={completeRegistration} />}
   </>;
 };
