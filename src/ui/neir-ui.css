@@ -142,3 +142,13 @@
 .neir-special-registration-button.neir-ui-button--primary:hover:not(:disabled){
   background:var(--neir-primary-900);border-color:var(--neir-primary-900);
 }
+
+/* My Profile uses the same bright primary CTA from the approved NEIR account view. */
+.neir-profile-search-button.neir-ui-button--primary,
+.neir-profile-primary-action.neir-ui-button--primary{
+  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+}
+.neir-profile-search-button.neir-ui-button--primary:hover:not(:disabled),
+.neir-profile-primary-action.neir-ui-button--primary:hover:not(:disabled){
+  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+}
