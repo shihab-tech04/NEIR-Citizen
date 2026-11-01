@@ -3,6 +3,7 @@ import { ArrowLeft, Check, CheckCircle2, ChevronDown, Eye, FileText, Gift, Packa
 import './ProfileSpecialRegistrationModal.css';
 import { NeirDocumentDemo, downloadNeirDocumentSample } from './NeirDocumentDemo';
 import { submitNeirSpecialRegistration } from '../utils/neirSpecialRegistrationApi.ts';
+import { UiInput, UiButton } from '../ui/index.ts';
 
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
@@ -238,7 +239,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
             <h3 className="neir-v7-section-heading" id="neir-v7-imei-heading">Enter the IMEI number of the device you want to register</h3>
             <label className="neir-v7-field" htmlFor="neir-v7-imei">
               <span>IMEI Number <b aria-hidden="true">*</b></span>
-              <input id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15}
+              <UiInput id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15}
                 onChange={event => {
                   const nextImei = event.target.value.replace(/\D/g, '').slice(0,15);
                   setImei(nextImei);
@@ -277,14 +278,14 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               <div className="neir-v7-grid">
                 <label className={'neir-v7-field' + (reason !== 'foreign-tour' ? ' neir-v7-span' : '')} htmlFor="neir-v7-arrival">
                   <span>Select arrival date <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-arrival" ref={arrivalRef} type="date" max={localDate()} value={arrival}
+                  <UiInput id="neir-v7-arrival" ref={arrivalRef} type="date" max={localDate()} value={arrival}
                     onChange={event => { setArrival(event.target.value); setSubmitted(false); }}
                     required aria-invalid={!!arrival && arrival > localDate()} />
                   {arrival && arrival > localDate() && <small className="neir-v7-error" role="alert">Future dates are not allowed.</small>}
                 </label>
                 {reason === 'foreign-tour' && <label className="neir-v7-field" htmlFor="neir-v7-passport">
                   <span>Passport number <b aria-hidden="true">*</b></span>
-                  <input id="neir-v7-passport" value={passport}
+                  <UiInput id="neir-v7-passport" value={passport}
                     onChange={event => { setPassport(event.target.value); setSubmitted(false); }}
                     placeholder="Enter passport number" required />
                 </label>}
@@ -307,8 +308,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <button className="neir-v7-cancel" type="button" onClick={onClose}>Cancel</button>
-           <button className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" aria-busy={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</button>
+          <UiButton variant="quiet" className="neir-v7-cancel" onClick={onClose}>Cancel</UiButton>
+           <UiButton variant="secondary" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
         </footer>
       </form>
       {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">
@@ -316,9 +317,9 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
           <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
         </div>
         <footer className="neir-v7-footer neir-v7-sample-footer">
-          <button className="neir-v7-next" type="button" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
+          <UiButton variant="secondary" className="neir-v7-next" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
             Download sample
-          </button>
+          </UiButton>
         </footer>
       </div>}
     </section>
