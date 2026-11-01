@@ -198,6 +198,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
             onChange={event => {
               const selected = event.target.files?.[0];
               if (selected) setFile(doc.id, selected);
+              else if (!files[doc.id]) setFile(doc.id); // Clear a rejected picker attempt, but retain an already attached file.
               event.target.value = '';
             }} />
           {!file && <label className="neir-v7-upload-pick" htmlFor={'neir-v7-file-' + doc.id}>
