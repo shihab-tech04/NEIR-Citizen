@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
@@ -269,7 +270,7 @@ export default function App() {
         <NeirModalFrame title={language === 'bn' ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের তথ্য' : 'About Special Registration'}
           onClose={() => setGuestRegistrationIntroOpen(false)}
-          footer={<button type="button" className="neir-shared-button" onClick={() => {
+          footer={<button type="button" className="neir-shared-button neir-registration-full-width" onClick={() => {
             setGuestRegistrationIntroOpen(false);
             setLoginForSpecialRegistration(true);
             setLoginInitialView('login');
@@ -294,14 +295,23 @@ export default function App() {
         <NeirModalFrame title={language === 'bn' ? 'লগইন সফল' : 'Login successful'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের জন্য লগইন সফল' : 'Special Registration login successful'}
           onClose={() => setRegistrationLoginSuccessOpen(false)}
-          footer={<button type="button" className="neir-shared-button" onClick={() => {
+          footer={<button type="button" className="neir-shared-button neir-registration-full-width neir-registration-success-cta" onClick={() => {
             setRegistrationLoginSuccessOpen(false);
             setCurrentRoute('home');
             setSpecialRegistrationTrigger(Date.now());
           }}>{language === 'bn' ? 'বিশেষ নিবন্ধন শুরু করুন' : 'Proceed to special registration'}</button>}>
-          <p role="status">{language === 'bn'
-            ? 'আপনি সফলভাবে আপনার অ্যাকাউন্টে লগইন করেছেন। এখন বিশেষ নিবন্ধনের আবেদন শুরু করতে পারেন।'
-            : 'You have successfully logged in to your account. You can now start your Special Registration application.'}</p>
+          <div className="neir-registration-success" role="status">
+            <div className="neir-registration-success-mark" aria-hidden="true"><CheckCircle2 size={38} strokeWidth={1.8} /></div>
+            <h3>{language === 'bn' ? 'আবেদন শুরু করার জন্য প্রস্তুত!' : 'You are ready to apply!'}</h3>
+            <p>{language === 'bn'
+              ? 'আপনি সফলভাবে লগইন করেছেন। এখন আপনার ডিভাইসের বিশেষ নিবন্ধনের আবেদন শুরু করতে পারেন।'
+              : 'You have successfully logged in. Your Special Registration application is ready to start.'}</p>
+            <div className="neir-registration-success-next">
+              <span className="neir-registration-success-step" aria-hidden="true">1</span>
+              <span>{language === 'bn' ? 'পরবর্তী ধাপ: ডিভাইসের IMEI এবং ক্রয়ের তথ্য দিন' : 'Next: Enter your device IMEI and how you received it'}</span>
+              <ArrowRight size={18} aria-hidden="true" />
+            </div>
+          </div>
         </NeirModalFrame>
       )}
       <LoginModal
