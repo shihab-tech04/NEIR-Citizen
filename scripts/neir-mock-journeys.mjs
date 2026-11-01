@@ -116,7 +116,7 @@ try{
     await dialog.getByRole('button',{name:/^login$/i}).click();
     const success=desktop.getByRole('dialog',{name:'Special Registration login successful'});
     await expectVisible(success,'successful login offers explicit registration handoff');
-    assert.equal(await desktop.getByRole('dialog',{name:'Special Registration'}).count(),0,'form waits for explicit action');
+    assert.equal(await desktop.getByRole('dialog',{name:'Special Registration',exact:true}).count(),0,'form waits for explicit action');
     await success.getByRole('button',{name:'Proceed to special registration'}).click();
     const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(resumedWizard,'user explicitly starts Special Registration');
