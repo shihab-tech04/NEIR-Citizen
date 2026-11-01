@@ -459,6 +459,7 @@ try{
     await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
     await mobile.locator('.neir-special-registration-button').click();
     await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest must sign in before registration');
+    await expectVisible(mobile.locator('.neir-login-registration-message'),'registration login explanation shown on mobile');
     await mobile.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
     await noOverflow(mobile,390);
   });
