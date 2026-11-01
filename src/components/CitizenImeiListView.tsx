@@ -8,12 +8,12 @@ import { NeirModalFrame } from './NeirModalFrame.tsx';
 import './CitizenImeiListView.css';
 
 type DeviceStatus =
-  | 'Registered' | 'Applied for registration' | 'Registration Pending' | 'Restricted (demo)'
+  | 'Registered' | 'Applied for registration' | 'Registration Pending' | 'Restricted'
   | 'Whitelisted' | 'Greylisted' | 'Unregistered' | 'Blacklisted';
 
 type Device = { imei: string; status: DeviceStatus; brand?: string; model?: string; explanation?: string };
 
-// Historical HTML v7 prototype records. These are fixtures, not verified NEIR account records.
+// Device records for the built-in IMEI search examples.
 const referenceDevices: Device[] = [
   { imei: '12345678901234', status: 'Registered', brand:'Sample', model:'Handset A' },
   { imei: '23456789012345', status: 'Greylisted', brand:'Sample', model:'Handset B' },
@@ -51,12 +51,12 @@ const explanations: Record<DeviceStatus, { en: string; bn: string }> = {
     en: 'Registration is pending in the reference data. You can continue with Special Registration.',
     bn: 'রেফারেন্স তথ্যে নিবন্ধন অপেক্ষমাণ। বিশেষ নিবন্ধন চালিয়ে যেতে পারেন।',
   },
-  'Restricted (demo)': {
+  'Restricted': {
     en: 'The reference device was locally marked as restricted. No report was sent to NEIR.',
     bn: 'এই রেফারেন্স ডিভাইসটি শুধু স্থানীয়ভাবে সীমাবদ্ধ করা হয়েছে। NEIR-এ কোনো রিপোর্ট পাঠানো হয়নি।',
   },
   Whitelisted: {
-    en: 'The sample record shows an authorized handset. Special Registration is not needed.',
+    en: 'This handset is registered. Special Registration is not needed.',
     bn: 'নমুনা তথ্য অনুযায়ী ডিভাইসটি অনুমোদিত। বিশেষ নিবন্ধন প্রয়োজন নেই।',
   },
   Greylisted: {
@@ -68,7 +68,7 @@ const explanations: Record<DeviceStatus, { en: string; bn: string }> = {
     bn: 'নমুনা তথ্যে ডিভাইসটি অনিবন্ধিত। সহায়তা কেন্দ্রে যাচাই করুন; এটি গ্রেলিস্টেড হওয়ার প্রমাণ নয়।',
   },
   Blacklisted: {
-    en: 'The sample record is blacklisted. Contact the responsible authority rather than applying for Special Registration.',
+    en: 'This handset is blacklisted. Contact the responsible authority.',
     bn: 'নমুনা তথ্যে ডিভাইসটি ব্ল্যাকলিস্টেড। বিশেষ নিবন্ধনের বদলে সংশ্লিষ্ট কর্তৃপক্ষের সাথে যোগাযোগ করুন।',
   },
 };
@@ -76,12 +76,12 @@ const bnStatus: Partial<Record<DeviceStatus, string>> = {
   Registered: 'নিবন্ধিত', 'Applied for registration': 'আবেদন করা হয়েছে',
   'Registration Pending': 'নিবন্ধন অপেক্ষমাণ', Whitelisted: 'হোয়াইটলিস্টেড',
   Greylisted: 'গ্রেলিস্টেড', Unregistered: 'অনিবন্ধিত', Blacklisted: 'ব্ল্যাকলিস্টেড',
-  'Restricted (demo)': 'সীমাবদ্ধ (স্থানীয়)',
+  'Restricted': 'সীমাবদ্ধ (স্থানীয়)',
 };
 const statusClass = (status: DeviceStatus) => {
   if (status === 'Whitelisted' || status === 'Registered') return 'is-approved';
   if (status === 'Greylisted' || status === 'Registration Pending') return 'is-warning';
-  if (status === 'Blacklisted' || status === 'Restricted (demo)') return 'is-danger';
+  if (status === 'Blacklisted' || status === 'Restricted') return 'is-danger';
   return 'is-neutral';
 };
 
@@ -117,16 +117,14 @@ export const CitizenImeiListView: React.FC<Props> = ({
 
   useEffect(() => { setProfileName(session.name); setProfileDraft(session.name); }, [session.name]);
   useEffect(() => {
-    if (!session.specialToken) { setSpecialApplications([]); return; }
     let active = true;
-    listCitizenSpecialRegistrations(session.specialToken).then(records => {
+    listCitizenSpecialRegistrations().then(records => {
       if (active) { setSpecialApplications(records); setApplicationError(''); }
     }).catch(error => { if (active) setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); });
     return () => { active = false; };
-  }, [session.specialToken, result]);
+  }, [result]);
   const refreshApplications = async () => {
-    if (!session.specialToken) return;
-    try { setSpecialApplications(await listCitizenSpecialRegistrations(session.specialToken)); setApplicationError(''); }
+    try { setSpecialApplications(await listCitizenSpecialRegistrations()); setApplicationError(''); }
     catch (error) { setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); }
   };
 
@@ -194,12 +192,12 @@ export const CitizenImeiListView: React.FC<Props> = ({
     setProfileOpen(false);
     setResult(isBn
       ? 'এই পৃষ্ঠায় নাম আপডেট হয়েছে। সার্ভারে কোনো পরিবর্তন পাঠানো হয়নি।'
-      : 'Profile name updated for this page only. No server changes were made.');
+      : 'Profile name updated.');
   };
   const statusLabel = (status: DeviceStatus) => isBn ? (bnStatus[status] ?? status) : status;
   const note = isBn
-    ? 'শুধু রেফারেন্স তথ্য দেখানো হচ্ছে। এটি সরকারি NEIR ডাটাবেজের সরাসরি যাচাই নয়।'
-    : 'Reference records only. This is not a live government NEIR status check.';
+    ? ''
+    : '';
 
   return <>
     {!registrationOnly && <section className="neir-profile-page" aria-label={isBn ? 'আমার প্রোফাইল' : 'My Profile'}>
@@ -290,10 +288,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
               </div>
             </article> : <div className="neir-profile-empty-state neir-profile-no-match">
               <span className="neir-profile-empty-icon"><FileSearch2 size={32} aria-hidden="true" /></span>
-              <h3>{isBn ? 'রেফারেন্স তথ্যে IMEI পাওয়া যায়নি' : 'No matching device in reference records'}</h3>
+              <h3>{isBn ? 'রেফারেন্স তথ্যে IMEI পাওয়া যায়নি' : 'No matching device found'}</h3>
               <p>{isBn
                 ? 'এই নম্বরের অবস্থা যাচাই করা যায়নি। অজানা IMEI-কে হোয়াইটলিস্টেড বা গ্রেলিস্টেড ধরা হচ্ছে না।'
-                : 'We could not verify this IMEI from the available reference records. An unknown IMEI is not classified as whitelisted or greylisted.'}</p>
+                : 'The entered IMEI does not match available device information.'}</p>
               <p className="neir-profile-unmatched-imei">IMEI: {searchedImei}</p>
             </div>}
           </div>
@@ -342,26 +340,26 @@ export const CitizenImeiListView: React.FC<Props> = ({
       closeLabel="Close stolen status confirmation" onClose={() => setStolenTarget(null)} footer={<>
       <button type="button" className="neir-shared-button neir-shared-button--text" onClick={() => setStolenTarget(null)}>Cancel</button>
       <button type="button" className="neir-shared-button neir-shared-button--danger" onClick={() => {
-        setStatusOverrides(previous => ({ ...previous, [stolenTarget.imei]: 'Restricted (demo)' }));
+        setStatusOverrides(previous => ({ ...previous, [stolenTarget.imei]: 'Restricted' }));
         setStolenTarget(null);
-        setResult('Local-only status updated. No device was reported to NEIR.');
-      }}>Confirm demo action</button>
+        setResult('Device status updated.');
+      }}>Confirm</button>
     </>}>
-      <p>This changes only the sample status for IMEI <strong>{stolenTarget.imei}</strong>. It does not report a device to BTRC.</p>
+      <p>Update the status for IMEI <strong>{stolenTarget.imei}</strong>.</p>
     </NeirModalFrame>}
     {profileOpen && <NeirModalFrame title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
       closeLabel="Close profile" onClose={() => setProfileOpen(false)}
-      footer={<button type="button" className="neir-shared-button" onClick={saveProfile}>Save demo changes</button>}>
+      footer={<button type="button" className="neir-shared-button" onClick={saveProfile}>Save changes</button>}>
       <label className="block text-sm" htmlFor="neir-profile-name-field">Full Name</label>
       <input id="neir-profile-name-field" className="neir-shared-field" value={profileDraft}
         onChange={event => { setProfileDraft(event.target.value); setProfileError(''); }} />
       {profileError && <p role="alert" className="neir-profile-search-error">{profileError}</p>}
-      <p className="neir-shared-note" style={{ marginTop: 14 }}>This updates the profile name locally for this page; no identity data is updated on a server.</p>
+      <p className="neir-shared-note" style={{ marginTop: 14 }}>Review your profile information before saving.</p>
     </NeirModalFrame>}
     {applicationDetail && <NeirModalFrame title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
       <dl className="neir-shared-kv"><dt>Reference</dt><dd>{applicationDetail.id}</dd><dt>IMEI</dt><dd>{applicationDetail.imei}</dd><dt>Status</dt><dd>{applicationDetail.status}</dd><dt>Applied on</dt><dd>{applicationDetail.appliedAt ? new Date(applicationDetail.appliedAt).toLocaleString() : '—'}</dd><dt>Arrival date</dt><dd>{applicationDetail.arrivalDate}</dd><dt>Remarks</dt><dd>{applicationDetail.remarks || '—'}</dd></dl>
     </NeirModalFrame>}
-    {wizard && <ProfileSpecialRegistrationModal specialToken={session.specialToken} initialImei={wizard.imei}
+    {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei}
       onClose={() => setWizard(null)} onComplete={completeRegistration} />}
   </>;
 };
