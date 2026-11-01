@@ -110,3 +110,74 @@
  .neir-v7-footer button{padding:0 12px;font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){.neir-v7-dialog *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Document checklist: adapt the supplied Upload Documents row hierarchy
+   without replacing NEIR's existing Poppins typography, color or modal tokens. */
+.neir-v7-doc-panel{
+  border:1px solid #d6e0e4;border-radius:12px;background:#fff;
+  padding:0 20px;min-width:0;overflow:visible;
+}
+.neir-v7-doc-panel-header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;min-height:66px;padding:12px 0;border:0;background:transparent;
+  text-align:left;color:#202c3c;font:inherit;font-size:18px;font-weight:600;
+  line-height:1.45;cursor:pointer;
+}
+.neir-v7-doc-panel-header svg{flex:none;color:#00838f;transform:rotate(0deg);transition:transform .12s}
+.neir-v7-doc-panel-header svg.is-open{transform:rotate(180deg)}
+.neir-v7-doc-panel-header:focus-visible{outline:2px solid #00838f;outline-offset:2px}
+.neir-v7-doc-panel .neir-v7-document-grid{display:block;padding-bottom:4px}
+.neir-v7-doc-panel .neir-v7-upload-group{
+  min-width:0;border-top:1px solid #e3dbd8;padding:16px 0;
+}
+.neir-v7-doc-panel .neir-v7-upload-line{
+  display:grid;grid-template-columns:22px minmax(0,1fr) auto;
+  align-items:center;gap:10px;width:100%;
+}
+.neir-v7-document-icon{align-self:start;margin-top:3px;flex:none;color:#00838f}
+.neir-v7-upload-text{min-width:0}
+.neir-v7-doc-panel .neir-v7-upload-title{
+  display:block;min-width:0;margin:0;color:#202c3c;
+  font-family:inherit;font-size:16px;line-height:1.45;font-weight:500;
+  overflow-wrap:anywhere;
+}
+.neir-v7-upload-desc{margin:4px 0 0;font-family:inherit;font-size:14px;line-height:1.5;color:#65768b}
+.neir-v7-upload-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:0}
+.neir-v7-doc-panel .neir-v7-help-trigger{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  width:auto;min-width:0;height:42px;padding:5px 6px;border-radius:7px;
+  border:0;background:transparent;color:#00838f;white-space:nowrap;
+  font-family:inherit;font-size:14px;font-weight:400;cursor:pointer;
+}
+.neir-v7-doc-panel .neir-v7-help-trigger:hover{background:#edf9fb}
+.neir-v7-doc-panel .neir-v7-upload-pick{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  min-height:42px;width:auto;margin:0;padding:9px 12px;gap:8px;
+  border:1px solid #d6e0e4;border-radius:7px;background:#f8fafc;color:#00838f;
+  font-family:inherit;font-size:14px;font-weight:500;line-height:1.4;white-space:nowrap;
+  cursor:pointer;
+}
+.neir-v7-doc-panel .neir-v7-upload-pick:hover{border-color:#00acc1;background:#edf9fb}
+.neir-v7-upload-selected{display:flex;align-items:center;gap:6px;min-width:0;margin:6px 0 0;font-size:13px;color:#00838f}
+.neir-v7-upload-selected span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.neir-v7-upload-selected button{flex:none;padding:0 4px;border:0;background:transparent;color:#a83232;font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+.neir-v7-upload-guidance{margin:12px 0 0 32px;padding:10px 12px;border:1px solid #b6e2e8;border-radius:8px;background:#f5fcfd;color:#31505d;font-size:14px;line-height:1.55}
+.neir-v7-upload-guidance span{font-style:italic;color:#65768b}
+.neir-v7-doc-panel .neir-v7-error{margin:8px 0 0 32px}
+@media(max-width:700px){
+  .neir-v7-doc-panel{padding:0 14px}
+  .neir-v7-doc-panel-header{font-size:18px;min-height:58px}
+  .neir-v7-doc-panel .neir-v7-upload-line{
+    grid-template-columns:20px minmax(0,1fr);align-items:start;gap:8px;
+  }
+  .neir-v7-upload-actions{grid-column:2;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .neir-v7-doc-panel .neir-v7-help-trigger,.neir-v7-doc-panel .neir-v7-upload-pick{min-height:42px;height:42px}
+  .neir-v7-upload-guidance{margin-left:28px}
+  .neir-v7-doc-panel .neir-v7-error{margin-left:28px}
+}
+@media(max-width:359px){
+  .neir-v7-doc-panel{padding:0 12px}
+  .neir-v7-upload-desc{font-size:13px}
+  .neir-v7-doc-panel .neir-v7-help-trigger{padding-left:2px;padding-right:4px}
+  .neir-v7-doc-panel .neir-v7-upload-pick{padding:8px 10px}
+}
