@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 import { NeirDocumentDemo, downloadNeirDocumentSample } from './NeirDocumentDemo';
 import { submitNeirSpecialRegistration } from '../utils/neirSpecialRegistrationApi.ts';
@@ -173,43 +173,51 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   };
   // Document checklist uses the existing NEIR design tokens, with the row
   // hierarchy and separate file-picker action from the supplied UX reference.
-  const uploadField = (doc: DocumentDefinition) => <div key={doc.id} className="neir-v7-upload-group">
-    <div className="neir-v7-upload-line">
-      <Paperclip className="neir-v7-document-icon" size={18} aria-hidden="true" />
-      <div className="neir-v7-upload-text">
-        <div className="neir-v7-upload-title">{doc.label}
-          {doc.required && <> <b className="neir-v7-required" aria-hidden="true">*</b></>}
+  const uploadField = (doc: DocumentDefinition) => {
+    const file = files[doc.id];
+    return <div key={doc.id} className={'neir-v7-upload-group' + (file ? ' is-complete' : '')}>
+      <div className="neir-v7-upload-line">
+        {file ? <CheckCircle2 className="neir-v7-document-icon neir-v7-document-complete-icon" size={19} aria-label="File attached" /> :
+          <Paperclip className="neir-v7-document-icon" size={18} aria-hidden="true" />}
+        <div className="neir-v7-upload-text">
+          <div className="neir-v7-upload-title">{doc.label}
+            {doc.required && <> <b className="neir-v7-required" aria-hidden="true">*</b></>}
+          </div>
+          <p className="neir-v7-upload-desc">{doc.purpose}</p>
         </div>
-        <p className="neir-v7-upload-desc">{doc.purpose}</p>
-        {files[doc.id] && <p className="neir-v7-upload-selected">
-          <FileText size={15} aria-hidden="true" />
-          <span>Attached: {files[doc.id].name}</span>
-          <button type="button" aria-label={'Remove ' + doc.label} onClick={() => setFile(doc.id)}>Remove</button>
-        </p>}
+        <div className="neir-v7-upload-actions">
+          <button type="button" className="neir-v7-help-trigger"
+            aria-label={'View sample of ' + doc.label}
+            onClick={event => { demoReturnFocusRef.current = event.currentTarget; setReturningFromSample(false); setDemoDoc(doc); }}>
+            <Eye size={16} aria-hidden="true" /> <span>View sample</span>
+          </button>
+          <input type="file" className="neir-v7-file-input"
+            id={'neir-v7-file-' + doc.id} aria-label={'Upload ' + doc.label}
+            aria-required={doc.required} required={doc.required && !file}
+            accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
+            onChange={event => {
+              const selected = event.target.files?.[0];
+              if (selected) setFile(doc.id, selected);
+              event.target.value = '';
+            }} />
+          {!file && <label className="neir-v7-upload-pick" htmlFor={'neir-v7-file-' + doc.id}>
+            <Upload size={16} aria-hidden="true" />
+            <span>Choose file</span>
+          </label>}
+        </div>
       </div>
-      <div className="neir-v7-upload-actions">
-        <button type="button" className="neir-v7-help-trigger"
-          aria-label={'View sample of ' + doc.label}
-          onClick={event => { demoReturnFocusRef.current = event.currentTarget; setReturningFromSample(false); setDemoDoc(doc); }}>
-          <Eye size={16} aria-hidden="true" /> <span>View sample</span>
+      {file && <div className="neir-v7-uploaded-file" role="group" aria-label={'Attached ' + doc.label}>
+        <FileText size={16} aria-hidden="true" />
+        <span className="neir-v7-uploaded-file-name" title={file.name}>{file.name}</span>
+        <button className="neir-v7-uploaded-remove" type="button"
+          aria-label={'Remove ' + doc.label} title="Remove attachment"
+          onClick={() => setFile(doc.id)}>
+          <X size={17} aria-hidden="true" />
         </button>
-        <input type="file" className="neir-v7-file-input"
-          id={'neir-v7-file-' + doc.id} aria-label={'Upload ' + doc.label}
-          aria-required={doc.required} required={doc.required}
-          accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
-          onChange={event => {
-            const selected = event.target.files?.[0];
-            setFile(doc.id, selected);
-            if (selected && (selected.size > maxFileSize || !allowedTypes.includes(selected.type))) event.target.value = '';
-          }} />
-        <label className="neir-v7-upload-pick" htmlFor={'neir-v7-file-' + doc.id}>
-          <Upload size={16} aria-hidden="true" />
-          <span>{files[doc.id] ? 'Replace file' : 'Choose file'}</span>
-        </label>
-      </div>
-    </div>
-    {fileErrors[doc.id] && <p className="neir-v7-error" role="alert">{fileErrors[doc.id]}</p>}
-  </div>;
+      </div>}
+      {fileErrors[doc.id] && <p className="neir-v7-error" role="alert">{fileErrors[doc.id]}</p>}
+    </div>;
+  };
 
   const choices = [
     { value: 'airmail' as const, label: 'Bought/Brought from Air Mail', Icon: Package },
