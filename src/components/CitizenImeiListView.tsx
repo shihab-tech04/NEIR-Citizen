@@ -239,9 +239,9 @@ export const CitizenImeiListView: React.FC<Props> = ({
               {session.email && !session.email.endsWith('.invalid') && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
             </div>
           </div>
-          <button type="button" className="neir-profile-edit" onClick={editProfile}>
+          <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
             {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
-          </button>
+          </UiButton>
         </section>
 
         <section className="neir-profile-search-panel" aria-labelledby="neir-device-search-title">
@@ -266,10 +266,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
                     setSearchError('');
                   }} />
               </div>
-              <button className="neir-profile-search-button" type="submit" disabled={!imeiQuery.trim()}>
+              <UiButton variant="primary" className="neir-profile-search-button" type="submit" disabled={!imeiQuery.trim()}>
                 <Search size={18} aria-hidden="true" />
                 {isBn ? 'খুঁজুন' : 'Search device'}
-              </button>
+              </UiButton>
             </div>
             {searchError && <p id="neir-profile-search-error" className="neir-profile-search-error" role="alert">{searchError}</p>}
           </form>
@@ -300,16 +300,16 @@ export const CitizenImeiListView: React.FC<Props> = ({
               </div>
               <div className="neir-profile-result-actions">
                 {requiresSpecialRegistration(matchedDevice.status) && !applicationForSearch &&
-                  <button type="button" className="neir-profile-primary-action"
+                  <UiButton variant="primary" type="button" className="neir-profile-primary-action"
                     onClick={() => startProfileRegistration(matchedDevice.imei)}>
                     {isBn ? 'বিশেষ নিবন্ধনের আবেদন করুন' : 'Apply for Special Registration'}
-                  </button>}
-                <button type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
+                  </UiButton>}
+                <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
                   <Info size={17} aria-hidden="true" /> {isBn ? 'বিস্তারিত দেখুন' : 'View details'}
-                </button>
-                <button type="button" className="neir-profile-secondary-action" onClick={() => setStolenTarget(matchedDevice)}>
+                </UiButton>
+                <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={() => setStolenTarget(matchedDevice)}>
                   {isBn ? 'হারানো / চুরি রিপোর্ট' : 'Mark as Stolen'}
-                </button>
+                </UiButton>
               </div>
             </article> : <div className="neir-profile-empty-state neir-profile-no-match">
               <span className="neir-profile-empty-icon"><FileSearch2 size={32} aria-hidden="true" /></span>
@@ -322,13 +322,13 @@ export const CitizenImeiListView: React.FC<Props> = ({
           </div>
           <p className="neir-profile-data-note">{note}</p>
           {applicationError && <p role="alert" className="neir-profile-search-error">{applicationError}
-            <button type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</button></p>}
+            <UiButton variant="quiet" type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</UiButton></p>}
           {result && <p role="status" className="neir-profile-feedback">{result}</p>}
         </section>
         {specialApplications.length > 0 && <section className="neir-special-applications" aria-labelledby="neir-special-applications-title">
           <div className="neir-special-table-heading">
             <h2 id="neir-special-applications-title">{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Special Registration applications'} ({specialApplications.length})</h2>
-            <button type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</button>
+            <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</UiButton>
           </div>
           <UiDataTable
             rows={specialApplications}
