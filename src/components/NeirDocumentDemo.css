@@ -69,3 +69,15 @@
   .neir-demo-paper-header span{font-size:10px}
 
 }
+
+/* The sample replaces content within the same dialog, never a nested overlay. */
+.neir-v7-title-group{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.neir-v7-title-group h2{min-width:0;overflow-wrap:anywhere}
+.neir-v7-back{border:0;background:transparent;color:#202020;width:28px;height:28px;flex:none;display:grid;place-items:center;padding:0;cursor:pointer}
+.neir-v7-back:focus-visible,.neir-v7-close:focus-visible{outline:2px solid #00838f;outline-offset:3px}
+.neir-v7-sample-view{animation:neir-sample-enter .26s cubic-bezier(.2,.75,.3,1) both}
+.neir-v7-form--swap-back{animation:neir-form-return .26s cubic-bezier(.2,.75,.3,1) both}
+@keyframes neir-sample-enter{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes neir-form-return{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:359px){.neir-v7-title-group{gap:8px}.neir-v7-title-group h2{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.neir-v7-sample-view,.neir-v7-form--swap-back{animation:none!important}}
