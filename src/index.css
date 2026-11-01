@@ -435,3 +435,75 @@ button,input,select,textarea{font:inherit}
   outline-offset:2px;
   border-radius:6px;
 }
+
+
+/* Special Registration modal — NEIR Public page 3, Figma 6891:8847 / 8891 / 9181 / 9323. */
+.neir-special-reg-dialog{
+  --neir-reg-border:#e3dbd8;--neir-reg-text:#202020;--neir-reg-muted:#525254;
+  width:100%;max-width:820px;max-height:min(94dvh,960px);display:flex;flex-direction:column;
+  overflow:hidden;background:#fff;border-radius:16px;color:var(--neir-reg-text);
+  font-family:Poppins,Arial,sans-serif;box-shadow:0 18px 60px #0003;
+}
+.neir-special-reg-dialog *{box-sizing:border-box}
+.neir-special-reg-header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:16px;margin:24px 24px 0;padding:0 0 24px;border-bottom:1px solid var(--neir-reg-border)}
+.neir-special-reg-header h2{font-size:24px;line-height:30px;font-weight:400;color:#000;margin:0}
+.neir-special-reg-close{display:flex;justify-content:center;align-items:center;width:24px;height:24px;flex:none;background:transparent;color:var(--neir-reg-text);cursor:pointer}
+.neir-special-reg-steps{display:flex;gap:24px;padding:24px 24px 0;flex-shrink:0}
+.neir-special-reg-step{min-width:0;flex:1;display:flex;gap:8px;align-items:center;border:1px solid var(--neir-reg-border);background:#fff;padding:12px;border-radius:16px;color:#9e9e9e}
+.neir-special-reg-step-copy{min-width:0;flex:1}
+.neir-special-reg-step-copy p{font-size:14px;line-height:22px;margin:0}
+.neir-special-reg-step-copy h3{font-size:16px;line-height:24px;font-weight:500;color:#424242;margin:0;overflow-wrap:anywhere}
+.neir-special-reg-step.is-active{background:var(--neir-primary-bg);border-color:#26c6da;color:var(--neir-primary-600)}
+.neir-special-reg-step.is-active h3{color:var(--neir-primary-600)}
+.neir-special-reg-step.is-complete{border-color:#26c6da}
+.neir-special-reg-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;flex:1;padding:24px;scrollbar-width:thin}
+.neir-special-reg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.neir-special-reg-grid>label,.neir-special-reg-attachments>label,.neir-special-reg-choice-block{display:block;min-width:0;font-size:14px;font-weight:400;line-height:30px;color:var(--neir-reg-text)}
+.neir-special-reg-grid>label input,.neir-special-reg-grid>label select,.neir-special-reg-attachments>label textarea{margin-top:2px}
+.neir-special-reg-field{display:block;width:100%;min-width:0;height:60px;padding:11px 29px;border:1px solid var(--neir-reg-border);border-radius:12px;background:white;color:var(--neir-reg-text);font-size:16px;font-weight:400;line-height:1.5;outline:none}
+textarea.neir-special-reg-field{height:auto;min-height:96px;resize:vertical}
+.neir-special-reg-field:focus-visible{border-color:var(--neir-primary-600);box-shadow:0 0 0 2px #00acc128}
+.neir-special-reg-choice-block{margin-top:16px}
+.neir-special-reg-choice-block>p{margin:0 0 4px}
+.neir-special-reg-options{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.neir-special-reg-option{min-height:60px;padding:12px 16px;border:1px solid #dee2e6;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;color:var(--neir-reg-muted);font-size:16px;text-align:left;cursor:pointer}
+.neir-special-reg-option.selected{background:var(--neir-primary-bg);border-color:#26c6da;color:var(--neir-primary-900)}
+.neir-special-reg-option-circle{width:16px;height:16px;border:1px solid #9e9e9e;display:flex;align-items:center;justify-content:center;flex:none;border-radius:50%;font-size:12px}
+.neir-special-reg-option.selected .neir-special-reg-option-circle{background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff}
+.neir-special-reg-footer{display:flex;align-items:center;gap:24px;justify-content:flex-end;flex-shrink:0;margin:0 24px 24px;padding-top:24px;border-top:1px solid var(--neir-reg-border)}
+.neir-special-reg-footer button{min-height:54px;font-size:16px;font-weight:400;cursor:pointer}
+.neir-special-reg-cancel,.neir-special-reg-previous{padding:8px;color:var(--neir-primary-600);background:transparent;white-space:nowrap}
+.neir-special-reg-next{min-width:0;flex:1;max-width:100%;padding:12px 20px;border:1px solid var(--neir-primary-600);border-radius:150px;color:var(--neir-primary-900);background:white;text-align:center}
+.neir-special-reg-next:hover{background:var(--neir-primary-bg)}
+.neir-special-reg-attachments{display:flex;flex-direction:column;gap:12px}
+.neir-special-reg-attachments h3,.neir-special-reg-review h3{font-size:16px;font-weight:500;margin:0 0 4px}
+.neir-special-reg-upload{min-height:60px;border:1px solid var(--neir-reg-border);border-radius:12px;padding:12px 16px;display:flex!important;flex-direction:column;gap:6px}
+.neir-special-reg-upload input{display:block;font-size:14px;max-width:100%}
+.neir-special-reg-upload small{font-size:12px;overflow-wrap:anywhere}
+.neir-special-reg-attachments .neir-special-reg-hint,.neir-special-reg-hint{font-size:14px;color:#727272;line-height:1.5;margin:6px 0}
+.neir-special-reg-error{font-size:12px;color:#b91c1c;line-height:1.4;margin:4px 0}
+.neir-special-reg-span{grid-column:1/-1}
+.neir-special-reg-text-action{color:var(--neir-primary-900);font-size:14px;cursor:pointer;text-align:left}
+.neir-special-reg-review{display:flex;flex-direction:column;gap:16px}
+.neir-special-reg-review>div{padding:16px;border:1px solid var(--neir-reg-border);border-radius:12px}
+.neir-special-reg-review h4{font-size:16px;font-weight:600;margin:0 0 10px}
+.neir-special-reg-review p{font-size:14px;line-height:1.6;margin:3px 0;overflow-wrap:anywhere}
+.neir-special-reg-dialog button:focus-visible{outline:2px solid var(--neir-primary-900);outline-offset:2px}
+@media(max-width:767px){
+ .neir-special-reg-dialog{max-height:90dvh;border-radius:16px 16px 0 0;align-self:flex-end}
+ .neir-special-reg-header{margin:16px 16px 0;padding-bottom:16px}
+ .neir-special-reg-header h2{font-size:20px}
+ .neir-special-reg-steps{padding:16px 16px 0;gap:6px}
+ .neir-special-reg-step{padding:8px 6px;border-radius:10px}
+ .neir-special-reg-step-copy p{font-size:11px;line-height:16px}
+ .neir-special-reg-step-copy h3{font-size:12px;line-height:16px}
+ .neir-special-reg-step svg{display:none}
+ .neir-special-reg-body{padding:16px}
+ .neir-special-reg-grid{grid-template-columns:1fr;gap:12px}
+ .neir-special-reg-options{grid-template-columns:1fr;gap:8px}
+ .neir-special-reg-field{height:52px;padding:10px 16px}
+ .neir-special-reg-option{min-height:52px;font-size:14px}
+ .neir-special-reg-footer{gap:10px;margin:0 16px 16px;padding-top:16px}
+ .neir-special-reg-footer button{min-height:48px;font-size:13px}
+ .neir-special-reg-next{padding:10px 12px}
+}
