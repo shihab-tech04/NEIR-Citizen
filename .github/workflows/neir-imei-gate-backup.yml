@@ -1,0 +1,38 @@
+name: NEIR IMEI selection pre-release Git restore
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify independent Git history restoration
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE="6604fbab72f9b0d6bdf5ba3b711c7955673a28ab"
+          git fetch origin main --tags
+          test "$(git rev-parse origin/main)" = "$BEFORE"
+          mkdir -p neir-recovery
+          git bundle create neir-recovery/NEIR-Citizen-pre-IMEI-gate-6604fbab.bundle --all
+          git bundle verify neir-recovery/NEIR-Citizen-pre-IMEI-gate-6604fbab.bundle
+          git clone neir-recovery/NEIR-Citizen-pre-IMEI-gate-6604fbab.bundle /tmp/neir-restore
+          git -C /tmp/neir-restore cat-file -e "$BEFORE^{commit}"
+          for path in src/components/ProfileSpecialRegistrationModal.tsx src/components/ProfileSpecialRegistrationModal.css scripts/neir-mock-journeys.mjs; do
+            git show "$BEFORE:$path" > /tmp/neir-original
+            git -C /tmp/neir-restore show "$BEFORE:$path" > /tmp/neir-restored
+            cmp /tmp/neir-original /tmp/neir-restored
+          done
+          (cd neir-recovery && sha256sum NEIR-Citizen-pre-IMEI-gate-6604fbab.bundle > bundle.sha256)
+          printf 'pre_release_commit=%s\nrestore_test=PASS\nsource_byte_comparison=PASS\n' "$BEFORE" > neir-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-Citizen-IMEI-gate-pre-release-restore-tested
+          path: neir-recovery/
+          retention-days: 7
