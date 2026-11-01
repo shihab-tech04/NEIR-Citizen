@@ -22,22 +22,22 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
       setError('Complete all required fields with a valid mobile number and email.');
       return;
     }
-    const ticketId = 'DEMO-NEIR-' + Math.floor(100000 + Math.random() * 900000);
+    const ticketId = 'QUERY-' + Math.floor(100000 + Math.random() * 900000);
     onAddQuery({
       ticketId, citizenName: fullName, mobile, email, category: purpose, categoryBangla: purpose,
       subject: summary.slice(0, 80), details: summary, createdAt: new Date().toLocaleString('en-BD'),
-      status: 'received', statusBangla: 'Demo received', officialNoteBangla: '',
-      officialNoteEnglish: 'Browser-local demo entry. Not submitted to BTRC.',
-      timeline: [{stage:'Demo entry created',timestamp:new Date().toLocaleString('en-BD'),details:'Stored in this browser session only.'}],
+      status: 'received', statusBangla: 'Received', officialNoteBangla: '',
+      officialNoteEnglish: 'Saved to this browser session.',
+      timeline: [{stage:'Query created',timestamp:new Date().toLocaleString('en-BD'),details:'Stored in this browser session only.'}],
     });
-    setResult('Demo query created: ' + ticketId + '. This is not an official BTRC ticket and was not submitted to any server.');
+    setResult('Query created: ' + ticketId + '.');
     setNumber(ticketId);
   };
   const lookup = (e: React.FormEvent) => {
     e.preventDefault(); setError(''); setResult('');
     if (!number.trim()) {setError('Query Ticket Number is required.');return;}
-    const ticket = queryList.find(q => q.ticketId.toUpperCase() === number.trim().toUpperCase() && q.ticketId.startsWith('DEMO-'));
-    setResult(ticket ? 'Demo query found: ' + ticket.ticketId + ' — locally received (not a BTRC service status).' : 'No matching demo query in this session. Official BTRC query tracking is not connected.');
+    const ticket = queryList.find(q => q.ticketId.toUpperCase() === number.trim().toUpperCase() && q.ticketId.startsWith('QUERY-'));
+    setResult(ticket ? 'Query found: ' + ticket.ticketId + ' — Received.' : 'No matching query found in this session.');
   };
   return <section className="neir-source-subpage neir-source-contact-page space-y-7">
     <header className="text-center py-7 space-y-3"><h1 className="text-3xl sm:text-4xl font-bold text-slate-950">{isBn ? 'আমরা আপনাকে সহায়তা করতে এখানে আছি!' : "We're here to help!"}</h1>
