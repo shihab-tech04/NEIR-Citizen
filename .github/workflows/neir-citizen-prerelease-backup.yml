@@ -21,7 +21,7 @@ jobs:
           mkdir -p out
           git cat-file -e "$original^{commit}"
           git bundle create out/neir-citizen-before-figma-release.bundle --all
-          sha256sum out/neir-citizen-before-figma-release.bundle > out/SHA256SUMS
+          (cd out && sha256sum neir-citizen-before-figma-release.bundle > SHA256SUMS)
           git bundle verify out/neir-citizen-before-figma-release.bundle
           git clone --quiet out/neir-citizen-before-figma-release.bundle /tmp/neir-citizen-restored
           git -C /tmp/neir-citizen-restored checkout --quiet "$original"
