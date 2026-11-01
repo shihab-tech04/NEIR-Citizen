@@ -239,10 +239,8 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
                 {errors.eligibility && <p className="neir-special-reg-error" role="alert">{errors.eligibility}</p>}
               </div>
             </div>}
-            {!registrationIntro && step===1 && <div className="neir-special-reg-grid">
-              {inputField('IMEI Number','imei','Enter IMEI number',true)}
-              <label>Select Device<select className={fieldClass} value={form.device} onChange={e=>update('device',e.target.value)}><option value="Handset">Mobile Device</option></select></label>
-              {inputField('Device model number','model','Input model Number')}
+            {!registrationIntro && step===1 && <div className="neir-special-reg-device">
+              <label>IMEI Number<input className={fieldClass+' neir-special-reg-readonly'} value={form.imei} readOnly aria-readonly="true" /></label>
               <div className="neir-special-reg-span">
                 {extraImeis.map((value,index)=><label className="block text-sm" key={index}>IMEI Number {index+2}
                   <div className="flex gap-2 items-center"><input className={fieldClass} inputMode="numeric" value={value} placeholder="Enter IMEI number"
@@ -252,9 +250,13 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
                 {errors.extraImeis&&<p className="neir-special-reg-error" role="alert">{errors.extraImeis}</p>}
                 <button type="button" className="neir-special-reg-text-action" onClick={()=>setExtraImeis(prev=>[...prev,''])}>+ Add another IMEI number</button>
               </div>
+              <div className="neir-special-reg-grid">
+                {inputField('Device model number','model','Input model Number')}
+                <label>Select Device<select className={fieldClass} value={form.device} onChange={e=>update('device',e.target.value)}><option value="Handset">Mobile Device</option></select></label>
+              </div>
             </div>}
             {!registrationIntro && step===2 && <div className="neir-special-reg-grid">
-              <label>Application Reason
+              <label className="neir-special-reg-span">Application Reason
                 <select className={fieldClass} value={form.reason} onChange={e=>update('reason',e.target.value)}>
                   <option value="">Select Application Reason</option>
                   <option value="Purchased device during his foreign tour">Purchased handset during his foreign tour</option>
@@ -262,7 +264,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
                   <option value="Bought/Brought from Air Mail">Bought/Brought from Air Mail</option>
                 </select>{errors.reason&&<p className="neir-special-reg-error" role="alert">{errors.reason}</p>}
               </label>
-              <label>Select Arrival Date<input type="date" className={fieldClass} value={form.arrival} onChange={e=>update('arrival',e.target.value)} />{errors.arrival&&<p className="neir-special-reg-error" role="alert">{errors.arrival}</p>}</label>
+              <label className="neir-special-reg-span neir-special-reg-date">Select Arrival Date<input type="date" className={fieldClass} value={form.arrival} onChange={e=>update('arrival',e.target.value)} />{errors.arrival&&<p className="neir-special-reg-error" role="alert">{errors.arrival}</p>}</label>
               <label>Select Verification’s method
                 <select className={fieldClass} value={form.verificationMethod} onChange={e=>update('verificationMethod',e.target.value)}><option value="Passport">Passport</option></select>
               </label>
@@ -272,7 +274,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
                   <option value="">Select purchase method</option><option value="With tax">With tax</option><option value="Without tax">Without tax</option>
                 </select>{errors.purchase&&<p className="neir-special-reg-error" role="alert">{errors.purchase}</p>}
               </label>
-              {form.purchase==='With tax'&&inputField('Tax Amount','tax','Enter tax amount')}
+              {form.purchase==='With tax'&&inputField('Tax Amount','tax','With tax Amount')}
             </div>}
             {!registrationIntro && step===3 && <div className="neir-special-reg-attachments">
               <h3>Add Required Documents</h3>
@@ -293,7 +295,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
               {form.remarks&&<div><h4>Remarks</h4><p>{form.remarks}</p></div>}
             </div>}
           </div>
-          <footer className="neir-special-reg-footer">
+          <footer className={`neir-special-reg-footer ${registrationIntro?'is-intro':''}`}>
             {!registrationIntro && step>1 && <button type="button" className="neir-special-reg-previous" onClick={()=>{setStep((step-1) as WizardStep);setErrors({});}}>Previous</button>}
             <button type="button" className="neir-special-reg-cancel" onClick={()=>setWizard(false)}>Cancel</button>
             {registrationIntro
