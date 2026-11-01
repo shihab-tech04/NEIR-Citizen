@@ -45,6 +45,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
   const [detail, setDetail] = useState<Device | null>(null);
   const [wizard, setWizard] = useState(false);
   const [registrationIntro, setRegistrationIntro] = useState(true);
+  const [extraImeis, setExtraImeis] = useState<string[]>([]);
   const observedRegistrationTrigger = useRef<number | null>(null);
   const [step, setStep] = useState<WizardStep>(1);
   const [form, setForm] = useState<FormState>(blankForm);
@@ -66,7 +67,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
   };
   const startRegistration = (imei = '') => {
     setForm({ ...blankForm, imei });
-    setUploads({}); setStep(1); setRegistrationIntro(true); setErrors({}); setResult(''); setActionRow(null); setWizard(true);
+    setExtraImeis([]); setUploads({}); setStep(1); setRegistrationIntro(true); setErrors({}); setResult(''); setActionRow(null); setWizard(true);
   };
   // A one-shot request also works when a citizen signs in before the homepage wizard mounts.
   useEffect(() => {
@@ -87,6 +88,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
       if (!/^\d{14,15}$/.test(form.imei)) e.imei = 'Enter a valid 14 or 15 digit IMEI.';
       if (!form.device) e.device = 'Select device.';
       if (!form.model.trim()) e.model = 'Device model number is required.';
+      if (extraImeis.some(value => !/^\d{14,15}$/.test(value))) e.extraImeis = 'Each additional IMEI must contain 14 or 15 digits.';
     }
     if (step === 2) {
       if (!form.reason.trim()) e.reason = 'Application reason is required.';
@@ -241,7 +243,15 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
               {inputField('IMEI Number','imei','Enter IMEI number',true)}
               <label>Select Device<select className={fieldClass} value={form.device} onChange={e=>update('device',e.target.value)}><option value="Handset">Mobile Device</option></select></label>
               {inputField('Device model number','model','Input model Number')}
-              <div className="neir-special-reg-span"><button type="button" className="neir-special-reg-text-action" onClick={()=>{ const input=document.getElementById('special-registration-title');input?.scrollIntoView({block:'nearest'}); }}>Add another IMEI number</button><p className="neir-special-reg-hint">Additional device registration can be started after this application.</p></div>
+              <div className="neir-special-reg-span">
+                {extraImeis.map((value,index)=><label className="block text-sm" key={index}>IMEI Number {index+2}
+                  <div className="flex gap-2 items-center"><input className={fieldClass} inputMode="numeric" value={value} placeholder="Enter IMEI number"
+                    onChange={e=>setExtraImeis(prev=>prev.map((v,i)=>i===index?e.target.value.replace(/\D/g,'').slice(0,15):v))}/>
+                    <button type="button" aria-label={`Remove IMEI ${index+2}`} onClick={()=>setExtraImeis(prev=>prev.filter((_,i)=>i!==index))}><X size={18}/></button></div>
+                </label>)}
+                {errors.extraImeis&&<p className="neir-special-reg-error" role="alert">{errors.extraImeis}</p>}
+                <button type="button" className="neir-special-reg-text-action" onClick={()=>setExtraImeis(prev=>[...prev,''])}>+ Add another IMEI number</button>
+              </div>
             </div>}
             {!registrationIntro && step===2 && <div className="neir-special-reg-grid">
               <label>Application Reason
@@ -277,7 +287,7 @@ export const CitizenImeiListView: React.FC<Props> = ({ language, session, regist
             </div>}
             {!registrationIntro && step===4 && <div className="neir-special-reg-review">
               <h3>Review Special Registration</h3>
-              <div><h4>Device Information</h4><p>IMEI Number: {form.imei}</p><p>Device model number: {form.model}</p><p>Device Type: Mobile Device</p><p>Eligibility: {form.eligibility==='local'?'Local SIM Holder':'Foreigner SIM holder'}</p></div>
+              <div><h4>Device Information</h4><p>IMEI Number 1: {form.imei}</p>{extraImeis.map((imei,i)=><p key={i}>IMEI Number {i+2}: {imei}</p>) }<p>Device model number: {form.model}</p><p>Device Type: Mobile Device</p><p>Eligibility: {form.eligibility==='local'?'Local SIM Holder':'Foreigner SIM holder'}</p></div>
               <div><h4>Verification Information</h4><p>Application Reason: {form.reason}</p><p>Arrival Date: {form.arrival}</p><p>Verification method: {form.verificationMethod}</p><p>Passport Number: {form.passport}</p><p>Purchased Method: {form.purchase}</p>{form.tax&&<p>Tax Amount: {form.tax}</p>}</div>
               <div><h4>Attached documents</h4>{requirements.filter(r=>uploads[r.key]).map(r=><p key={r.key}>{r.label}: {uploads[r.key]?.name}</p>)}</div>
               {form.remarks&&<div><h4>Remarks</h4><p>{form.remarks}</p></div>}
