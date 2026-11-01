@@ -24,8 +24,11 @@ try{
     assert.equal(await desktop.locator('.neir-source-step-card').count(),6);
     await expectVisible(desktop.locator('.neir-special-registration-section'),'public Special Registration guide');
     await desktop.locator('.neir-special-registration-section button').click();
-    await expectVisible(desktop.getByRole('dialog',{name:'Login'}),'guest registration asks to log in');
-    await desktop.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
+    const introduction=desktop.getByRole('dialog',{name:'About Special Registration'});
+    await expectVisible(introduction,'guest sees eligibility explanation before login');
+    await expectVisible(introduction.getByText('Who may need to apply?'),'eligibility explained');
+    await expectVisible(introduction.getByText('You must log in to your account',{exact:false}),'login required');
+    await introduction.getByRole('button',{name:'Close dialog'}).click();
     const failed=await desktop.locator('.neir-logo-wrap img, .neir-source-hero-media img, .neir-source-step-card img').evaluateAll(images=>images.filter(x=>!x.complete||x.naturalWidth===0).map(x=>x.src));
     assert.deepEqual(failed,[]);
     await snap(desktop,'01-home-desktop');
@@ -90,9 +93,12 @@ try{
   await check('Login modal enforces two Supabase-backed demo accounts',async()=>{
     await desktop.locator('.neir-main-navigation button').first().click();
     await desktop.locator('.neir-special-registration-button').click();
+    const eligibility=desktop.getByRole('dialog',{name:'About Special Registration'});
+    await expectVisible(eligibility.getByText('What is Special Registration?'),'guest explainer');
+    await eligibility.getByRole('button',{name:'Proceed to login'}).click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
-    await expectVisible(dialog.getByText('Log in to apply for Special Registration'),'registration login reason is explained');
+    assert.equal(await dialog.getByText('Log in to apply for Special Registration').count(),0,'duplicate login banner removed');
     await snap(desktop,'07-login');
     await dialog.getByRole('button',{name:/^login$/i}).click();
     await expectVisible(dialog.getByText('Mobile number is required'),'empty mobile validation');
@@ -108,8 +114,12 @@ try{
     await expectVisible(dialog.getByRole('alert').filter({hasText:'Incorrect mobile number or password.'}),'wrong password rejection');
     await dialog.locator('#login-password').fill('123456');
     await dialog.getByRole('button',{name:/^login$/i}).click();
+    const success=desktop.getByRole('dialog',{name:'Special Registration login successful'});
+    await expectVisible(success,'successful login offers explicit registration handoff');
+    assert.equal(await desktop.getByRole('dialog',{name:'Special Registration'}).count(),0,'form waits for explicit action');
+    await success.getByRole('button',{name:'Proceed to special registration'}).click();
     const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
-    await expectVisible(resumedWizard,'guest login resumes Special Registration');
+    await expectVisible(resumedWizard,'user explicitly starts Special Registration');
     assert.equal(new URL(desktop.url()).pathname,'/');
     assert.equal(await resumedWizard.locator('#neir-v7-imei').inputValue(),'');
     assert.equal(await resumedWizard.locator('#neir-v7-arrival').count(),0,'arrival must wait for Continue');
@@ -258,7 +268,12 @@ try{
     assert(await homeSample.locator('.neir-v7-form').isHidden(),'registration form temporarily hidden in sample mode');
     await expectVisible(homeSample.getByText('SAMPLE ONLY · NOT VALID FOR IDENTIFICATION OR SUBMISSION'),'non-official disclaimer');
     assert.equal(await homeSample.locator('.neir-demo-paper-table tbody tr').count(),1,'illustrative invoice has a sample item');
-    await homeSample.getByRole('button',{name:'Back to form'}).click();
+    const [download] = await Promise.all([
+      desktop.waitForEvent('download'),
+      homeSample.getByRole('button',{name:'Download sample'}).click(),
+    ]);
+    assert.match(download.suggestedFilename(),/^neir-sample-commercial-invoice\.html$/,'sample downloaded');
+    await homeSample.getByRole('button',{name:'Back to registration'}).click();
     await expectVisible(wizard.getByRole('button',{name:'View sample of Commercial Invoice'}),'Back restores original form');
     assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','IMEI preserved after sample swap');
     await wizard.getByRole('button',{name:'Close special registration'}).click();
@@ -387,7 +402,7 @@ try{
     await dlg.getByRole('button',{name:'View sample of Passport Arrival Date Seal'}).click();
     const arrivalSample=desktop.getByRole('dialog',{name:'Sample · Passport Arrival Date Seal'});
     await expectVisible(arrivalSample.getByText('NOT AN OFFICIAL STAMP'),'sample arrival seal is fictional');
-    await arrivalSample.getByRole('button',{name:'Back to form'}).click();
+    await arrivalSample.getByRole('button',{name:'Back to registration'}).click();
     await dlg.getByRole('button',{name:'Close special registration'}).click();
   });
   await check('My Profile search: known whitelist, greylist, unknown and validation',async()=>{
@@ -557,7 +572,12 @@ try{
     await expectVisible(mobile.locator('.neir-special-registration-section'),'guest guide remains public on mobile');
     await expectVisible(mobile.getByRole('button',{name:/^(Login|লগইন)$/}),'mobile login restored after logout');
     await mobile.locator('.neir-special-registration-button').click();
-    await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest must sign in before registration');
+    const guestIntro=mobile.getByRole('dialog',{name:'About Special Registration'});
+    await expectVisible(guestIntro,'guest eligibility explanation on mobile');
+    const introBounds=await guestIntro.boundingBox();
+    assert(introBounds && introBounds.width<=390 && introBounds.height<=844,'mobile explanation fits');
+    await guestIntro.getByRole('button',{name:'Proceed to login'}).click();
+    await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest proceeds to login');
     await expectVisible(mobile.locator('.neir-login-registration-message'),'registration login explanation shown on mobile');
     await mobile.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
     await noOverflow(mobile,390);
