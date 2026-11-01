@@ -1,0 +1,38 @@
+name: NEIR citizen pre-authless independent full Git backup
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create, verify and restore full Git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRE_RELEASE="5e49addf3162bd998dcde03d6fb1983be0ce3570"
+          git fetch origin main --tags
+          test "$(git rev-parse origin/main)" = "$PRE_RELEASE"
+          mkdir -p recovery
+          git bundle create recovery/neir-citizen-pre-authless-5e49addf.bundle --all
+          git bundle verify recovery/neir-citizen-pre-authless-5e49addf.bundle
+          git clone recovery/neir-citizen-pre-authless-5e49addf.bundle /tmp/neir-restore
+          git -C /tmp/neir-restore cat-file -e "$PRE_RELEASE^{commit}"
+          for source in src/App.tsx src/components/CitizenImeiListView.tsx src/components/UserGuidesView.tsx src/components/HomeHero.tsx; do
+            git show "$PRE_RELEASE:$source" > /tmp/pre-release-source
+            git -C /tmp/neir-restore show "$PRE_RELEASE:$source" > /tmp/restored-source
+            cmp /tmp/pre-release-source /tmp/restored-source
+          done
+          (cd recovery && sha256sum neir-citizen-pre-authless-5e49addf.bundle > bundle.sha256)
+          printf 'source=shihab-tech04/NEIR-Citizen\npre_release=%s\nrestore_test=PASS\nsource_comparison=PASS\n' "$PRE_RELEASE" > recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-citizen-pre-authless-full-git
+          path: recovery/
+          retention-days: 7
