@@ -407,6 +407,9 @@ try{
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
     await dialog.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
+    assert.equal(await dialog.locator('#neir-v7-arrival').count(),0,'mobile requires Continue');
+    await dialog.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(dialog.locator('#neir-v7-arrival'),'arrival after Continue');
     assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
