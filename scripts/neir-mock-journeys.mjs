@@ -359,6 +359,13 @@ try{
     const popupBox=await popup.boundingBox();
     assert(popupBox && popupBox.x>=0 && popupBox.x+popupBox.width<=320.5,'dropdown remains inside 320px viewport');
     await dialog.getByRole('option',{name:'Feature Phone'}).click();
+    await dialog.getByPlaceholder('IMEI Number').fill('99000100000001');
+    await dialog.getByRole('button',{name:'Local SIM Holder'}).click();
+    await dialog.getByRole('button',{name:'Add New Device by Special Registration'}).click();
+    const stepWidth=await dialog.locator('.neir-sr-stepper').evaluate(el=>({scroll:el.scrollWidth,client:el.clientWidth}));
+    assert(stepWidth.scroll<=stepWidth.client+2,JSON.stringify(stepWidth));
+    assert.equal(await dialog.locator('.neir-sr-step').count(),3);
+    await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
     await dialog.getByRole('button',{name:'Close special registration'}).click();
     await noOverflow(mobile,390);
