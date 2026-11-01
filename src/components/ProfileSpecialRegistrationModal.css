@@ -109,3 +109,63 @@
  .neir-v7-reason-copy>span{font-size:13px;line-height:19px}
  .neir-v7-choice-circle{width:20px;height:20px}
 }
+
+/* Unified Special Registration - IMEI first, 3-column reason selection and BMET last.
+   Use NEIR's shared modal geometry and type, while preserving the v7 document rules. */
+.neir-v7-backdrop{font-family:inherit}
+.neir-v7-dialog{width:min(820px,100%);max-height:min(92dvh,960px);border:0;border-radius:16px;font-family:inherit;font-size:16px}
+.neir-v7-header{padding:24px;border-bottom:1px solid var(--neir-dialog-stroke,#e3dbd8)}
+.neir-v7-header h2{font-size:24px;font-weight:400;line-height:30px;color:#000}
+.neir-v7-close{border:0;border-radius:6px;width:28px;height:28px;color:#202020}
+.neir-v7-body{padding:24px}
+.neir-v7-imei-section{width:100%}
+.neir-v7-imei-section .neir-v7-field{width:100%}
+.neir-v7-hint{font-size:14px;line-height:1.45;color:#65768b;font-weight:400}
+.neir-v7-reason-fieldset{margin:0;min-width:0}
+.neir-v7-reason-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
+.neir-v7-reason-card{min-width:0;min-height:170px;padding:16px;display:flex;align-items:flex-start;flex-direction:column;gap:12px;border-radius:12px}
+.neir-v7-reason-icon{flex:0 0 42px;width:42px;height:42px}
+.neir-v7-reason-copy{flex:1;gap:5px}
+.neir-v7-reason-copy strong{font-size:16px;line-height:1.4;font-weight:600}
+.neir-v7-reason-copy>span{font-size:14px;line-height:1.4}
+.neir-v7-choice-circle{position:absolute;top:18px;right:16px;width:20px;height:20px}
+.neir-v7-field input:not([type=radio]){min-height:60px}
+.neir-v7-document-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.neir-v7-upload-heading{display:flex;justify-content:flex-start;align-items:center;gap:7px;min-height:25px;max-width:100%}
+.neir-v7-upload-title{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.neir-v7-help-wrap{position:relative;display:inline-flex;align-items:center;flex:none;z-index:3}
+.neir-v7-help-trigger{width:28px;height:28px;border:0;border-radius:50%;display:grid;place-items:center;background:transparent;color:#00838f;cursor:pointer}
+.neir-v7-help-trigger:hover{background:#def6fa}
+.neir-v7-help-trigger:focus-visible{outline:2px solid #00838f;outline-offset:1px}
+.neir-v7-help-tooltip{position:absolute;bottom:calc(100% + 7px);right:0;width:min(260px,calc(100vw - 62px));padding:10px 12px;background:#263d50;border:1px solid #334b5f;border-radius:9px;box-shadow:0 8px 24px #0003;color:white;font-size:14px;line-height:1.45;font-weight:400;z-index:6;visibility:hidden;opacity:0;pointer-events:none;overflow-wrap:break-word}
+.neir-v7-help-wrap:hover .neir-v7-help-tooltip,.neir-v7-help-wrap:focus-within .neir-v7-help-tooltip,.neir-v7-help-tooltip.is-open{visibility:visible;opacity:1}
+.neir-v7-bmet-section{padding-bottom:2px}
+.neir-v7-bmet-section .neir-v7-field{width:100%}
+.neir-v7-bmet-conditional{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start;margin-top:16px}
+.neir-v7-footer{margin:0 24px;padding:20px 0 24px;border-top:1px solid var(--neir-dialog-stroke,#e3dbd8)}
+.neir-v7-footer button{font-size:16px;font-weight:400;min-height:54px}
+.neir-v7-next{color:#00838f;background:#fff;border:1px solid #00acc1}
+.neir-v7-next:hover:not(:disabled){background:#def6fa;color:#00838f}
+.neir-v7-next:disabled{background:#edf2f4;border-color:#edf2f4;color:#789097}
+.neir-v7-cancel{border:0;color:#00838f;background:transparent}
+@media(max-width:700px){
+ .neir-v7-backdrop{align-items:flex-end;padding:0}
+ .neir-v7-dialog{max-height:90dvh;border-radius:16px 16px 0 0;width:100%}
+ .neir-v7-header{padding:16px}
+ .neir-v7-header h2{font-size:21px;line-height:28px}
+ .neir-v7-body{padding:16px}
+ .neir-v7-reason-list{grid-template-columns:1fr;gap:9px}
+ .neir-v7-reason-card{min-height:90px;flex-direction:row;align-items:center;padding:12px 14px;gap:12px}
+ .neir-v7-reason-icon{flex:0 0 42px;width:42px;height:42px}
+ .neir-v7-choice-circle{position:static;margin-left:auto}
+ .neir-v7-document-grid,.neir-v7-bmet-conditional{grid-template-columns:1fr;gap:14px}
+ .neir-v7-field input:not([type=radio]){min-height:52px;height:52px}
+ .neir-v7-footer{margin:0 16px;padding:12px 0 max(16px,env(safe-area-inset-bottom))}
+ .neir-v7-footer button{min-height:48px}
+}
+@media(max-width:359px){
+ .neir-v7-reason-card{padding:10px 12px;gap:9px}
+ .neir-v7-reason-copy strong{font-size:15px;line-height:1.4}
+ .neir-v7-reason-icon{flex-basis:36px;width:36px;height:36px}
+ .neir-v7-help-tooltip{width:min(245px,calc(100vw - 48px))}
+}
