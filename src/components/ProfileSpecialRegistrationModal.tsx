@@ -38,7 +38,6 @@ const localDate = () => {
 type Props = { initialImei?: string; specialToken?: string; onClose: () => void; onComplete?: (message: string) => void };
 export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', specialToken, onClose, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
-  const [stage, setStage] = useState<1 | 2>(1);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
   const [passport, setPassport] = useState('');
@@ -97,26 +96,22 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   }, []);
 
   useEffect(() => {
+    // Selecting a purchase method shows the remaining form fields immediately.
+    if (!reason) return;
     const body = bodyRef.current;
-    if (stage === 2) {
-      // Reveal details under the existing fields and scroll only the modal body.
-      const arrivalSection = arrivalSectionRef.current;
-      arrivalRef.current?.focus({ preventScroll: true });
-      if (body && arrivalSection) {
-        const top = body.scrollTop + arrivalSection.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        body.scrollTo({ top: Math.max(0, top), behavior: reducedMotion ? 'instant' : 'smooth' });
-      }
-    } else {
-      body?.scrollTo({ top: 0, behavior: 'instant' });
-      imeiRef.current?.focus({ preventScroll: true });
+    const arrivalSection = arrivalSectionRef.current;
+    arrivalRef.current?.focus({ preventScroll: true });
+    if (body && arrivalSection) {
+      const top = body.scrollTop + arrivalSection.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      body.scrollTo({ top: Math.max(0, top), behavior: reducedMotion ? 'instant' : 'smooth' });
     }
-  }, [stage]);
+  }, [reason]);
 
   const validImei = /^\d{14,15}$/.test(imei.trim());
   const showReason = true;
   const canContinue = validImei && !!reason;
-  const showDetails = stage === 2 && canContinue;
+  const showDetails = canContinue;
   const reasonDocs: DocumentDefinition[] = reason ? documentSets[reason] : [];
   const validDocs = reasonDocs.every(doc => !fileErrors[doc.id] && (!doc.required || !!files[doc.id]));
   const enabled = showDetails && !!arrival && arrival <= localDate() &&
@@ -146,10 +141,6 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (submitting) return;
-    if (stage === 1) {
-      if (canContinue) { setStage(2); setDemoDoc(null); setFeedback(''); }
-      return;
-    }
     if (!enabled || submitted) return;
     if (!specialToken) {
       setFeedback('Your secure sign-in has expired. Sign out and sign in again to apply.');
@@ -245,11 +236,11 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
                   setSubmitted(false);
                   if (!/^\d{14,15}$/.test(nextImei)) {
                     // A partial IMEI must never retain a previously selected acquisition method.
-                    setReason(''); setStage(1); setArrival(''); setPassport('');
+                    setReason(''); setArrival(''); setPassport('');
                     setFiles({}); setFileErrors({}); setFeedback('');
                   }
                 }}
-                inputMode="numeric" autoComplete="off" placeholder="Enter 14 or 15 IMEI digits to continue."
+                inputMode="numeric" autoComplete="off" placeholder="Enter 14 or 15 IMEI digits."
                 aria-description="The IMEI number must contain 14 or 15 digits." required aria-invalid={!!imei && !validImei} />
             </label>
           </section>
@@ -307,8 +298,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <button className="neir-v7-cancel" type="button" onClick={stage === 1 ? onClose : () => { setStage(1); setDemoDoc(null); setFeedback(''); }}>{stage === 1 ? 'Cancel' : 'Back'}</button>
-          <button className="neir-v7-next" disabled={submitting || (stage === 1 ? !canContinue : !enabled || submitted)} type="submit" aria-busy={submitting}>{stage === 1 ? 'Continue' : submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</button>
+          <button className="neir-v7-cancel" type="button" onClick={onClose}>Cancel</button>
+           <button className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" aria-busy={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</button>
         </footer>
       </form>
       {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">

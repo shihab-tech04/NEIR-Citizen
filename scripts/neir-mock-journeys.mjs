@@ -95,6 +95,7 @@ try{
     await desktop.locator('.neir-special-registration-button').click();
     const eligibility=desktop.getByRole('dialog',{name:'About Special Registration'});
     await expectVisible(eligibility.getByText('What is Special Registration?'),'guest explainer');
+    assert(await eligibility.getByRole('button',{name:'Proceed to login'}).evaluate(el=>Math.abs(el.getBoundingClientRect().width-el.parentElement.getBoundingClientRect().width)<2),'guest login CTA fills modal footer');
     await eligibility.getByRole('button',{name:'Proceed to login'}).click();
     const dialog=desktop.getByRole('dialog',{name:'Login'});
     await expectVisible(dialog,'login modal');
@@ -116,6 +117,9 @@ try{
     await dialog.getByRole('button',{name:/^login$/i}).click();
     const success=desktop.getByRole('dialog',{name:'Special Registration login successful'});
     await expectVisible(success,'successful login offers explicit registration handoff');
+    await expectVisible(success.getByRole('heading',{name:'You are ready to apply!'}),'distinct successful login heading');
+    assert.equal(await success.locator('.neir-registration-success-mark').count(),1,'successful login has confirmation icon');
+    assert(await success.getByRole('button',{name:'Proceed to special registration'}).evaluate(el=>Math.abs(el.getBoundingClientRect().width-el.parentElement.getBoundingClientRect().width)<2),'next CTA fills modal footer');
     assert.equal(await desktop.getByRole('dialog',{name:'Special Registration',exact:true}).count(),0,'form waits for explicit action');
     await success.getByRole('button',{name:'Proceed to special registration'}).click();
     const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
@@ -237,7 +241,7 @@ try{
     const wizard=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(wizard,'same Special Registration wizard');
     assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'','home entry must start with blank IMEI');
-    assert.equal(await wizard.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.','IMEI instructions appear inside input');
+    assert.equal(await wizard.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits.','IMEI instructions appear inside input');
     assert.equal(await wizard.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no IMEI message outside input');
     assert.equal(await wizard.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'home entry uses one stepper-free modal');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'home displays IMEI and three acquisition choices on initial modal');
@@ -252,31 +256,26 @@ try{
       '13 IMEI digits keep all acquisition choices disabled');
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[false,false,false],
-      '14 digits immediately enable acquisition cards before Continue');
+      '14 digits immediately enable acquisition cards before choice');
     await wizard.locator('#neir-v7-imei').fill('990001000000011');
     assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[false,false,false],
       '15 digits also immediately enable acquisition cards');
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    assert(await wizard.getByRole('button',{name:'Continue'}).isEnabled(),
-      'valid IMEI and chosen acquisition allow Continue');
+    await expectVisible(wizard.locator('#neir-v7-arrival'),'selecting an acquisition option immediately reveals details');
+    assert.equal(await wizard.getByRole('button',{name:'Continue'}).count(),0,'obsolete Continue action removed');
     await wizard.locator('#neir-v7-imei').fill('9900010000000');
     assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[true,true,true],
       'shortening selected IMEI disables every acquisition choice again');
     assert.equal(await reasonInputs.locator(':checked').count(),0,'invalid IMEI clears old acquisition selection');
-    assert(await wizard.getByRole('button',{name:'Continue'}).isDisabled(),'invalid IMEI blocks Continue');
+    assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'invalid IMEI hides selected details');
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'arrival hidden until Continue');
-    await wizard.getByRole('button',{name:'Continue'}).click();
-    await expectVisible(wizard.locator('#neir-v7-arrival'),'Continue reveals arrival details');
-    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Continue retains IMEI in the same form');
-    assert(await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).isChecked(),'Continue keeps acquisition choice mounted');
-    assert.equal(await wizard.locator('.neir-v7-imei-section').count(),1,'first section remains mounted during arrival');
-    await wizard.getByRole('button',{name:'Back'}).click();
-    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Back preserves IMEI');
-    await wizard.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(wizard.locator('#neir-v7-arrival'),'choosing purchase method directly reveals arrival');
+    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','selection retains IMEI');
+    assert(await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).isChecked(),'choice persists when details appear');
+    assert.equal(await wizard.locator('.neir-v7-imei-section').count(),1,'IMEI remains mounted');
     await expectVisible(wizard.getByRole('button',{name:'Upload Documents'}),'document accordion from homepage');
     assert.equal(await wizard.locator('.neir-v7-upload-group').count(),3,'homepage Air Mail shows three documents');
     await expectVisible(wizard.getByRole('button',{name:'View sample of Commercial Invoice'}),'homepage View sample action');
@@ -321,7 +320,7 @@ try{
     const dlg=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dlg,'Special Registration from My Profile');
     assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile pending IMEI is prefilled');
-    assert.equal(await dlg.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.');
+    assert.equal(await dlg.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits.');
     assert.equal(await dlg.locator('.neir-v7-reason-card').count(),3,'keep all three reasons');
     assert.deepEqual(await dlg.locator('input[name="application-reason"]').evaluateAll(nodes=>nodes.map(input=>input.disabled)),
       [false,false,false],'prefilled 14-digit IMEI immediately enables all acquisition choices');
@@ -332,13 +331,12 @@ try{
     }));
     assert.equal(layout.columns,3,'desktop acquisition reasons in three columns');
     assert.equal(layout.rows,1,'desktop cards on one row');
-    assert(await dlg.getByRole('button',{name:'Continue'}).isDisabled(),'acquisition reason required before Continue');
+    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'acquisition method required before submit');
+    assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'details hidden before purchase method');
     await dlg.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'arrival waits until Continue');
-    await dlg.getByRole('button',{name:'Continue'}).click();
-    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival follows Continue');
-    assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','Continue retains profile IMEI');
-    assert.equal(await dlg.locator('.neir-v7-reason-fieldset').count(),1,'Continue keeps acquisition cards');
+    await expectVisible(dlg.locator('#neir-v7-arrival'),'purchase selection reveals arrival immediately');
+    assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile IMEI retained');
+    assert.equal(await dlg.locator('.neir-v7-reason-fieldset').count(),1,'acquisition cards remain mounted');
     const continuousOrder=await dlg.evaluate(el=>['.neir-v7-imei-section','.neir-v7-reason-fieldset','#neir-v7-arrival'].map(sel=>el.querySelector(sel)?.getBoundingClientRect().top));
     assert(continuousOrder.every((v,i)=>i===0||v>continuousOrder[i-1]),'IMEI, acquisition and arrival stay in one vertical scroll');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
@@ -405,7 +403,7 @@ try{
 
     await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}).click();
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
-    await dlg.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(dlg.locator('#neir-v7-arrival'),'Gift details immediately appear');
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page (Donor) *','Passport Arrival Date Seal (Donor) *','Device Box IMEI Number *','Gift Deed (Donor) *'],
       'Gift checklist follows historical reference PDF');
@@ -416,9 +414,7 @@ try{
     await expectVisible(giftSample.getByText('Example gift declaration'),'gift declaration sample');
     await expectVisible(giftSample.getByText('Donor signature:',{exact:false}),'sample signatures');
     await giftSample.getByRole('button',{name:'Back to registration'}).click();
-    await dlg.getByRole('button',{name:'Back'}).click();
     await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
-    await dlg.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dlg.getByLabel('Passport number'),'passport input for foreign tour');
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page *','Passport Arrival Date Seal *','Device Box IMEI Number *','Ticket / Boarding Pass / Travel Document'],
@@ -519,7 +515,7 @@ try{
     const mobileReasonInputs=dialog.locator('input[name="application-reason"]');
     assert.deepEqual(await mobileReasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),
       [true,true,true],'320px initial state keeps all acquisition cards disabled');
-    assert.equal(await dialog.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.','mobile hint is inside input');
+    assert.equal(await dialog.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits.','mobile hint is inside input');
     assert.equal(await dialog.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no mobile external IMEI hint');
     await dialog.locator('#neir-v7-imei').fill('9900010000000');
     assert.deepEqual(await mobileReasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),
@@ -531,13 +527,12 @@ try{
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
     await dialog.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
-    assert.equal(await dialog.locator('#neir-v7-arrival').count(),0,'mobile requires Continue');
-    await dialog.getByRole('button',{name:'Continue'}).click();
-    await expectVisible(dialog.locator('#neir-v7-arrival'),'arrival after Continue');
-    assert.equal(await dialog.locator('#neir-v7-imei').inputValue(),'99000100000001','320px Continue preserves IMEI');
-    assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'320px Continue preserves acquisition options');
+    await expectVisible(dialog.locator('#neir-v7-arrival'),'mobile choice immediately reveals details');
+    assert.equal(await dialog.getByRole('button',{name:'Continue'}).count(),0,'mobile has no intermediate Continue button');
+    assert.equal(await dialog.locator('#neir-v7-imei').inputValue(),'99000100000001','selection retains IMEI on narrow mobile');
+    assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'acquisition cards remain on mobile');
     await mobile.waitForFunction(()=>document.querySelector('.neir-v7-body')?.scrollTop>0);
-    assert(await dialog.locator('.neir-v7-body').evaluate(el=>el.scrollTop>0),'Continue scrolls modal body rather than replacing fields');
+    assert(await dialog.locator('.neir-v7-body').evaluate(el=>el.scrollTop>0),'selection scrolls only modal body');
     assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
@@ -566,9 +561,8 @@ try{
     const cards=await profileModal.locator('.neir-v7-reason-card').evaluateAll(nodes=>nodes.map(n=>({left:n.getBoundingClientRect().left,right:n.getBoundingClientRect().right})));
     assert(cards.every(x=>x.left>=-1 && x.right<=321),'cards fit 320px');
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await profileModal.getByRole('button',{name:'Continue'}).click();
-    await expectVisible(profileModal.locator('#neir-v7-arrival'),'arrival after Continue on mobile');
-    assert.equal(await profileModal.locator('#neir-v7-imei').inputValue(),'12004089900331','profile 320px retains IMEI after Continue');
+    await expectVisible(profileModal.locator('#neir-v7-arrival'),'profile 320px choice reveals details');
+    assert.equal(await profileModal.locator('#neir-v7-imei').inputValue(),'12004089900331','profile retains IMEI after selection');
     assert.equal(await profileModal.locator('.neir-v7-reason-card').count(),3,'profile 320px retains acquisition cards');
     await expectVisible(profileModal.getByRole('button',{name:'View sample of Commercial Invoice'}),'mobile View sample action');
     assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),3,'three responsive Air Mail rows');
