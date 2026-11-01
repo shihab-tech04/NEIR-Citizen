@@ -235,6 +235,9 @@ try{
     assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'arrival hidden until Continue');
     await wizard.getByRole('button',{name:'Continue'}).click();
     await expectVisible(wizard.locator('#neir-v7-arrival'),'Continue reveals arrival details');
+    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Continue retains visible IMEI field');
+    assert(await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).isChecked(),'Continue keeps acquisition choice mounted');
+    assert.equal(await wizard.locator('.neir-v7-imei-section').count(),1,'Continue must not swap out the first section');
     await wizard.getByRole('button',{name:'Back'}).click();
     assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'99000100000001','Back preserves IMEI');
     await wizard.getByRole('button',{name:'Continue'}).click();
@@ -275,6 +278,15 @@ try{
     assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'arrival waits until Continue');
     await dlg.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival follows Continue');
+    assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','Continue keeps profile IMEI mounted');
+    assert.equal(await dlg.locator('.neir-v7-reason-fieldset').count(),1,'acquisition cards remain in the form');
+    const continuousOrder=await dlg.evaluate(el=>{
+      const imei=el.querySelector('.neir-v7-imei-section');
+      const reason=el.querySelector('.neir-v7-reason-fieldset');
+      const arrival=el.querySelector('#neir-v7-arrival');
+      return [imei,reason,arrival].map(item=>item?.getBoundingClientRect().top);
+    });
+    assert(continuousOrder.every((v,i)=>i===0||v>continuousOrder[i-1]),'IMEI, acquisition and arrival stay in one vertical scroll');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
     assert.equal(await dlg.getByRole('radio',{name:'Without Tax'}).count(),0,'remove Without Tax radio');
     assert.equal(await dlg.locator('#neir-v7-tax,#neir-v7-bmet,.neir-v7-bmet-section,.neir-v7-bmet-conditional').count(),0,'remove tax/BMET inputs and sections');
@@ -410,6 +422,10 @@ try{
     assert.equal(await dialog.locator('#neir-v7-arrival').count(),0,'mobile requires Continue');
     await dialog.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dialog.locator('#neir-v7-arrival'),'arrival after Continue');
+    assert.equal(await dialog.locator('#neir-v7-imei').inputValue(),'99000100000001','320px Continue must preserve IMEI');
+    assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'320px Continue keeps earlier cards');
+    await mobile.waitForFunction(()=>document.querySelector('.neir-v7-body')?.scrollTop>0);
+    assert(await dialog.locator('.neir-v7-body').evaluate(el=>el.scrollTop>0),'Continue scrolls modal instead of swapping sections');
     assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
@@ -435,6 +451,8 @@ try{
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await profileModal.getByRole('button',{name:'Continue'}).click();
     await expectVisible(profileModal.locator('#neir-v7-arrival'),'arrival after Continue on mobile');
+    assert.equal(await profileModal.locator('#neir-v7-imei').inputValue(),'12004089900331','profile mobile retains its IMEI after Continue');
+    assert.equal(await profileModal.locator('.neir-v7-reason-card').count(),3,'profile mobile retains acquisition selection');
     await expectVisible(profileModal.getByRole('button',{name:'View guidance for Commercial Invoice'}),'mobile document guidance');
     assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),4,'four responsive document rows');
     assert.equal(await profileModal.locator('.neir-v7-upload-pick').count(),4,'four mobile file pickers');
