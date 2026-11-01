@@ -248,9 +248,12 @@ try{
     await desktop.waitForURL('**/dashboard');
   });
   await check('Shared Special Registration: no tax or BMET inputs, PDF documents and accessible upload rows',async()=>{
-    const table=desktop.locator('.neir-profile-device-table');
-    await table.getByRole('button',{name:'Actions for IMEI 12004089900331'}).click();
-    await table.getByRole('menuitem',{name:'Special Registration'}).click();
+    const profileSearch=desktop.getByRole('search');
+    await expectVisible(desktop.getByRole('heading',{name:'Your device information will appear here'}),'empty before search');
+    await profileSearch.getByLabel('Device IMEI number').fill('12004089900331');
+    await profileSearch.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.locator('.neir-profile-device-result'),'matching IMEI appears');
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
     const dlg=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dlg,'Special Registration from My Profile');
     assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile pending IMEI is prefilled');
