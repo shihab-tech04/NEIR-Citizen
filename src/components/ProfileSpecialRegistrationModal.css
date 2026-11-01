@@ -64,8 +64,8 @@
 .neir-v7-help-trigger{width:24px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:transparent;color:#888;cursor:pointer}
 .neir-v7-help-trigger:hover{color:#00838f;background:#def6fa}
 .neir-v7-help-trigger:focus-visible{outline:2px solid #00838f;outline-offset:1px}
-.neir-v7-help-tooltip{position:absolute;right:0;top:calc(100% + 8px);width:min(270px,calc(100vw - 48px));padding:11px 12px;border-radius:10px;background:#263d50;box-shadow:0 8px 24px #0003;color:#fff;font-size:14px;line-height:1.5;font-weight:400;overflow-wrap:anywhere;z-index:10;visibility:hidden;opacity:0;pointer-events:none}
-.neir-v7-help-wrap:hover .neir-v7-help-tooltip,.neir-v7-help-wrap:focus-within .neir-v7-help-tooltip,.neir-v7-help-tooltip.is-open{visibility:visible;opacity:1}
+.neir-v7-help-tooltip{display:none;position:absolute;right:0;bottom:calc(100% + 8px);width:min(270px,calc(100vw - 48px));padding:11px 12px;border-radius:10px;background:#263d50;box-shadow:0 8px 24px #0003;color:#fff;font-size:14px;line-height:1.5;font-weight:400;overflow-wrap:anywhere;z-index:10;pointer-events:none}
+.neir-v7-help-wrap:hover .neir-v7-help-tooltip,.neir-v7-help-wrap:focus-within .neir-v7-help-tooltip,.neir-v7-help-tooltip.is-open{display:block}
 .neir-v7-bmet-conditional{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:end;margin-top:16px}
 .neir-v7-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;gap:16px;margin:0 24px;padding:20px 0 24px;border-top:1px solid var(--neir-dialog-stroke,#e3dbd8)}
 .neir-v7-footer>p{flex:1;margin:0;font-size:14px;line-height:1.5;color:#267b87}
