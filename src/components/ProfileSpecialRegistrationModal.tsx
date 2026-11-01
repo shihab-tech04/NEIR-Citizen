@@ -9,7 +9,7 @@ type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
 
 // Document names are based on the earlier 11-page Special Registration reference.
-// These remain prototype UI requirements, not a certified BTRC checklist.
+// The current acquisition-specific document checklist is preserved.
 const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
   'foreign-tour': [
     { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Passport page showing name, photo and number.' },
@@ -36,8 +36,8 @@ const localDate = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-type Props = { initialImei?: string; specialToken?: string; onClose: () => void; onComplete?: (message: string) => void };
-export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', specialToken, onClose, onComplete }) => {
+type Props = { initialImei?: string; onClose: () => void; onComplete?: (message: string) => void };
+export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', onClose, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
@@ -143,15 +143,11 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     event.preventDefault();
     if (submitting) return;
     if (!enabled || submitted) return;
-    if (!specialToken) {
-      setFeedback('Your secure sign-in has expired. Sign out and sign in again to apply.');
-      return;
-    }
     setSubmitting(true);
     setFeedback('');
     try {
       const response = await submitNeirSpecialRegistration({
-        token:specialToken,imei:imei.trim(),reason,arrivalDate:arrival,
+        imei:imei.trim(),reason,arrivalDate:arrival,
         passportNumber:passport.trim(),files
       });
       setSubmitted(true);
