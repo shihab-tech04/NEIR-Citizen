@@ -1,34 +1,30 @@
 import React, {useState} from 'react';
 import type {AppRoute, Language, UserSession} from '../types.ts';
-import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut, ArrowRight} from 'lucide-react';
+import {Home, CircleHelp, ChevronDown, Menu, X, UserRound} from 'lucide-react';
 
 type Props = {
   currentRoute: AppRoute; onRouteChange: (route:AppRoute)=>void;
   language:Language; onLanguageChange:(language:Language)=>void;
-  session:UserSession; onOpenLogin:()=>void; onOpenRegister:()=>void;
-  onOpenDashboard:()=>void; onLogout:()=>void;
+  session:UserSession; onOpenDashboard:()=>void;
 };
 const menu = [
   {route:'home' as AppRoute,en:'Home',bn:'হোম',icon:Home},
   {route:'guides' as AppRoute,en:'User Guides',bn:'ব্যবহার নির্দেশিকা',icon:CircleHelp},
 ];
-export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLanguageChange,session,onOpenLogin,onOpenRegister,onOpenDashboard,onLogout}) => {
+export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLanguageChange,session,onOpenDashboard}) => {
   const [open,setOpen]=useState(false);
   const [profileOpen,setProfileOpen]=useState(false);
   const [mobileProfileOpen,setMobileProfileOpen]=useState(false);
   const navigate=(route:AppRoute)=>{onRouteChange(route);setOpen(false);setProfileOpen(false);};
   const controls = <div className="neir-header-auth">
-    {session.isLoggedIn ? <div className="neir-profile-container">
-      <button type="button" className="neir-profile-icon" aria-label="Citizen profile menu" aria-expanded={profileOpen} onClick={()=>setProfileOpen(!profileOpen)}><UserRound size={25}/></button>
+    <div className="neir-profile-container">
+      <button type="button" className="neir-profile-icon" aria-label="Citizen profile menu" aria-expanded={profileOpen}
+        onClick={()=>setProfileOpen(!profileOpen)}><UserRound size={25}/></button>
       {profileOpen && <div className="neir-profile-dropdown">
         <p className="neir-profile-name">{session.name}</p>
         <button onClick={()=>navigate('dashboard')}><UserRound size={16}/> My Profile</button>
-        <button onClick={()=>{setProfileOpen(false);onLogout();}}><LogOut size={16}/> Logout</button>
       </div>}
-    </div> : <>
-      <button type="button" className="neir-nav-btn neir-auth-register" onClick={onOpenRegister}>{language==='bn'?'নিবন্ধন':'Register'}</button>
-      <button type="button" className="neir-nav-btn neir-auth-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'}</button>
-    </>}
+    </div>
   </div>;
   return <header className="neir-original-header">
     <div className="neir-menubar">
@@ -45,17 +41,19 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
       </div>
       <div className="neir-source-mobile-auth">
         <label className="neir-source-mobile-language"><span className="sr-only">Language</span><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={15} aria-hidden="true"/></label>
-        {session.isLoggedIn ? <div className="neir-mobile-profile-container">
-            <button type="button" className="neir-source-mobile-login" aria-label="Citizen mobile profile menu" aria-expanded={mobileProfileOpen} aria-haspopup="true" onClick={()=>setMobileProfileOpen(!mobileProfileOpen)}>
-              <UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ChevronDown size={18} aria-hidden="true"/>
+        <div className="neir-mobile-profile-container">
+          <button type="button" className="neir-source-mobile-login" aria-label="Citizen mobile profile menu"
+            aria-expanded={mobileProfileOpen} aria-haspopup="true"
+            onClick={()=>setMobileProfileOpen(!mobileProfileOpen)}>
+            <UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ChevronDown size={18} aria-hidden="true"/>
+          </button>
+          {mobileProfileOpen && <div className="neir-profile-dropdown neir-mobile-profile-dropdown">
+            <p className="neir-profile-name">{session.name}</p>
+            <button type="button" onClick={()=>{setMobileProfileOpen(false);onOpenDashboard();}}>
+              <UserRound size={16}/> {language==='bn'?'আমার প্রোফাইল':'My Profile'}
             </button>
-            {mobileProfileOpen && <div className="neir-profile-dropdown neir-mobile-profile-dropdown">
-              <p className="neir-profile-name">{session.name}</p>
-              <button type="button" onClick={()=>{setMobileProfileOpen(false);onOpenDashboard();}}><UserRound size={16}/> {language==='bn'?'আমার প্রোফাইল':'My Profile'}</button>
-              <button type="button" onClick={()=>{setMobileProfileOpen(false);onLogout();}}><LogOut size={16}/> {language==='bn'?'লগআউট':'Logout'}</button>
-            </div>}
-          </div>
-          : <button type="button" className="neir-source-mobile-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'} <ArrowRight size={18}/></button>}
+          </div>}
+        </div>
       </div>
       <button type="button" className="neir-mobile-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={23}/>:<Menu size={23}/>}</button>
     </div>
