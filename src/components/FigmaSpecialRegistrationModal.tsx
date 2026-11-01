@@ -264,7 +264,6 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
           {stage === 4 && <div className="neir-sr-review">
             <div className="neir-sr-review-panel">
               <div className="neir-sr-review-heading">Device Status <span>Pending verification</span></div>
-              <p className="neir-sr-review-note"><Info size={20} /> This prototype cannot retrieve BTRC status or tax-free registration eligibility.</p>
             </div>
             <div className="neir-sr-review-grid">
               <div className="neir-sr-review-panel">
@@ -286,7 +285,6 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
               {docs.filter(doc => uploads[doc.key]).map(doc => <p className="neir-sr-attachment" key={doc.key}><FileText size={17} />{doc.label}: {uploads[doc.key].name}</p>)}
               {remarks && <p className="neir-sr-review-remarks"><strong>Remarks:</strong> {remarks}</p>}
             </div>
-            <p className="neir-sr-submission-note">Submission is local validation only. No registration is submitted to BTRC.</p>
           </div>}
         </div>
         <footer className="neir-sr-footer">
