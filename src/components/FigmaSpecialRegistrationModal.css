@@ -194,3 +194,97 @@
   .neir-sr-previous,.neir-sr-next{white-space:nowrap}
 }
 @media(prefers-reduced-motion:reduce){.neir-sr-dialog *{scroll-behavior:auto!important}}
+
+
+/* Reusable select-only combobox: Figma-aligned trigger with a viewport-positioned
+   listbox. The listbox is rendered inside the dialog so it cannot be clipped by
+   scrolling content or escape the modal's focus/accessible context. */
+.neir-sr-dropdown{min-width:0}
+.neir-sr-dropdown-trigger{
+  appearance:none;display:flex;align-items:center;justify-content:space-between;
+  text-align:left;cursor:pointer;gap:12px;color:#202020;min-width:0;
+}
+.neir-sr-dropdown-trigger[aria-invalid="true"]{border-color:#b42318}
+.neir-sr-dropdown-trigger:focus-visible{
+  outline:2px solid #00838f;outline-offset:2px;
+}
+.neir-sr-dropdown-value{
+  min-width:0;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  font-size:16px;line-height:24px;font-weight:400;
+}
+.neir-sr-dropdown-placeholder{color:#757575}
+.neir-sr-dropdown-chevron{
+  flex:0 0 18px;color:#202020;transition:transform .15s ease;
+}
+.neir-sr-dropdown-chevron-open{transform:rotate(180deg)}
+.neir-sr-dropdown-popup{
+  position:fixed;z-index:150;box-sizing:border-box;min-width:0;
+  border:1px solid #e3dbd8;border-radius:12px;background:#fff;
+  box-shadow:0 12px 32px rgba(29,45,59,.16);
+  padding:6px;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.neir-sr-dropdown-option{
+  appearance:none;box-sizing:border-box;width:100%;min-height:48px;
+  border:0;border-radius:8px;background:#fff;color:#323232;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:11px 13px;
+  font-size:16px;line-height:24px;text-align:left;
+  white-space:normal;overflow-wrap:anywhere;cursor:pointer;
+}
+.neir-sr-dropdown-option span{min-width:0;flex:1}
+.neir-sr-dropdown-option svg{flex:0 0 19px;color:#00acc1}
+.neir-sr-dropdown-option-active,
+.neir-sr-dropdown-option:hover{background:#e9f8fa}
+.neir-sr-dropdown-option[aria-selected="true"]{color:#00838f}
+.neir-sr-dropdown-option:focus-visible{outline:2px solid #00838f;outline-offset:-2px}
+
+/* No horizontal stepper scrolling on mobile: all three step cards remain visible
+   at the approved 320px minimum. Header and footer stay fixed, only body scrolls. */
+@media(max-width:767px){
+  .neir-sr-dialog{padding-bottom:max(16px,env(safe-area-inset-bottom));}
+  .neir-sr-stepper{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;min-height:105px;overflow:visible;padding:12px 0;
+    overscroll-behavior-x:auto;
+  }
+  .neir-sr-step{
+    width:100%;min-width:0;min-height:80px;height:80px;
+    border-radius:12px;padding:8px 6px;justify-content:center;
+  }
+  .neir-sr-chevron{display:none}
+  .neir-sr-step-meta{
+    font-size:12px;line-height:17px;padding-right:16px;
+  }
+  .neir-sr-step-title{
+    font-size:13px;line-height:17px;white-space:normal;
+    overflow-wrap:anywhere;letter-spacing:-.01em;
+  }
+  .neir-sr-step-check{
+    width:17px;height:17px;top:9px;right:5px;transform:none;
+  }
+  .neir-sr-step-check svg{width:11px;height:11px}
+  .neir-sr-content{overflow-x:hidden}
+  .neir-sr-footer{gap:8px}
+  .neir-sr-footer .neir-sr-outline{
+    height:48px;min-width:0;padding:0 11px;
+    font-size:14px;gap:5px;
+  }
+  .neir-sr-footer .neir-sr-outline svg{width:16px;height:16px;flex-shrink:0}
+  .neir-sr-dropdown-popup{
+    border-radius:12px;padding:4px;
+    box-shadow:0 8px 26px rgba(29,45,59,.2);
+  }
+  .neir-sr-dropdown-option{min-height:52px;padding:12px;font-size:16px;line-height:23px}
+}
+@media(max-width:359px){
+  .neir-sr-header,.neir-sr-stepper,.neir-sr-footer{margin-left:12px;margin-right:12px}
+  .neir-sr-content{padding-left:12px;padding-right:12px}
+  .neir-sr-step-title{font-size:12px;line-height:16px}
+  .neir-sr-step-meta{font-size:11px}
+  .neir-sr-footer{gap:6px}
+  .neir-sr-footer .neir-sr-outline{padding:0 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .neir-sr-dropdown-chevron{transition:none}
+}
