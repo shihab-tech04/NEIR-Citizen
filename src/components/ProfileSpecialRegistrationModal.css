@@ -32,6 +32,18 @@
 .neir-v7-reason-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px}
 .neir-v7-reason-card{min-width:0;min-height:128px;position:relative;display:flex;align-items:flex-start;flex-direction:column;gap:12px;padding:16px;border:1px solid #dce4ee;border-radius:12px;background:#fff;color:#17243a;cursor:pointer;transition:background-color .12s,border-color .12s}
 .neir-v7-reason-card:hover{background:#fbffff;border-color:#70bfc9}
+.neir-v7-reason-card.is-disabled,.neir-v7-reason-card.is-disabled:hover{
+  background:#f7f9fa;border-color:#e5eaf0;color:#8c9ba8;
+  cursor:not-allowed;box-shadow:none;
+}
+.neir-v7-reason-card.is-disabled .neir-v7-reason-icon{
+  background:#f2f5f7;border-color:#e5eaf0;color:#99acbb;
+}
+.neir-v7-reason-card.is-disabled .neir-v7-choice-circle{
+  background:transparent;border-color:#ced8e2;
+}
+.neir-v7-reason-card.is-disabled .neir-v7-reason-copy strong{color:#8c9ba8}
+.neir-v7-reason-card input:disabled{cursor:not-allowed}
 .neir-v7-reason-card.is-selected{background:#edf9fb;border-color:var(--neir-primary-600,#00acc1);box-shadow:inset 3px 0 var(--neir-primary-600,#00acc1)}
 .neir-v7-reason-card input{position:absolute;opacity:0;width:1px;height:1px;left:0;top:0}
 .neir-v7-reason-card:focus-within{outline:3px solid #00838f;outline-offset:2px}
