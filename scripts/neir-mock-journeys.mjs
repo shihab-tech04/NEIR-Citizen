@@ -234,7 +234,9 @@ try{
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(wizard.locator('#neir-v7-arrival'),'home acquisition reason reveals details');
+    assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'home arrival waits for Continue');
+    await wizard.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(wizard.locator('#neir-v7-arrival'),'home Continue reveals arrival details');
     await expectVisible(wizard.getByRole('button',{name:'Upload Documents'}),'document accordion from homepage');
     assert.equal(await wizard.locator('.neir-v7-upload-group').count(),4,'homepage shows PDF Air Mail checklist');
     await expectVisible(wizard.getByRole('button',{name:'View guidance for Commercial Invoice'}),'homepage document guidance');
@@ -270,9 +272,11 @@ try{
     }));
     assert.equal(layout.columns,3,'desktop acquisition reasons in three columns');
     assert.equal(layout.rows,1,'desktop cards on one row');
-    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'submit validates required fields');
+    assert(await dlg.getByRole('button',{name:'Continue'}).isDisabled(),'acquisition reason required before Continue');
     await dlg.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival field remains');
+    assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'profile arrival waits for Continue');
+    await dlg.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival field remains after Continue');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
     assert.equal(await dlg.getByRole('radio',{name:'Without Tax'}).count(),0,'remove Without Tax radio');
     assert.equal(await dlg.locator('#neir-v7-tax,#neir-v7-bmet,.neir-v7-bmet-section,.neir-v7-bmet-conditional').count(),0,'remove tax/BMET inputs and sections');
@@ -318,12 +322,15 @@ try{
 
     await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
+    await dlg.getByRole('button',{name:'Continue'}).click();
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page (Donor) *','Passport Arrival Date Seal (Donor) *','Device Box IMEI Number *','Gift Deed (Donor) *'],
       'Gift checklist follows historical reference PDF');
     assert.equal(await dlg.locator('#neir-v7-passport').count(),0,'donor passport uploaded, no applicant passport field');
     await snap(desktop,'12-neir-document-rows-gift');
+    await dlg.getByRole('button',{name:'Back'}).click();
     await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
+    await dlg.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dlg.getByLabel('Passport number'),'passport input for foreign tour');
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page *','Passport Arrival Date Seal *','Device Box IMEI Number *','Ticket / Boarding Pass / Travel Document (optional)'],
@@ -424,6 +431,8 @@ try{
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
     await dialog.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
+    assert.equal(await dialog.locator('#neir-v7-arrival').count(),0,'mobile arrival waits for Continue');
+    await dialog.getByRole('button',{name:'Continue'}).click();
     assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
@@ -452,7 +461,9 @@ try{
     const cards=await profileModal.locator('.neir-v7-reason-card').evaluateAll(nodes=>nodes.map(n=>({left:n.getBoundingClientRect().left,right:n.getBoundingClientRect().right})));
     assert(cards.every(x=>x.left>=-1 && x.right<=321),'cards fit 320px');
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(profileModal.locator('#neir-v7-arrival'),'immediate reveal on mobile');
+    assert.equal(await profileModal.locator('#neir-v7-arrival').count(),0,'mobile profile arrival waits for Continue');
+    await profileModal.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(profileModal.locator('#neir-v7-arrival'),'arrival after Continue on mobile');
     await expectVisible(profileModal.getByRole('button',{name:'View guidance for Commercial Invoice'}),'mobile document guidance');
     assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),4,'four responsive document rows');
     assert.equal(await profileModal.locator('.neir-v7-upload-pick').count(),4,'four mobile file pickers');
