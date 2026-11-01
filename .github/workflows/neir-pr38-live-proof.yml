@@ -1,0 +1,60 @@
+name: Verify NEIR PR38 published production
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Match published Pages version and live registration bundle
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="63d9be3608516781133a1f691797da09a42c2895"
+          URL="https://shihab-tech04.github.io/NEIR-Citizen/"
+          for attempt in $(seq 1 48); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$TARGET\") | .id" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id" --jq '.status + " " + (.conclusion // "pending")')"
+              echo "Pages run $run_id: $state"
+              if [[ "$state" == "completed success" ]]; then
+                echo "PASS exact Pages production workflow for $TARGET"
+                break
+              fi
+              if [[ "$state" == "completed failure" || "$state" == "completed cancelled" ]]; then
+                echo 'FAIL: Pages deployment failed'; exit 1
+              fi
+            fi
+            if [[ "$attempt" == 48 ]]; then echo 'FAIL: exact production deploy not verified'; exit 1; fi
+            sleep 10
+          done
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 20 "$URL" -o /tmp/neir.html && grep -Fq '/NEIR-Citizen/assets/' /tmp/neir.html; then break; fi
+            if [[ "$attempt" == 12 ]]; then echo 'FAIL: public HTML unavailable'; exit 1; fi
+            sleep 5
+          done
+          python - <<'PY'
+          import re,urllib.request,time
+          root='https://shihab-tech04.github.io'
+          html=open('/tmp/neir.html',encoding='utf-8').read()
+          urls=re.findall(r'(?:src|href)="(/NEIR-Citizen/assets/[^"]+\.js)"',html)
+          assert urls,'No published Vite JavaScript assets'
+          for retry in range(12):
+              try:
+                  content=''.join(urllib.request.urlopen(root+url,timeout=25).read().decode('utf-8') for url in urls)
+                  for required in ['neir-v7-stage','neir-v7-arrival','View demo of ', 'Continue', 'Back', 'getBoundingClientRect', 'scrollTo']:
+                      assert required in content,f'Missing expected deployed scroll & parallel behavior: {required}'
+                  print('PASS: public bundled registration includes continuous scroll, arrival, Back and document demo')
+                  break
+              except Exception as err:
+                  if retry==11: raise
+                  print(f'Retrying public assets {retry}: {err}')
+                  time.sleep(5)
+          PY
+          echo "PASS production commit $TARGET and public site $URL"
