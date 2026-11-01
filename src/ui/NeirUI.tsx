@@ -107,7 +107,8 @@ export function UiDataTable<Row>({
     </div>}
     <div className={classes('neir-ui-table-scroll', scrollClassName)}>
       <table {...tableProps} className={classes('neir-ui-table', className)}>
-        <thead><tr>{columns.map(col => <th key={col.key} scope="col" className={col.numeric ? 'neir-ui-numeric' : undefined}>
+        <thead><tr>{columns.map(col => <th key={col.key} scope="col" className={col.numeric ? 'neir-ui-numeric' : undefined}
+          aria-sort={sorting?.key === col.key ? (sorting.ascending ? 'ascending' : 'descending') : col.sortValue ? 'none' : undefined}>
           {col.sortValue ? <button type="button" className="neir-ui-table-sort" onClick={() => setSorting(current => ({
             key: col.key, ascending: current?.key === col.key ? !current.ascending : true,
           }))} aria-label={'Sort by ' + (typeof col.heading === 'string' ? col.heading : col.key)}>
