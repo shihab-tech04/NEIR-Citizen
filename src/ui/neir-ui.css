@@ -70,7 +70,7 @@
 }
 .neir-ui-status{
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
-  padding:6px 12px;border-radius:7px;font:500 13px/1.35 var(--neir-ui-font);
+  padding:6px 12px;border-radius:7px;font:500 14px/1.35 var(--neir-ui-font);
   white-space:nowrap;background:#edf0f3;color:#56636f;
 }
 .neir-ui-status--success{background:#def4e6;color:#24753e}
