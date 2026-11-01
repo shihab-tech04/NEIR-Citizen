@@ -308,11 +308,19 @@ try{
     await expectVisible(dlg.getByRole('alert').filter({hasText:'at most 1 MB'}),'file validation retained');
     const file={name:'sample.png',mimeType:'image/png',buffer:Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082','hex')};
     for(let i=0;i<3;i++) await dlg.locator('input[type=file]').nth(i).setInputFiles(file);
-    const endGap=await dlg.locator('.neir-v7-body').evaluate(el=>{
+    const endLayout=await dlg.locator('.neir-v7-body').evaluate(el=>{
       el.scrollTop=el.scrollHeight;
-      const last=el.querySelector('.neir-v7-bmet-section').getBoundingClientRect();
-      return Math.round(el.getBoundingClientRect().bottom-last.bottom);
+      const last=el.querySelector('.neir-v7-bmet-section');
+      const r=last.getBoundingClientRect(),b=el.getBoundingClientRect();
+      const f=el.closest('form').getBoundingClientRect();
+      const d=el.closest('[role="dialog"]').getBoundingClientRect();
+      return {gap:Math.round(b.bottom-r.bottom),scrollTop:el.scrollTop,scrollHeight:el.scrollHeight,
+        clientHeight:el.clientHeight,lastHeight:r.height,lastBottom:r.bottom,bodyBottom:b.bottom,bodyHeight:b.height,
+        formHeight:f.height,dialogHeight:d.height,padBottom:getComputedStyle(el).paddingBottom,
+        lastMarginBottom:getComputedStyle(last).marginBottom,children:Array.from(el.children).slice(-4).map(x=>({tag:x.tagName,cls:x.className,box:x.getBoundingClientRect().height,bottom:x.getBoundingClientRect().bottom}))};
     });
+    console.log('NEIR BMET BODY GEOMETRY',JSON.stringify(endLayout));
+    const endGap=endLayout.gap;
     assert(endGap>=0 && endGap<=20,'no large blank gap below BMET before footer: '+endGap+'px');
     assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'valid documents enable submit');
     await dlg.getByRole('button',{name:'Submit'}).click();
