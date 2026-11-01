@@ -18,6 +18,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: TypeScript
         run: npm run lint
+      - name: Enforce shared NEIR UI component library
+        run: npm run ui:audit
       - name: Production build
         run: npm run build
       - name: Save offline presentation build
