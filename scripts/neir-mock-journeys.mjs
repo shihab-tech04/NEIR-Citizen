@@ -231,10 +231,32 @@ try{
     assert.equal(await wizard.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no IMEI message outside input');
     assert.equal(await wizard.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'home entry uses one stepper-free modal');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'home displays IMEI and three acquisition choices on initial modal');
+    const reasonInputs = wizard.locator('input[name="application-reason"]');
+    assert.equal(await reasonInputs.count(),3,'exactly three acquisition choices');
+    assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[true,true,true],
+      'all acquisition choices are initially disabled until a full IMEI is entered');
     await expectVisible(wizard.getByRole('heading',{name:'Enter the IMEI number of the device you want to register'}),'IMEI heading');
     assert.equal((await wizard.locator('.neir-v7-reason-fieldset legend').innerText()).trim().replace(/\s*\*$/,''),'Select how you purchased or received the device');
+    await wizard.locator('#neir-v7-imei').fill('9900010000000');
+    assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[true,true,true],
+      '13 IMEI digits keep all acquisition choices disabled');
+    await wizard.locator('#neir-v7-imei').fill('99000100000001');
+    assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[false,false,false],
+      '14 digits immediately enable acquisition cards before Continue');
+    await wizard.locator('#neir-v7-imei').fill('990001000000011');
+    assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[false,false,false],
+      '15 digits also immediately enable acquisition cards');
     await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
+    await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
+    assert(await wizard.getByRole('button',{name:'Continue'}).isEnabled(),
+      'valid IMEI and chosen acquisition allow Continue');
+    await wizard.locator('#neir-v7-imei').fill('9900010000000');
+    assert.deepEqual(await reasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),[true,true,true],
+      'shortening selected IMEI disables every acquisition choice again');
+    assert.equal(await reasonInputs.locator(':checked').count(),0,'invalid IMEI clears old acquisition selection');
+    assert(await wizard.getByRole('button',{name:'Continue'}).isDisabled(),'invalid IMEI blocks Continue');
+    await wizard.locator('#neir-v7-imei').fill('99000100000001');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     assert.equal(await wizard.locator('#neir-v7-arrival').count(),0,'arrival hidden until Continue');
     await wizard.getByRole('button',{name:'Continue'}).click();
@@ -286,6 +308,8 @@ try{
     assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile pending IMEI is prefilled');
     assert.equal(await dlg.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.');
     assert.equal(await dlg.locator('.neir-v7-reason-card').count(),3,'keep all three reasons');
+    assert.deepEqual(await dlg.locator('input[name="application-reason"]').evaluateAll(nodes=>nodes.map(input=>input.disabled)),
+      [false,false,false],'prefilled 14-digit IMEI immediately enables all acquisition choices');
     assert.equal(await dlg.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'no stepper');
     const layout=await dlg.locator('.neir-v7-reason-list').evaluate(el=>({
       columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,
@@ -477,9 +501,17 @@ try{
     const narrow=await dialog.boundingBox();
     assert(narrow && narrow.width<=320 && narrow.height<=640,'registration dialog fits 320px viewport');
     assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'320px initial modal shows IMEI and three cards');
+    const mobileReasonInputs=dialog.locator('input[name="application-reason"]');
+    assert.deepEqual(await mobileReasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),
+      [true,true,true],'320px initial state keeps all acquisition cards disabled');
     assert.equal(await dialog.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.','mobile hint is inside input');
     assert.equal(await dialog.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no mobile external IMEI hint');
+    await dialog.locator('#neir-v7-imei').fill('9900010000000');
+    assert.deepEqual(await mobileReasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),
+      [true,true,true],'320px 13-digit IMEI still disables acquisition cards');
     await dialog.locator('#neir-v7-imei').fill('99000100000001');
+    assert.deepEqual(await mobileReasonInputs.evaluateAll(nodes=>nodes.map(input=>input.disabled)),
+      [false,false,false],'320px 14-digit IMEI enables acquisition cards immediately');
     assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'same reason cards on mobile home');
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
