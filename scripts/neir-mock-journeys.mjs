@@ -119,6 +119,8 @@ try{
     await expectVisible(success,'successful login offers explicit registration handoff');
     await expectVisible(success.getByRole('heading',{name:'You are ready to apply!'}),'distinct successful login heading');
     assert.equal(await success.locator('.neir-registration-success-mark').count(),1,'successful login has confirmation icon');
+    assert.equal(await success.locator('.neir-registration-success-next').count(),0,'obsolete next-step information panel is removed');
+    assert.equal(await success.getByText('Next: Enter your device IMEI and how you received it').count(),0,'obsolete next-step copy is absent');
     assert(await success.getByRole('button',{name:'Proceed to special registration'}).evaluate(el=>Math.abs(el.getBoundingClientRect().width-el.parentElement.getBoundingClientRect().width)<2),'next CTA fills modal footer');
     assert.equal(await desktop.getByRole('dialog',{name:'Special Registration',exact:true}).count(),0,'form waits for explicit action');
     await success.getByRole('button',{name:'Proceed to special registration'}).click();
