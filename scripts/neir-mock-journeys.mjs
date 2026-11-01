@@ -263,7 +263,7 @@ try{
     }));
     assert.equal(layout.columns,3,'desktop acquisition reasons in three columns');
     assert.equal(layout.rows,1,'desktop cards on one row');
-    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'submit validates required fields');
+    assert(await dlg.getByRole('button',{name:'Continue'}).isDisabled(),'acquisition reason required before Continue');
     await dlg.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival field remains');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
