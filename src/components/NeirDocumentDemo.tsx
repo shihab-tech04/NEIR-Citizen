@@ -77,6 +77,43 @@ const samples: Record<string, Sample> = {
 
 };
 
+
+/** Downloadable, print-ready, fictional HTML reference. Never submit as identity evidence. */
+export function downloadNeirDocumentSample(documentId: string): void {
+  const sample = samples[documentId];
+  if (!sample) return;
+  const escapeHtml = (value: string): string =>
+    value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character] || character));
+  const fields = sample.fields.map(([label, value]) =>
+    '<div class="field"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value) + '</strong></div>').join('');
+  const rows = sample.rows?.map(([number, item, detail]) =>
+    '<tr><td>' + escapeHtml(number) + '</td><td>' + escapeHtml(item) + '</td><td>' + escapeHtml(detail) + '</td></tr>').join('') || '';
+  const table = rows ? '<table><thead><tr><th>No.</th><th>Item description</th><th>Example detail</th></tr></thead><tbody>' + rows + '</tbody></table>' : '';
+  const html = [
+    '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<title>', escapeHtml(sample.heading), ' — sample only</title>',
+    '<style>body{font-family:Arial,sans-serif;max-width:760px;margin:48px auto;padding:0 24px;color:#263b49}',
+    'h1{font-size:24px} .notice{font-weight:bold;color:#a83232;border:2px solid #a83232;padding:14px;margin:20px 0;text-align:center}',
+    '.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{padding:14px;border:1px solid #dce5ec;border-radius:8px}',
+    '.field span{display:block;font-size:12px;color:#667788;margin-bottom:6px}.field strong{overflow-wrap:anywhere}',
+    'table{width:100%;border-collapse:collapse;margin:24px 0}td,th{border:1px solid #dce5ec;text-align:left;padding:10px}',
+    '.foot{margin-top:28px;line-height:1.6}@media print{body{margin:0;max-width:none}}</style></head><body>',
+    '<div class="notice">SAMPLE ONLY — NOT VALID FOR IDENTIFICATION OR SUBMISSION</div>',
+    '<h1>', escapeHtml(sample.heading), '</h1><p>Fictitious example · ', escapeHtml(sample.reference), '</p>',
+    '<div class="grid">', fields, '</div>', table,
+    '<p class="foot"><strong>What to upload:</strong> ', escapeHtml(sample.note), '</p>',
+    '<div class="notice">ILLUSTRATIVE SAMPLE — NOT AN OFFICIAL DOCUMENT</div></body></html>'
+  ].join('');
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = 'neir-sample-' + documentId.replace(/([A-Z])/g, '-$1').toLowerCase() + '.html';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export const NeirDocumentDemo: React.FC<{ documentId: string; documentName: string }> = ({ documentId, documentName }) => {
   const sample = samples[documentId];
   if (!sample) return <p>There is no illustrative example for this attachment.</p>;
