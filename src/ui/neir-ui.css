@@ -134,3 +134,11 @@
 .neir-source-verify-button.neir-ui-button--primary:hover:not(:disabled){
   background:var(--neir-primary-900);border-color:var(--neir-primary-900);
 }
+
+/* Keep the approved Special Registration landing CTA identical to hero verify. */
+.neir-special-registration-button.neir-ui-button--primary{
+  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+}
+.neir-special-registration-button.neir-ui-button--primary:hover:not(:disabled){
+  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+}
