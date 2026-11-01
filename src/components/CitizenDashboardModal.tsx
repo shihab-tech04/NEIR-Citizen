@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Language, UserSession } from '../types.ts';
 import { 
   X, 
@@ -55,6 +55,32 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
   const [customsSlipNo, setCustomsSlipNo] = useState('HSIA-CUS-2026-9921');
   const [fileAttached, setFileAttached] = useState(true);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const latestClose = useRef(onClose);
+  latestClose.current = onClose;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialogRef.current?.querySelector<HTMLButtonElement>('[aria-label="Close citizen dashboard"]')?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); latestClose.current(); return; }
+      if (event.key !== 'Tab') return;
+      const elements = dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled)');
+      if (!elements?.length) return;
+      const first = elements[0], last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', onKeyDown);
+      previousFocus?.focus();
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -78,23 +104,25 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+    <div className="neir-shared-backdrop">
       <div 
-        className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden relative max-h-[90vh] flex flex-col"
+        className="neir-shared-dialog"
         role="dialog"
         aria-modal="true"
+        aria-labelledby="neir-citizen-dashboard-title"
+        ref={dialogRef}
       >
         {/* Modal Top Header */}
-        <div className="bg-[#006a4e] text-white p-5 flex items-center justify-between border-b-2 border-emerald-700 shrink-0">
+        <div className="neir-shared-header">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center border border-emerald-600">
-              <User className="w-5 h-5 text-amber-300" />
+            <div className="w-10 h-10 rounded-full bg-cyan-50 text-cyan-800 flex items-center justify-center border border-cyan-100">
+              <User className="w-5 h-5 text-cyan-800" />
             </div>
             <div>
-              <h3 className="font-bold text-base sm:text-lg leading-tight">
+              <h2 id="neir-citizen-dashboard-title">
                 {isBn ? 'নাগরিক ড্যাশবোর্ড' : 'Citizen Profile & Handsets'}
-              </h3>
-              <p className="text-xs text-emerald-200">
+              </h2>
+              <p className="text-sm text-slate-600">
                 {isBn ? session.nameBangla : session.name} | NID: {session.nid}
               </p>
             </div>
@@ -107,7 +135,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                 onLogout();
                 onClose();
               }}
-              className="px-2.5 py-1 text-xs bg-red-600/80 hover:bg-red-700 rounded text-white flex items-center gap-1 cursor-pointer transition"
+              className="neir-shared-button neir-shared-button--text"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>{isBn ? 'লগআউট' : 'Logout'}</span>
@@ -115,21 +143,22 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-emerald-200 hover:text-white rounded-lg transition cursor-pointer"
+              className="neir-shared-close"
+              aria-label="Close citizen dashboard"
             >
-              <X className="w-5 h-5" />
+              <X size={24} strokeWidth={1.7} />
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 bg-slate-50 text-xs font-semibold shrink-0">
+        <div className="flex border-b border-[#e3dbd8] bg-white text-sm font-medium shrink-0 px-6">
           <button
             type="button"
             onClick={() => setActiveTab('devices')}
             className={`flex-1 py-3 text-center transition cursor-pointer flex items-center justify-center gap-2 ${
               activeTab === 'devices'
-                ? 'bg-white text-[#006a4e] border-b-2 border-[#006a4e]'
+                ? 'bg-white text-[#00838f] border-b-2 border-[#00acc1]'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -144,17 +173,17 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
             onClick={() => setActiveTab('register_new')}
             className={`flex-1 py-3 text-center transition cursor-pointer flex items-center justify-center gap-2 ${
               activeTab === 'register_new'
-                ? 'bg-white text-[#006a4e] border-b-2 border-[#006a4e]'
+                ? 'bg-white text-[#00838f] border-b-2 border-[#00acc1]'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <PlusCircle className="w-4 h-4 text-emerald-600" />
+            <PlusCircle className="w-4 h-4 text-cyan-700" />
             <span>{isBn ? 'বিদেশি / বিশেষ হ্যান্ডসেট নিবন্ধন' : 'Register New Handset'}</span>
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="p-6 overflow-y-auto space-y-4">
+        <div className="neir-shared-body space-y-4">
           {activeTab === 'devices' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -164,7 +193,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('register_new')}
-                  className="text-xs text-[#006a4e] font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-xs text-[#00838f] font-bold hover:underline cursor-pointer flex items-center gap-1"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   <span>{isBn ? 'নতুন হ্যান্ডসেট যোগ করুন' : 'Add Handset'}</span>
@@ -225,7 +254,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
             <div>
               {submitSuccess ? (
                 <div className="p-8 text-center bg-emerald-50 rounded-xl border border-emerald-300 space-y-2">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <CheckCircle2 className="w-12 h-12 text-cyan-700 mx-auto" />
                   <h4 className="font-bold text-emerald-900 text-base">
                     {isBn ? 'আবেদন সফলভাবে দাখিল হয়েছে!' : 'Application Submitted Successfully!'}
                   </h4>
@@ -253,7 +282,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         type="text"
                         value={newBrand}
                         onChange={(e) => setNewBrand(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs outline-none"
+                        className="neir-shared-field"
                         required
                       />
                     </div>
@@ -265,7 +294,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         type="text"
                         value={newModel}
                         onChange={(e) => setNewModel(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs outline-none"
+                        className="neir-shared-field"
                         required
                       />
                     </div>
@@ -281,7 +310,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         maxLength={15}
                         value={newImei1}
                         onChange={(e) => setNewImei1(e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono outline-none"
+                        className="neir-shared-field font-mono"
                         required
                       />
                     </div>
@@ -294,7 +323,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         maxLength={15}
                         value={newImei2}
                         onChange={(e) => setNewImei2(e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono outline-none"
+                        className="neir-shared-field font-mono"
                       />
                     </div>
                   </div>
@@ -308,7 +337,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         type="text"
                         value={passportNumber}
                         onChange={(e) => setPassportNumber(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs outline-none"
+                        className="neir-shared-field"
                         required
                       />
                     </div>
@@ -320,7 +349,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
                         type="text"
                         value={customsSlipNo}
                         onChange={(e) => setCustomsSlipNo(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs outline-none"
+                        className="neir-shared-field"
                         required
                       />
                     </div>
@@ -344,7 +373,7 @@ export const CitizenDashboardModal: React.FC<CitizenDashboardModalProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 rounded-lg bg-[#006a4e] hover:bg-[#044c38] text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                    className="neir-shared-button w-full"
                   >
                     {isBn ? 'নিবন্ধন আবেদন দাখিল করুন' : 'Submit Handset Registration Request'}
                   </button>
