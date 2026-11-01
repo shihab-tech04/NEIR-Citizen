@@ -5,6 +5,8 @@ import { SAMPLE_HANDSETS, type HandsetRecord } from '../utils/imei.ts';
 import { ProfileSpecialRegistrationModal } from './ProfileSpecialRegistrationModal.tsx';
 import { listCitizenSpecialRegistrations, type SpecialApplication } from '../utils/neirSpecialRegistrationApi.ts';
 import { NeirModalFrame } from './NeirModalFrame.tsx';
+import { UiButton, UiInput, UiDataTable, UiStatusBadge } from '../ui/index.ts';
+import type { UiColumn } from '../ui/index.ts';
 import './CitizenImeiListView.css';
 
 type DeviceStatus =
@@ -200,6 +202,28 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const note = isBn
     ? 'শুধু রেফারেন্স তথ্য দেখানো হচ্ছে। এটি সরকারি NEIR ডাটাবেজের সরাসরি যাচাই নয়।'
     : 'Reference records only. This is not a live government NEIR status check.';
+  const applicationColumns: UiColumn<SpecialApplication>[] = [
+    { key: 'number', heading: '#', numeric: true, render: (_, index) => index + 1 },
+    { key: 'imei', heading: 'IMEI Number', sortValue: row => row.imei,
+      render: row => <span className="neir-special-imei">{row.imei}</span> },
+    { key: 'device', heading: isBn ? 'ডিভাইস' : 'Device',
+      render: row => row.reason === 'airmail' ? 'Air Mail' : row.reason === 'gift' ? 'Gift' : 'Foreign Tour' },
+    { key: 'status', heading: isBn ? 'আবেদনের অবস্থা' : 'Status', sortValue: row => row.status,
+      render: row => <UiStatusBadge
+        tone={row.status === 'Accepted' ? 'success' : row.status === 'Rejected' ? 'danger'
+          : row.status === 'In Progress' ? 'info' : 'warning'}
+        className={'neir-special-table-status is-' + row.status.toLowerCase().replace(/\s+/g, '-')}>
+        {row.status}
+      </UiStatusBadge> },
+    { key: 'date', heading: isBn ? 'আবেদনের তারিখ' : 'Applied on',
+      sortValue: row => row.appliedAt || '',
+      render: row => row.appliedAt ? new Date(row.appliedAt).toLocaleDateString(isBn ? 'bn-BD' : 'en-GB') : '—' },
+    { key: 'action', heading: isBn ? 'বিস্তারিত' : 'Action',
+      render: row => <UiButton variant="secondary" size="compact" className="neir-special-details-button"
+        onClick={event => { event.stopPropagation(); setApplicationDetail(row); }}>
+        {isBn ? 'বিস্তারিত' : 'Details'}
+      </UiButton> },
+  ];
 
   return <>
     {!registrationOnly && <section className="neir-profile-page" aria-label={isBn ? 'আমার প্রোফাইল' : 'My Profile'}>
@@ -233,7 +257,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
             <div className="neir-profile-search-controls">
               <div className="neir-profile-search-input">
                 <Search size={20} aria-hidden="true" />
-                <input id="neir-profile-imei-search" type="text" inputMode="numeric" autoComplete="off"
+                <UiInput id="neir-profile-imei-search" type="text" inputMode="numeric" autoComplete="off"
                   maxLength={17} value={imeiQuery}
                   placeholder={isBn ? '১৪ বা ১৫ সংখ্যার IMEI লিখুন' : 'Enter 14- or 15-digit IMEI'}
                   aria-invalid={!!searchError} aria-describedby={searchError ? 'neir-profile-search-error' : undefined}
@@ -307,31 +331,25 @@ export const CitizenImeiListView: React.FC<Props> = ({
             <h2 id="neir-special-applications-title">{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Special Registration applications'} ({specialApplications.length})</h2>
             <button type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</button>
           </div>
-          <div className="neir-special-table-scroll">
-            <table className="neir-special-table">
-              <thead><tr>
-                <th scope="col">#</th><th scope="col">IMEI Number</th>
-                <th scope="col">{isBn ? 'ডিভাইস' : 'Device'}</th>
-                <th scope="col">{isBn ? 'আবেদনের অবস্থা' : 'Status'}</th>
-                <th scope="col">{isBn ? 'আবেদনের তারিখ' : 'Applied on'}</th>
-                <th scope="col">{isBn ? 'বিস্তারিত' : 'Action'}</th>
-              </tr></thead>
-              <tbody>{specialApplications.map((application,index) => <tr key={application.id}>
-                <td>{index + 1}</td><td className="neir-special-imei">{application.imei}</td>
-                <td>{application.reason === 'airmail' ? 'Air Mail' : application.reason === 'gift' ? 'Gift' : 'Foreign Tour'}</td>
-                <td><span className={'neir-special-table-status is-' + application.status.toLowerCase().replace(/\s+/g,'-')}>{application.status}</span></td>
-                <td>{application.appliedAt ? new Date(application.appliedAt).toLocaleDateString(isBn ? 'bn-BD' : 'en-GB') : '—'}</td>
-                <td><button type="button" className="neir-special-details-button" onClick={() => setApplicationDetail(application)}>{isBn ? 'বিস্তারিত' : 'Details'}</button></td>
-              </tr>)}</tbody>
-            </table>
-          </div>
+          <UiDataTable
+            rows={specialApplications}
+            columns={applicationColumns}
+            rowKey={row => row.id}
+            onRowClick={setApplicationDetail}
+            rowLabel={row => 'View Special Registration application for IMEI ' + row.imei}
+            className="neir-special-table"
+            scrollClassName="neir-special-table-scroll"
+            searchPlaceholder={isBn ? 'IMEI বা অবস্থা অনুসন্ধান করুন' : 'Search by IMEI, device or status'}
+            searchable={(row, query) => [row.imei, row.status, row.reason].some(value => value.toLowerCase().includes(query))}
+            emptyText={isBn ? 'কোনো আবেদন পাওয়া যায়নি' : 'No matching applications'}
+          />
         </section>}
       </div>
     </section>}
 
     {detail && <NeirModalFrame title={isBn ? 'IMEI বিস্তারিত' : 'IMEI Details'} ariaLabel="IMEI details" size="medium" closeLabel="Close details"
       onClose={() => setDetail(null)} footer={requiresSpecialRegistration(detail.status) ?
-      <button type="button" className="neir-shared-button" onClick={() => startProfileRegistration(detail.imei)}>Special Registration</button> : undefined}>
+      <UiButton variant="secondary" className="neir-shared-button" onClick={() => startProfileRegistration(detail.imei)}>Special Registration</UiButton> : undefined}>
       <dl className="neir-shared-kv"><dt>IMEI Number</dt><dd>{detail.imei}</dd>
         {detail.brand && <><dt>Brand</dt><dd>{detail.brand}</dd></>}
         {detail.model && <><dt>Model</dt><dd>{detail.model}</dd></>}
@@ -340,20 +358,20 @@ export const CitizenImeiListView: React.FC<Props> = ({
     </NeirModalFrame>}
     {stolenTarget && <NeirModalFrame title="Mark as Stolen" ariaLabel="Mark IMEI as stolen" role="alertdialog" size="compact"
       closeLabel="Close stolen status confirmation" onClose={() => setStolenTarget(null)} footer={<>
-      <button type="button" className="neir-shared-button neir-shared-button--text" onClick={() => setStolenTarget(null)}>Cancel</button>
-      <button type="button" className="neir-shared-button neir-shared-button--danger" onClick={() => {
+      <UiButton variant="quiet" className="neir-shared-button neir-shared-button--text" onClick={() => setStolenTarget(null)}>Cancel</UiButton>
+      <UiButton variant="danger" className="neir-shared-button neir-shared-button--danger" onClick={() => {
         setStatusOverrides(previous => ({ ...previous, [stolenTarget.imei]: 'Restricted (demo)' }));
         setStolenTarget(null);
         setResult('Local-only status updated. No device was reported to NEIR.');
-      }}>Confirm demo action</button>
+      }}>Confirm demo action</UiButton>
     </>}>
       <p>This changes only the sample status for IMEI <strong>{stolenTarget.imei}</strong>. It does not report a device to BTRC.</p>
     </NeirModalFrame>}
     {profileOpen && <NeirModalFrame title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
       closeLabel="Close profile" onClose={() => setProfileOpen(false)}
-      footer={<button type="button" className="neir-shared-button" onClick={saveProfile}>Save demo changes</button>}>
+      footer={<UiButton variant="secondary" className="neir-shared-button" onClick={saveProfile}>Save demo changes</UiButton>}>
       <label className="block text-sm" htmlFor="neir-profile-name-field">Full Name</label>
-      <input id="neir-profile-name-field" className="neir-shared-field" value={profileDraft}
+      <UiInput id="neir-profile-name-field" className="neir-shared-field" value={profileDraft}
         onChange={event => { setProfileDraft(event.target.value); setProfileError(''); }} />
       {profileError && <p role="alert" className="neir-profile-search-error">{profileError}</p>}
       <p className="neir-shared-note" style={{ marginTop: 14 }}>This updates the profile name locally for this page; no identity data is updated on a server.</p>
