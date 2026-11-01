@@ -163,7 +163,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
       <div className="neir-sr-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-sr-title" ref={dialogRef}>
         <header className="neir-sr-header">
           <h2 id="neir-sr-title">Special Registration</h2>
-          <button type="button" className="neir-sr-close" onClick={onClose} ref={closeButtonRef} aria-label="Close Special Registration"><X size={29} strokeWidth={1.7} /></button>
+          <button type="button" className="neir-sr-close" onClick={onClose} ref={closeButtonRef} aria-label="Close special registration"><X size={29} strokeWidth={1.7} /></button>
         </header>
 
         {stage > 0 && <nav className="neir-sr-stepper" aria-label="Registration progress">
@@ -185,7 +185,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
         <div className="neir-sr-content">
           {stage === 0 && <>
             <div className="neir-sr-grid">
-              {field('IMEI Number', 'imei', imei, setImei, 'Enter IMEI number', { inputMode: 'numeric' })}
+              {field('IMEI Number', 'imei', imei, setImei, 'IMEI Number', { inputMode: 'numeric' })}
               {selectField('Select Device', 'device', device, setDevice, [
                 { value: 'Mobile Device', label: 'Mobile Device' },
                 { value: 'Smart Phone', label: 'Smart Phone' },
