@@ -34,7 +34,7 @@ export const UserGuidesView: React.FC<Props> = () => {
   const fullImage = isReg ? (isMobileReg ? 'acc-guide-mobile-full-process.png' : 'acc-guide-web-full-process.png') : 'pwd-guide-web-full-process.png';
   const url = (file:string) => import.meta.env.BASE_URL + 'neir-source/user-guides/' + base + file;
   const image = (file:string, alt:string) => broken.includes(file)
-    ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Reference illustration unavailable offline: {alt}</div>
+    ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Illustration unavailable: {alt}</div>
     : <img src={url(file)} alt={alt} loading="lazy" onError={() => setBroken(v => [...v, file])} className="w-full rounded-xl object-contain border border-slate-100 bg-white" />;
   return <section className="neir-source-subpage neir-source-guide-page space-y-8">
     <header className="text-center space-y-3"><h1 className="text-3xl md:text-[44px] text-slate-950 font-bold">User Guide of NEIR</h1>
