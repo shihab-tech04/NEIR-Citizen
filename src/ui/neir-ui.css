@@ -125,3 +125,12 @@
 .neir-ui-form-action{min-width:148px}
 .neir-ui-form-control{margin-top:6px}
 @media(max-width:700px){.neir-ui-choice-tab{min-height:84px;padding:12px}.neir-ui-form-action{width:100%}}
+
+/* Approved public hero/button pair must keep its original bright NEIR teal.
+   The common Button API must never silently change locked landing-page artwork. */
+.neir-source-verify-button.neir-ui-button--primary{
+  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+}
+.neir-source-verify-button.neir-ui-button--primary:hover:not(:disabled){
+  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+}
