@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { UiButton, UiInput, UiSelect, UiTextarea } from '../ui/index.ts';
 import type { Language } from '../types.ts';
 import type { QueryTicket } from '../utils/queryTracker.ts';
 import { CircleHelp, FileText, Search, Send } from 'lucide-react';
@@ -14,7 +15,7 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
   const [number,setNumber] = useState('');
   const [result,setResult] = useState('');
   const [error,setError] = useState('');
-  const inputClass = 'w-full rounded-xl border border-slate-300 px-4 py-3 text-sm mt-1.5 focus:ring-2 focus:ring-cyan-500 focus:outline-none';
+  const inputClass = 'neir-ui-form-control';
   const isBn = language === 'bn';
   const submit = (e: React.FormEvent) => {
     e.preventDefault(); setError(''); setResult('');
@@ -44,28 +45,28 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
       <p className="text-base text-slate-700 max-w-3xl mx-auto">If you need assistance or have any questions regarding the NEIR Portal Bangladesh, feel free to reach out to us. We are here to help and support you.</p>
     </header>
     <div className="grid grid-cols-2 gap-3 sm:gap-5">
-      <button aria-pressed={tab === 'submit'} onClick={() => {setTab('submit');setResult('');setError('');}} className={tab === 'submit' ? 'rounded-3xl p-4 sm:p-6 bg-white border-[8px] border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
+      <UiButton aria-pressed={tab === 'submit'} onClick={() => {setTab('submit');setResult('');setError('');}} className="neir-ui-choice-tab">
         <Send className="mx-auto mb-2" size={26} /> Submit New Query
-      </button>
-      <button aria-pressed={tab === 'status'} onClick={() => {setTab('status');setResult('');setError('');}} className={tab === 'status' ? 'rounded-3xl p-4 sm:p-6 bg-white border-[8px] border-[#00ACC1] text-[#00838F] font-semibold' : 'rounded-3xl p-4 sm:p-6 bg-white border border-slate-200 text-slate-700'}>
+      </UiButton>
+      <UiButton aria-pressed={tab === 'status'} onClick={() => {setTab('status');setResult('');setError('');}} className="neir-ui-choice-tab">
         <Search className="mx-auto mb-2" size={26} /> Check Query Status
-      </button>
+      </UiButton>
     </div>
     <div className="rounded-3xl bg-white border border-slate-200 p-5 sm:p-9 shadow-sm">
       {tab === 'submit' ? <form className="space-y-5" onSubmit={submit}>
         <h2 className="text-center text-2xl sm:text-3xl font-semibold text-slate-900">Submit Your Query</h2><hr className="border-slate-200"/>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <label className="block text-sm font-medium sm:col-span-2">Full Name <span className="text-red-600">*</span><input required className={inputClass} placeholder="Enter your full name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>
-          <label className="block text-sm font-medium">Enter your mobile number <span className="text-red-600">*</span><input required inputMode="numeric" maxLength={11} className={inputClass} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e => setMobile(e.target.value.replace(/\D/g,'').slice(0,11))} /></label>
-          <label className="block text-sm font-medium">Email <span className="text-red-600">*</span><input required type="email" className={inputClass} placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} /></label>
-          <label className="block text-sm font-medium sm:col-span-2">Choose Purpose Type <span className="text-red-600">*</span><select required className={inputClass} aria-label="Choose Purpose Type" value={purpose} onChange={e => setPurpose(e.target.value)}><option value="">Select a purpose type</option><option value="Demo inquiry">Demo inquiry (prototype only)</option></select><span className="block text-xs text-slate-500 mt-1">The original dropdown options were not included in the supplied HTML. This temporary choice is visibly labeled demo.</span></label>
+          <label className="block text-sm font-medium sm:col-span-2">Full Name <span className="text-red-600">*</span><UiInput required className={inputClass} placeholder="Enter your full name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>
+          <label className="block text-sm font-medium">Enter your mobile number <span className="text-red-600">*</span><UiInput required inputMode="numeric" maxLength={11} className={inputClass} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e => setMobile(e.target.value.replace(/\D/g,'').slice(0,11))} /></label>
+          <label className="block text-sm font-medium">Email <span className="text-red-600">*</span><UiInput required type="email" className={inputClass} placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} /></label>
+          <label className="block text-sm font-medium sm:col-span-2">Choose Purpose Type <span className="text-red-600">*</span><UiSelect required className={inputClass} aria-label="Choose Purpose Type" value={purpose} onChange={e => setPurpose(e.target.value)}><option value="">Select a purpose type</option><option value="Demo inquiry">Demo inquiry (prototype only)</option></UiSelect><span className="block text-xs text-slate-500 mt-1">The original dropdown options were not included in the supplied HTML. This temporary choice is visibly labeled demo.</span></label>
         </div>
-        <label className="block text-sm font-medium">Issues Summary <span className="text-red-600">*</span><textarea required className={inputClass} rows={4} placeholder="Tell us more about the issue you are facing" value={summary} onChange={e => setSummary(e.target.value)} /></label>
-        <button type="submit" className="bg-[#00ACC1] hover:bg-[#00838F] text-white font-semibold rounded-xl px-8 py-3">Submit</button>
+        <label className="block text-sm font-medium">Issues Summary <span className="text-red-600">*</span><UiTextarea required className={inputClass} rows={4} placeholder="Tell us more about the issue you are facing" value={summary} onChange={e => setSummary(e.target.value)} /></label>
+        <UiButton type="submit" variant="primary" className="neir-ui-form-action">Submit</UiButton>
       </form> : <form className="space-y-5" onSubmit={lookup}>
         <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">Check Your Query Ticket Status</h2>
-        <label className="block text-sm font-medium">Query Ticket Number <span className="text-red-600">*</span><input required className={inputClass} placeholder="Query Ticket Number" value={number} onChange={e => setNumber(e.target.value)} /></label>
-        <button type="submit" className="bg-[#00ACC1] hover:bg-[#00838F] text-white font-semibold rounded-xl px-8 py-3">Check Query Status</button>
+        <label className="block text-sm font-medium">Query Ticket Number <span className="text-red-600">*</span><UiInput required className={inputClass} placeholder="Query Ticket Number" value={number} onChange={e => setNumber(e.target.value)} /></label>
+        <UiButton type="submit" variant="primary" className="neir-ui-form-action">Check Query Status</UiButton>
       </form>}
       {error && <p role="alert" className="bg-red-50 text-red-800 rounded-lg p-3 mt-5 text-sm">{error}</p>}
       {result && <p role="status" className="bg-sky-50 text-sky-950 rounded-lg p-3 mt-5 text-sm">{result}</p>}
