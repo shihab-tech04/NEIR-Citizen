@@ -1,0 +1,52 @@
+name: Verify NEIR IMEI acquisition gate is publicly LIVE
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Confirm exact Pages deployment and deployed registration gating
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="72aaac4d9ada03bdb9bf373ef60d1017324db762"
+          for attempt in $(seq 1 55); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$TARGET\") | .id" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id" --jq '.status + " " + (.conclusion // "pending")')"
+              echo "Pages run $run_id: $state"
+              if [[ "$state" == "completed success" ]]; then break; fi
+              if [[ "$state" == "completed failure" || "$state" == "completed cancelled" ]]; then
+                echo 'FAIL: target Pages workflow did not succeed'; exit 1
+              fi
+            fi
+            if [[ "$attempt" == 55 ]]; then echo 'FAIL: Pages workflow timed out'; exit 1; fi
+            sleep 10
+          done
+          python - <<'PY'
+          import urllib.request,re,time
+          url='https://shihab-tech04.github.io/NEIR-Citizen/'
+          for attempt in range(22):
+              try:
+                  html=urllib.request.urlopen(url,timeout=25).read().decode('utf-8')
+                  paths=re.findall(r'(?:src|href)="(/NEIR-Citizen/assets/[^"]+\.js)"',html)
+                  assert paths, 'missing built Vite assets'
+                  js=''.join(urllib.request.urlopen('https://shihab-tech04.github.io'+p,timeout=35).read().decode('utf-8') for p in paths)
+                  expected=('neir-v7-reason-card','is-disabled','application-reason','neir-v7-imei','neir-v7-arrival','Continue')
+                  for marker in expected:
+                      assert marker in js, 'Missing deployed gating feature: '+marker
+                  print('PASS LIVE: public JS contains 14/15-digit IMEI acquisition gating and existing Continue flow')
+                  break
+              except Exception as error:
+                  if attempt==21: raise
+                  print('Waiting for public assets to update:',str(error)[:130])
+                  time.sleep(6)
+          PY
+          echo "PASS LIVE exact Pages commit $TARGET at https://shihab-tech04.github.io/NEIR-Citizen/"
