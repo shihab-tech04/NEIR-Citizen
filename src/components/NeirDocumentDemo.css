@@ -1,0 +1,89 @@
+/* Illustration-only document samples shown from the shared NEIR Special Registration dialog.
+   All styles are locally scoped; never replace global typography or modal tokens. */
+.neir-v7-dialog{position:relative}
+.neir-v7-demo-overlay{
+  position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  padding:18px;background:rgba(15,24,35,.48);box-sizing:border-box;
+}
+.neir-v7-demo-dialog{
+  display:flex;flex-direction:column;min-width:0;width:min(640px,100%);max-height:100%;
+  overflow:hidden;border:1px solid #d6e0e4;border-radius:16px;background:#fff;
+  box-shadow:0 12px 36px rgba(13,29,41,.22);font-family:inherit;color:#202c3c;
+}
+.neir-v7-demo-header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;
+  border-bottom:1px solid #e3dbd8;flex:none;
+}
+.neir-v7-demo-header h3{margin:0;font-family:inherit;font-size:20px;line-height:1.4;font-weight:500;color:#202c3c}
+.neir-v7-demo-close{
+  display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid #d6e0e4;
+  border-radius:9px;background:#fff;color:#202c3c;cursor:pointer;
+}
+.neir-v7-demo-close:hover{border-color:#00acc1;background:#edf9fb}
+.neir-v7-demo-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 20px 22px}
+.neir-demo-explanation{margin:0 0 16px;color:#65768b;font-size:14px;line-height:1.5}
+.neir-demo-paper{
+  position:relative;overflow:hidden;max-width:100%;padding:20px 22px;background:#fff;border:1px solid #c8d6e0;
+  border-radius:8px;box-shadow:0 3px 12px #1b29330b;color:#253749;isolation:isolate;
+}
+.neir-demo-paper-header{position:relative;z-index:1;display:flex;align-items:center;gap:12px;
+  padding-bottom:16px;border-bottom:1px solid #dce5ec}
+.neir-demo-paper-icon{display:grid;place-items:center;flex:none;width:42px;height:42px;
+  border-radius:9px;background:#edf9fb;color:#00838f}
+.neir-demo-paper-header div:last-child{min-width:0;display:flex;flex-direction:column;gap:3px}
+.neir-demo-paper-header strong{font-size:16px;line-height:1.4;font-weight:600}
+.neir-demo-paper-header span{color:#65768b;font-size:11px;letter-spacing:.6px}
+.neir-demo-watermark{
+  position:absolute;z-index:0;pointer-events:none;user-select:none;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-26deg);white-space:nowrap;color:#bbd5dc;
+  font-weight:700;font-size:clamp(30px,6vw,62px);opacity:.36;letter-spacing:5px;
+}
+.neir-demo-paper-fields{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;margin:18px 0 0}
+.neir-demo-paper-fields>div{min-width:0;border-bottom:1px solid #e8eef2;padding-bottom:9px}
+.neir-demo-paper-fields dt{margin-bottom:5px;color:#68798a;font-size:12px;line-height:1.45}
+.neir-demo-paper-fields dd{margin:0;font-family:inherit;color:#23374a;font-size:14px;line-height:1.45;
+  font-weight:500;overflow-wrap:anywhere}
+.neir-demo-passport-portrait{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;
+  position:relative;z-index:1;float:right;margin:16px 0 4px 16px;width:100px;height:124px;
+  border:1px dashed #9fb5c2;border-radius:6px;color:#8199a5;background:#f7fafc}
+.neir-demo-passport-portrait span{font-size:15px;font-weight:600}
+.neir-demo-passport-portrait small{font-size:10px;text-align:center}
+.neir-demo-stamp{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:4px;width:188px;height:144px;margin:20px auto 4px;
+  border:3px dashed #8ca9b5;border-radius:50%;transform:rotate(-8deg);
+  color:#4b6d7b;text-align:center}
+.neir-demo-stamp strong{font-size:21px;letter-spacing:2px}
+.neir-demo-stamp span{font-size:13px;font-weight:500}
+.neir-demo-stamp small{font-size:9px;letter-spacing:.5px}
+.neir-demo-barcode{position:relative;z-index:1;width:min(220px,100%);height:42px;margin:18px auto 0;
+  background:repeating-linear-gradient(90deg,#253749 0 2px,transparent 2px 4px,#253749 4px 5px,transparent 5px 10px);
+  opacity:.4}
+.neir-demo-paper-table-scroll{position:relative;z-index:1;overflow-x:auto;margin-top:18px}
+.neir-demo-paper-table{width:100%;border-collapse:collapse;font-size:13px;color:#253749;min-width:330px}
+.neir-demo-paper-table th,.neir-demo-paper-table td{padding:9px;text-align:left;border:1px solid #dae4eb}
+.neir-demo-paper-table thead{background:#f3f8fa}
+.neir-demo-signatures{position:relative;z-index:1;display:flex;justify-content:space-between;flex-wrap:wrap;
+  gap:12px;margin-top:30px;padding:18px 0 4px;font-size:13px}
+.neir-demo-paper-footer{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-top:24px;padding-top:12px;border-top:1px solid #dce5ec;color:#9a4351;
+  text-align:center;font-size:11px;font-weight:600;letter-spacing:.3px;line-height:1.5}
+.neir-demo-upload-tip{margin:16px 0 0;padding:12px 14px;border-radius:8px;background:#f5fcfd;
+  border:1px solid #cce8ec;color:#31505d;font-size:14px;line-height:1.55}
+.neir-demo-upload-tip strong{font-weight:600}
+@media(max-width:700px){
+  .neir-v7-demo-overlay{padding:8px;align-items:center}
+  .neir-v7-demo-dialog{border-radius:12px;max-height:100%}
+  .neir-v7-demo-header{padding:12px 14px}
+  .neir-v7-demo-header h3{font-size:17px}
+  .neir-v7-demo-content{padding:12px}
+  .neir-demo-paper{padding:14px}
+  .neir-demo-paper-fields{gap:10px}
+  .neir-demo-paper-fields dd{font-size:13px}
+  .neir-demo-passport-portrait{width:70px;height:96px}
+}
+@media(max-width:359px){
+  .neir-demo-paper-fields{grid-template-columns:1fr}
+  .neir-demo-paper-header span{font-size:10px}
+  .neir-v7-demo-close{width:32px;height:32px}
+}
