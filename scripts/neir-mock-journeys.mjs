@@ -272,7 +272,9 @@ try{
     assert.equal(layout.rows,1,'desktop cards on one row');
     assert(await dlg.getByRole('button',{name:'Continue'}).isDisabled(),'acquisition reason required before Continue');
     await dlg.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival field remains');
+    assert.equal(await dlg.locator('#neir-v7-arrival').count(),0,'arrival waits until Continue');
+    await dlg.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival follows Continue');
     assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
     assert.equal(await dlg.getByRole('radio',{name:'Without Tax'}).count(),0,'remove Without Tax radio');
     assert.equal(await dlg.locator('#neir-v7-tax,#neir-v7-bmet,.neir-v7-bmet-section,.neir-v7-bmet-conditional').count(),0,'remove tax/BMET inputs and sections');
@@ -314,22 +316,25 @@ try{
     assert(gap>=0 && gap<=20,'no phantom whitespace after documents: '+gap+'px');
     await dlg.getByRole('button',{name:'Submit'}).click();
     await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'prototype does not falsely claim real registration');
-    await dlg.getByRole('button',{name:'Cancel'}).click();
+    await dlg.getByRole('button',{name:'Close special registration'}).click();
 
     await table.getByRole('button',{name:'Actions for IMEI 12004089900331'}).click();
     await table.getByRole('menuitem',{name:'Special Registration'}).click();
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
+    await dlg.getByRole('button',{name:'Continue'}).click();
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page (Donor) *','Passport Arrival Date Seal (Donor) *','Device Box IMEI Number *','Gift Deed (Donor) *'],
       'Gift checklist follows historical reference PDF');
     assert.equal(await dlg.locator('#neir-v7-passport').count(),0,'donor passport uploaded, no applicant passport field');
     await snap(desktop,'12-neir-document-rows-gift');
+    await dlg.getByRole('button',{name:'Back'}).click();
     await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
+    await dlg.getByRole('button',{name:'Continue'}).click();
     await expectVisible(dlg.getByLabel('Passport number'),'passport input for foreign tour');
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page *','Passport Arrival Date Seal *','Device Box IMEI Number *','Ticket / Boarding Pass / Travel Document (optional)'],
       'Foreign Tour checklist follows reference PDF with optional travel evidence');
-    await dlg.getByRole('button',{name:'Cancel'}).click();
+    await dlg.getByRole('button',{name:'Close special registration'}).click();
   });
   await check('Profile editing, logout and mock registration screens',async()=>{
     await desktop.getByRole('button',{name:'Edit Profile Informations'}).click();
