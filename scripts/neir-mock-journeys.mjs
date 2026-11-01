@@ -231,7 +231,9 @@ try{
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await expectVisible(wizard.locator('#neir-v7-arrival'),'home acquisition reason reveals details');
-    await expectVisible(wizard.getByRole('button',{name:'About Commercial Invoice attachment'}),'home attachment tooltips');
+    await expectVisible(wizard.getByRole('button',{name:'Upload Documents'}),'document accordion from homepage');
+    assert.equal(await wizard.locator('.neir-v7-upload-group').count(),4,'homepage shows PDF Air Mail checklist');
+    await expectVisible(wizard.getByRole('button',{name:'View guidance for Commercial Invoice'}),'homepage document guidance');
     await wizard.getByRole('button',{name:'Close special registration'}).click();
     await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
     await expectVisible(wizard,'wizard can reopen after closing');
@@ -245,102 +247,81 @@ try{
     await desktop.getByRole('button',{name:'My Profile'}).click();
     await desktop.waitForURL('**/dashboard');
   });
-  await check('One shared IMEI-first Special Registration, reason cards, attachments and BMET last',async()=>{
+  await check('Shared Special Registration: no tax or BMET inputs, PDF documents and accessible upload rows',async()=>{
     const table=desktop.locator('.neir-profile-device-table');
     await table.getByRole('button',{name:'Actions for IMEI 12004089900331'}).click();
     await table.getByRole('menuitem',{name:'Special Registration'}).click();
     const dlg=desktop.getByRole('dialog',{name:'Special Registration'});
-    await expectVisible(dlg,'unified modal from My Profile');
-    assert.equal(await dlg.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'no stepper');
-    assert.equal(await dlg.locator('select').count(),0,'no reason dropdown');
-    assert.equal(await dlg.locator('input#neir-v7-imei').inputValue(),'12004089900331','pending IMEI prefills');
+    await expectVisible(dlg,'Special Registration from My Profile');
+    assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile pending IMEI is prefilled');
     assert.equal(await dlg.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.');
-    assert.equal(await dlg.locator('.neir-v7-imei-section small').count(),0,'IMEI helper and immediate error text removed');
-    assert.equal(await dlg.locator('.neir-v7-reason-card').count(),3,'the first modal shows IMEI and three acquisition cards');
-    assert.equal(await dlg.locator('.neir-v7-reason-copy>span').count(),0,'the cards have no subtitles');
-    await expectVisible(dlg.getByRole('heading',{name:'Enter the IMEI number of the device you want to register'}),'IMEI introduction');
-    const geometry=await dlg.locator('.neir-v7-reason-list').evaluate(el=>({
+    assert.equal(await dlg.locator('.neir-v7-reason-card').count(),3,'keep all three reasons');
+    assert.equal(await dlg.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'no stepper');
+    const layout=await dlg.locator('.neir-v7-reason-list').evaluate(el=>({
       columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,
-      rows:new Set(Array.from(el.querySelectorAll('.neir-v7-reason-card')).map(x=>Math.round(x.getBoundingClientRect().top))).size
+      rows:new Set([...el.querySelectorAll('.neir-v7-reason-card')].map(x=>Math.round(x.getBoundingClientRect().top))).size
     }));
-    assert.equal(geometry.columns,3,'desktop uses three equal columns');
-    assert.equal(geometry.rows,1,'three options fit on one row');
-    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'validation gates submit');
-    const typography=await dlg.evaluate(el=>({
-      font:getComputedStyle(el).fontFamily,
-      input:getComputedStyle(el.querySelector('#neir-v7-imei')).fontSize,
-      radius:getComputedStyle(el).borderTopLeftRadius
-    }));
-    assert.match(typography.font,/Poppins/i,'global Poppins');
-    assert.equal(typography.input,'16px','system field font size');
-    assert.equal(typography.radius,'16px','approved NEIR modal corners');
-    await snap(desktop,'11-unified-registration-imei-first');
+    assert.equal(layout.columns,3,'desktop acquisition reasons in three columns');
+    assert.equal(layout.rows,1,'desktop cards on one row');
+    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'submit validates required fields');
     await dlg.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival available immediately after reason');
-    await expectVisible(dlg.getByRole('radio',{name:'With Tax'}),'purchase tax choice after reason');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').count(),1,'without selecting tax status, air mail only asks for an invoice');
-    await expectVisible(dlg.getByRole('heading',{name:"Provide the device's arrival date and tax details."}),'details heading');
-    await expectVisible(dlg.getByRole('heading',{name:'Upload the required documents for verification.'}),'document heading');
-    assert.equal(await dlg.locator('.neir-v7-upload-line').count(),1,'each document uses a single upload row and separate info icon');
-    assert.equal(await dlg.locator('.neir-v7-upload-line .neir-v7-upload-pick').count(),1,'no duplicate file title and picker');
-    const tooltipButton=dlg.getByRole('button',{name:'About Commercial Invoice attachment'});
-    await tooltipButton.click();
-    await expectVisible(dlg.getByRole('tooltip').filter({hasText:'sender and item details'}),'tooltip explains purpose');
-    assert.equal(await tooltipButton.getAttribute('aria-expanded'),'true','tooltip is interactive');
-    await tooltipButton.click();
-    assert.equal(await tooltipButton.getAttribute('aria-expanded'),'false');
-    assert.equal(await dlg.getByLabel('BMET Card Number').count(),0,'BMET number remains conditional');
-    const order=await dlg.evaluate(el=>['#neir-v7-imei','.neir-v7-reason-fieldset','#neir-v7-arrival','.neir-v7-document-grid','.neir-v7-bmet-section'].map(selector=>el.querySelector(selector)?.getBoundingClientRect().top));
-    assert(order.every((v,i)=>i===0||v>=order[i-1]),'IMEI → reasons → arrival → attachments → BMET visual order');
+    await expectVisible(dlg.locator('#neir-v7-arrival'),'arrival field remains');
+    assert.equal(await dlg.getByRole('radio',{name:'With Tax'}).count(),0,'remove With Tax radio');
+    assert.equal(await dlg.getByRole('radio',{name:'Without Tax'}).count(),0,'remove Without Tax radio');
+    assert.equal(await dlg.locator('#neir-v7-tax,#neir-v7-bmet,.neir-v7-bmet-section,.neir-v7-bmet-conditional').count(),0,'remove tax/BMET inputs and sections');
+    assert.equal(await dlg.getByText('BMET card information').count(),0,'no BMET heading');
+    assert.equal(await dlg.getByText(/tax details/i).count(),0,'no tax details heading');
+    const panel=dlg.getByRole('button',{name:'Upload Documents'});
+    await expectVisible(panel,'document section follows screenshot accordion layout');
+    assert.equal(await panel.getAttribute('aria-expanded'),'true','document panel open by default');
+    const docRows=dlg.locator('.neir-v7-upload-group');
+    assert.equal(await docRows.count(),4,'PDF Air Mail checklist is four rows');
+    const actual=(await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' '));
+    assert.deepEqual(actual, ['Courier Bill *','Packing List *','Commercial Invoice *','Applicant Tax Document *'],'PDF document labels and order');
+    assert.equal(await dlg.locator('.neir-v7-upload-desc').count(),4,'each document explains its purpose and file limits');
+    assert.equal(await dlg.locator('.neir-v7-upload-pick').count(),4,'one Choose file action per document');
+    assert.equal(await dlg.locator('.neir-v7-document-icon').count(),4,'one paperclip icon per row');
+    await panel.click();
+    assert.equal(await dlg.locator('.neir-v7-upload-group').count(),0,'panel collapse hides rows');
+    await panel.click();
+    assert.equal(await dlg.locator('.neir-v7-upload-group').count(),4,'panel expands without losing content');
+    const guide=dlg.getByRole('button',{name:'View guidance for Courier Bill'});
+    await guide.click();
+    await expectVisible(dlg.getByRole('note').filter({hasText:'shipment or courier receipt'}),'view guidance describes required file');
+    assert.equal(await guide.getAttribute('aria-expanded'),'true','guidance disclosure is accessible');
+    await guide.click();
+    assert.equal(await dlg.getByRole('note').count(),0,'guidance closes');
+    await snap(desktop,'11-neir-document-rows-airmail');
     await dlg.locator('#neir-v7-arrival').fill('2026-10-20');
-    await dlg.getByRole('radio',{name:'With Tax'}).check();
-    await expectVisible(dlg.getByLabel('Tax amount'),'tax amount only with tax');
-    await dlg.getByLabel('Tax amount').fill('1200');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').count(),2,'paid air mail adds tax receipt upload only with tax');
-    await dlg.getByRole('radio',{name:'Yes'}).check();
-    await expectVisible(dlg.getByLabel('BMET Card Number'),'BMET number at end');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').count(),3,'BMET attachment added at end');
-    await expectVisible(dlg.getByRole('button',{name:'About BMET Card attachment'}),'BMET tooltip present');
-    await dlg.getByLabel('BMET Card Number').fill('BMET12345');
-    await snap(desktop,'12-unified-registration-reason-attachments-bmet');
-    assert(await dlg.getByRole('button',{name:'Submit'}).isDisabled(),'all required files required');
-    await dlg.locator('input[type=file]').first().setInputFiles({name:'oversized.png',mimeType:'image/png',buffer:Buffer.alloc(1048577)});
+    const inputs=dlg.locator('input[type=file]');
+    await inputs.first().setInputFiles({name:'oversized.png',mimeType:'image/png',buffer:Buffer.alloc(1048577)});
     await expectVisible(dlg.getByRole('alert').filter({hasText:'at most 1 MB'}),'file validation retained');
     const file={name:'sample.png',mimeType:'image/png',buffer:Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082','hex')};
-    for(let i=0;i<3;i++) await dlg.locator('input[type=file]').nth(i).setInputFiles(file);
-    const endLayout=await dlg.locator('.neir-v7-body').evaluate(el=>{
+    for(let k=0;k<4;k++) await inputs.nth(k).setInputFiles(file);
+    assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'document-only required fields enable submit');
+    const gap=await dlg.locator('.neir-v7-body').evaluate(el=>{
       el.scrollTop=el.scrollHeight;
-      const last=el.querySelector('.neir-v7-bmet-section');
-      const r=last.getBoundingClientRect(),b=el.getBoundingClientRect();
-      const f=el.closest('form').getBoundingClientRect();
-      const d=el.closest('[role="dialog"]').getBoundingClientRect();
-      return {gap:Math.round(b.bottom-r.bottom),scrollTop:el.scrollTop,scrollHeight:el.scrollHeight,
-        clientHeight:el.clientHeight,lastHeight:r.height,lastBottom:r.bottom,bodyBottom:b.bottom,bodyHeight:b.height,
-        formHeight:f.height,dialogHeight:d.height,padBottom:getComputedStyle(el).paddingBottom,
-        lastMarginBottom:getComputedStyle(last).marginBottom,children:Array.from(el.children).slice(-4).map(x=>({tag:x.tagName,cls:x.className,box:x.getBoundingClientRect().height,bottom:x.getBoundingClientRect().bottom}))};
+      const last=el.querySelector('.neir-v7-doc-panel');
+      return Math.round(el.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom);
     });
-    console.log('NEIR BMET BODY GEOMETRY',JSON.stringify(endLayout));
-    const endGap=endLayout.gap;
-    assert(endGap>=0 && endGap<=20,'no large blank gap below BMET before footer: '+endGap+'px');
-    assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'valid documents enable submit');
+    assert(gap>=0 && gap<=20,'no phantom whitespace after documents: '+gap+'px');
     await dlg.getByRole('button',{name:'Submit'}).click();
-    await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'no false real submission');
+    await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'prototype does not falsely claim real registration');
     await dlg.getByRole('button',{name:'Cancel'}).click();
+
     await table.getByRole('button',{name:'Actions for IMEI 12004089900331'}).click();
     await table.getByRole('menuitem',{name:'Special Registration'}).click();
-    await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
-    await expectVisible(dlg.getByLabel('Passport number'),'tour-only passport');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').count(),3,'tour: passport info, handset IMEI, optional travel evidence');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').filter({hasText:/arrival.*seal/i}).count(),0,'arrival seal uploads are removed');
-    assert.equal(await dlg.locator('.neir-v7-optional').count(),1,'ticket/boarding pass is optional');
-    await dlg.getByRole('radio',{name:'No'}).check();
-    assert.equal(await dlg.getByLabel('BMET Card Number').count(),0,'BMET No hides extra fields');
-    await dlg.getByRole('radio',{name:'Without Tax'}).check();
-    assert.equal(await dlg.getByLabel('Tax amount').count(),0,'tax-free hides amount');
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
-    assert.equal(await dlg.locator('.neir-v7-upload-title').count(),3,'gift: passport info, gift deed and handset IMEI only');
-    assert.equal(await dlg.locator('.neir-v7-upload-title').filter({hasText:/arrival.*seal/i}).count(),0,'donor arrival seal is removed');
-    assert.equal(await dlg.getByLabel('Passport number').count(),0,'gift does not demand applicant passport');
+    assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
+      ['Passport Info Page (Donor) *','Passport Arrival Date Seal (Donor) *','Device Box IMEI Number *','Gift Deed (Donor) *'],
+      'Gift checklist follows historical reference PDF');
+    assert.equal(await dlg.locator('#neir-v7-passport').count(),0,'donor passport uploaded, no applicant passport field');
+    await snap(desktop,'12-neir-document-rows-gift');
+    await dlg.getByRole('radio',{name:'Purchased handset during his foreign tour'}).check();
+    await expectVisible(dlg.getByLabel('Passport number'),'passport input for foreign tour');
+    assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
+      ['Passport Info Page *','Passport Arrival Date Seal *','Device Box IMEI Number *','Ticket / Boarding Pass / Travel Document (optional)'],
+      'Foreign Tour checklist follows reference PDF with optional travel evidence');
     await dlg.getByRole('button',{name:'Cancel'}).click();
   });
   await check('Profile editing, logout and mock registration screens',async()=>{
