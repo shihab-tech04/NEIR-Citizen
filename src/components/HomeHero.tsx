@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import type {Language} from '../types.ts';
 import {Info, ArrowRight} from 'lucide-react';
+import { UiInput, UiButton } from '../ui/index.ts';
 type Props = {language:Language; onScrollToVerifier:()=>void; onOpenGuides:()=>void};
 export const HomeHero:React.FC<Props> = ({language}) => {
   const [imei,setImei]=useState('');
@@ -23,10 +24,10 @@ export const HomeHero:React.FC<Props> = ({language}) => {
             <div className="neir-source-input-wrap">
               <label className="sr-only" htmlFor="neir-imei-input">Please enter the first 14 digits of your IMEI</label>
               <p className="neir-source-imei-mobile-label" aria-hidden="true">First 14 digits of your IMEI</p>
-              <input id="neir-imei-input" type="text" inputMode="numeric" maxLength={14} minLength={14} placeholder="Please enter the first 14 digits of your IMEI" value={imei} onChange={e=>{setImei(e.target.value.replace(/\D/g,'').slice(0,14));setError('');setDemoResult('');}}/>
+              <UiInput id="neir-imei-input" uiSize="default" type="text" inputMode="numeric" maxLength={14} minLength={14} placeholder="Please enter the first 14 digits of your IMEI" value={imei} onChange={e=>{setImei(e.target.value.replace(/\D/g,'').slice(0,14));setError('');setDemoResult('');}}/>
               <span className="neir-source-imei-help" title="Dial *#06# to find the 15-digit IMEI" aria-label="IMEI help"><Info size={16}/></span>
             </div>
-            <button className="neir-source-verify-button" type="submit"><span className="neir-source-verify-long">{bn?'ফোনের স্ট্যাটাস যাচাই করুন':"Check phone's Verification Status now"}</span><span className="neir-source-verify-short">{bn?'যাচাই':'check'}</span><ArrowRight size={20}/></button>
+            <UiButton variant="primary" className="neir-source-verify-button" type="submit"><span className="neir-source-verify-long">{bn?'ফোনের স্ট্যাটাস যাচাই করুন':"Check phone's Verification Status now"}</span><span className="neir-source-verify-short">{bn?'যাচাই':'check'}</span><ArrowRight size={20}/></UiButton>
             {error && <p className="neir-source-error" role="alert">{error}</p>}
             {demoResult && <p className="neir-source-demo-result" role="status">{demoResult}</p>}
           </form>
