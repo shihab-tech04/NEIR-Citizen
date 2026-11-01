@@ -17,7 +17,7 @@ export const HomeHero:React.FC<Props> = ({language}) => {
     <div className="neir-source-hero-inner">
       <div className="neir-source-hero-copy">
         <h1>{bn?'ন্যাশনাল ইকুইপমেন্ট আইডেন্টিটি রেজিস্টার (NEIR)':'National Equipment Identity Register (NEIR)'}</h1>
-        <p className="neir-source-description">{bn?'বাংলাদেশের মোবাইল ডিভাইস ডাটাবেসে আপনার ফোনের আইএমইআই নম্বর যাচাই করুন।':"Verify your phone's IMEI number with the official Bangladesh Mobile Device Database. Find out if your device is authentic, imported legally, and not reported as lost, stolen, or cloned."}</p>
+        <p className="neir-source-description">{bn?'বাংলাদেশের মোবাইল ডিভাইস ডাটাবেসে আপনার ফোনের আইএমইআই নম্বর যাচাই করুন।':"Search your phone's IMEI to view its device information and registration status."}</p>
         <div className="neir-source-verification-card" id="imei-verifier">
           <h2>{bn?'আপনার ফোনের ভেরিফিকেশন স্ট্যাটাস দেখুন':"Check Your phone's Verification Status instantly"}</h2>
           <form onSubmit={verify} noValidate>
@@ -34,7 +34,7 @@ export const HomeHero:React.FC<Props> = ({language}) => {
         </div>
       </div>
       <div className="neir-source-hero-media">
-        <img src={`${import.meta.env.BASE_URL}neir-source/gifs/neir-herobanner.gif`} alt="Official NEIR handset verification illustration" decoding="async"/>
+        <img src={`${import.meta.env.BASE_URL}neir-source/gifs/neir-herobanner.gif`} alt="NEIR handset verification illustration" decoding="async"/>
       </div>
     </div>
   </section>;
