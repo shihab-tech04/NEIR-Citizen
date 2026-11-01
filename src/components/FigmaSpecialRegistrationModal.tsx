@@ -172,7 +172,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
             const current = Math.min(stage, 3) === indexStage;
             const completed = stage > indexStage;
             return <React.Fragment key={title}>
-              {index > 0 && <ChevronsRight className={'neir-sr-chevron' + (completed || current ? ' neir-sr-chevron-active' : '')} size={26} aria-hidden="true" />}
+              {index > 0 && <ChevronsRight className={'neir-sr-chevron' + (stage >= index ? ' neir-sr-chevron-active' : '')} size={26} aria-hidden="true" />}
               <div className={'neir-sr-step' + (current ? ' neir-sr-step-active' : '')} aria-current={current ? 'step' : undefined}>
                 <span className="neir-sr-step-meta">Step {indexStage}</span>
                 <span className="neir-sr-step-title">{title}</span>
