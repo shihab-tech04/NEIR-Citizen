@@ -1,0 +1,44 @@
+name: NEIR PR31 independent pre-release history backup
+on:
+  push:
+    branches:
+      - ops/neir-pr31-source-backup-20261101
+permissions:
+  contents: read
+jobs:
+  restore-tested-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Preserve full Git history and verify independent restoration
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRE_RELEASE=19e3d5afca76685250bee1deb0c9b2b008e868a8
+          git fetch --prune origin main --tags
+          test "$(git rev-parse origin/main)" = "$PRE_RELEASE"
+          test "$(git cat-file -t "$PRE_RELEASE")" = commit
+          mkdir -p neir-recovery
+          FILE="neir-recovery/NEIR-Citizen-pre-PR31-${PRE_RELEASE:0:12}.bundle"
+          git bundle create "$FILE" --all
+          git bundle verify "$FILE"
+          mkdir -p /tmp/neir-independent-restore
+          git clone "$FILE" /tmp/neir-independent-restore/NEIR-Citizen
+          git -C /tmp/neir-independent-restore/NEIR-Citizen cat-file -e "$PRE_RELEASE^{commit}"
+          A="$(git rev-parse "$PRE_RELEASE^{tree}")"
+          B="$(git -C /tmp/neir-independent-restore/NEIR-Citizen rev-parse "$PRE_RELEASE^{tree}")"
+          test "$A" = "$B"
+          git show "$PRE_RELEASE:src/App.tsx" > /tmp/source-App.tsx
+          git -C /tmp/neir-independent-restore/NEIR-Citizen show "$PRE_RELEASE:src/App.tsx" > /tmp/restored-App.tsx
+          cmp /tmp/source-App.tsx /tmp/restored-App.tsx
+          (cd neir-recovery && sha256sum *.bundle > SHA256SUMS)
+          printf 'pre_release_sha=%s\nsource_tree=%s\nrestore_tree=%s\nfull_history_bundle=PASS\nrestore_clone=PASS\nsource_byte_comparison=PASS\n' "$PRE_RELEASE" "$A" "$B" > neir-recovery/manifest.txt
+          cat neir-recovery/SHA256SUMS neir-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-Citizen-pre-PR31-restore-tested-full-history
+          path: neir-recovery/
+          retention-days: 14
