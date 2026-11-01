@@ -1,0 +1,52 @@
+/* Profile Special Registration: scoped reproduction of supplied v7 HTML. */
+.neir-v7-backdrop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(12,37,45,.55);font-family:Poppins,Arial,sans-serif}
+.neir-v7-dialog{box-sizing:border-box;width:min(900px,100%);max-height:94dvh;background:#fff;border:1px solid #cae5e7;border-radius:18px;box-shadow:0 18px 56px rgba(14,62,72,.22);color:#233b48;display:flex;flex-direction:column;overflow:hidden}
+.neir-v7-header{flex:none;display:flex;align-items:center;justify-content:space-between;padding:18px 26px;border-bottom:0}
+.neir-v7-header h2{font-size:19px;line-height:1.5;font-weight:700;color:#193b48;margin:0}
+.neir-v7-close{width:42px;height:42px;display:grid;place-items:center;background:#fff;border:1px solid #cde3e5;border-radius:10px;color:#355661;cursor:pointer}
+.neir-v7-close:hover{background:#effbfc}
+.neir-v7-progress{flex:none;height:4px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.neir-v7-progress span{background:#dcebed}.neir-v7-progress span.is-active{background:#129dab}
+.neir-v7-form{display:flex;flex-direction:column;min-height:0;flex:1}
+.neir-v7-body{padding:22px 26px 26px;overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0}
+.neir-v7-section-header{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.neir-v7-section-header span{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#e4f7f9;color:#0b94a4;font-weight:700;font-size:11px;border:1px solid #bde7eb}
+.neir-v7-section-header h3{font-size:15px;font-weight:600;color:#244451;margin:0}
+.neir-v7-divider{height:1px;background:#dfebed;margin:22px 0}
+.neir-v7-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+.neir-v7-span{grid-column:1/-1}
+.neir-v7-field{min-width:0;display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600;color:#31505d}
+.neir-v7-field legend{font-size:13px;font-weight:600;margin-bottom:7px}
+.neir-v7-field b,.neir-v7-upload-title b{color:#d84d4d;font-weight:600}
+.neir-v7-field input:not([type=radio]),.neir-v7-field select{width:100%;min-width:0;height:46px;padding:9px 13px;border:1px solid #cfe2e5;border-radius:10px;background:#fff;color:#23444d;font-size:13px;font-weight:400;outline:none;font-family:inherit}
+.neir-v7-field input:focus-visible,.neir-v7-field select:focus-visible{outline:2px solid #0da6b5;outline-offset:1px}
+.neir-v7-field input[aria-invalid=true]{border-color:#b42318}
+.neir-v7-field fieldset,fieldset.neir-v7-field{border:0;margin:0;padding:0}
+.neir-v7-radio-group{display:flex;gap:10px;width:100%;min-height:46px}
+.neir-v7-radio-option{min-width:0;flex:1;min-height:46px;display:flex;align-items:center;gap:10px;padding:10px 13px;background:#fff;border:1px solid #cfe2e5;border-radius:10px;cursor:pointer;font:500 13px Poppins,sans-serif;color:#31505d}
+.neir-v7-radio-option input{width:18px;height:18px;margin:0;accent-color:#129dab;cursor:pointer;flex:none}
+.neir-v7-radio-option.is-selected{background:#eaf9fa;border-color:#129dab;box-shadow:inset 3px 0 #129dab;color:#075d69}
+.neir-v7-radio-option:has(input:focus-visible){outline:3px solid #15899a;outline-offset:2px}
+.neir-v7-verify-grid{margin-top:16px}
+.neir-v7-doc-intro{font-size:13px;color:#3b5c68;line-height:1.65;margin:0 0 4px}
+.neir-v7-doc-limits{font-size:11px;color:#63818a;text-align:right;margin:0 0 14px;line-height:1.6}
+.neir-v7-document-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 18px}
+.neir-v7-upload-group{position:relative;min-width:0;display:flex;flex-direction:column;gap:6px}
+.neir-v7-upload-title{font-size:13px;color:#31505d;font-weight:600}
+.neir-v7-file-input{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;top:30px}
+.neir-v7-upload-pick{display:flex;align-items:center;gap:9px;min-height:50px;padding:10px 12px;border:1px dashed #9ecfd6;background:#f9fdfd;border-radius:10px;color:#258c98;font-size:12px;font-weight:500;cursor:pointer}
+.neir-v7-upload-pick span{font-size:21px;line-height:1}.neir-v7-upload-pick:hover{border-color:#139eac;background:#effbfc}
+.neir-v7-upload-group:has(.neir-v7-file-input:focus-visible) .neir-v7-upload-pick{outline:3px solid #168a9d;outline-offset:2px}
+.neir-v7-uploaded{display:flex;align-items:center;gap:9px;min-height:50px;padding:9px 10px;border:1px solid #b4dfe2;background:#f0fbfc;border-radius:10px;font-size:12px}
+.neir-v7-uploaded>span{min-width:0;flex:1;overflow-wrap:anywhere;font-weight:600;color:#235960}.neir-v7-uploaded small{color:#67828b}
+.neir-v7-uploaded button{width:30px;height:30px;border:1px solid #e2c5c5;border-radius:8px;background:#fff;color:#b13c3c;font-size:15px;cursor:pointer}
+.neir-v7-error{font-size:11px;color:#b42318;margin:5px 0 0}
+.neir-v7-doc-notice{font-size:12px;color:#ba3838;margin:14px 0 0}
+.neir-v7-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:14px 26px;border-top:1px solid #e1eced}
+.neir-v7-footer>p{margin-right:auto;font-size:12px;line-height:1.5;color:#267b87}
+.neir-v7-footer button{min-height:44px;border-radius:10px;padding:0 23px;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer}
+.neir-v7-cancel{background:#fff;color:#2b6a75;border:1px solid #bfdee2}.neir-v7-cancel:hover{background:#eff9fa}
+.neir-v7-next{background:#119eae;border:1px solid #119eae;color:#fff;min-width:130px}.neir-v7-next:hover:not(:disabled){background:#087e8f}.neir-v7-next:disabled{background:#e1e9ea;color:#789097;border-color:#e1e9ea;cursor:not-allowed}
+@media(max-width:640px){.neir-v7-backdrop{align-items:flex-end;padding:0}.neir-v7-dialog{border-radius:18px 18px 0 0;width:100%;max-height:94dvh}.neir-v7-header{padding:14px 18px}.neir-v7-body{padding:17px 18px 22px}.neir-v7-grid,.neir-v7-document-grid{grid-template-columns:1fr;gap:13px}.neir-v7-span{grid-column:auto}.neir-v7-divider{margin:19px 0}.neir-v7-section-header{margin-bottom:13px}.neir-v7-doc-limits{text-align:left}.neir-v7-footer{padding:11px 18px;gap:10px;flex-wrap:wrap}.neir-v7-footer>p:not(:empty){flex:1 0 100%;order:-1}}
+@media(max-width:360px){.neir-v7-radio-group{gap:8px}.neir-v7-radio-option{padding:9px 10px}.neir-v7-footer{gap:6px}.neir-v7-footer button{padding:0 12px;min-width:0}}
+@media(prefers-reduced-motion:reduce){.neir-v7-dialog *{scroll-behavior:auto!important}}

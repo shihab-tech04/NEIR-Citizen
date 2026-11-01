@@ -1,0 +1,29 @@
+/* Source: NEIR_Special_Registration_Progressive_Modal_v7.html device-list screen. */
+.neir-profile-reference{min-height:calc(100vh - 180px);background:#dff8fa;padding:0 15px 40px;color:#6a6a6a;font-family:Poppins,Arial,sans-serif}
+.neir-profile-table-wrap{width:min(980px,100%);margin:0 auto;padding-top:0;padding-bottom:20px}
+.neir-profile-device-table{width:100%;border-collapse:separate;border-spacing:0 7px;table-layout:fixed;font-size:14px}
+.neir-profile-device-table thead th{height:47px;background:#fff;text-align:left;padding:0 20px;font-size:14px;font-weight:700;color:#676767}
+.neir-profile-device-table tbody td{height:61px;background:#fff;padding:9px 20px;color:#6a6a6a;vertical-align:middle}
+.neir-profile-device-table th:nth-child(1),.neir-profile-device-table td:nth-child(1){width:11%}
+.neir-profile-device-table th:nth-child(2),.neir-profile-device-table td:nth-child(2){width:21%}
+.neir-profile-device-table th:nth-child(3),.neir-profile-device-table td:nth-child(3){width:33%}
+.neir-profile-device-table th:nth-child(4),.neir-profile-device-table td:nth-child(4){width:35%}
+.neir-profile-imei{font-variant-numeric:tabular-nums;white-space:nowrap}
+.neir-profile-status{display:inline-flex;align-items:center;min-height:34px;padding:8px 19px;border-radius:7px;font-weight:500;white-space:nowrap;font-size:14px}
+.neir-profile-status-registered{background:#c8e7cd;color:#378e45}
+.neir-profile-status-applied-for-registration{background:#e5c4e9;color:#8a3f98}
+.neir-profile-status-registration-pending{background:#ffb11c;color:#fff}
+.neir-profile-status-restricted-demo-{background:#fee2e2;color:#991b1b}
+.neir-profile-actions-cell{white-space:nowrap}
+.neir-profile-pill{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:34px;padding:0 16px;background:#fff;border:1px solid #e2e4e4;border-radius:19px;color:#999;font-size:14px;font-family:inherit;cursor:pointer}
+.neir-profile-pill:hover{border-color:#58c0cc;color:#1da4b0}
+.neir-profile-pill:focus-visible,.neir-profile-actions-menu button:focus-visible{outline:3px solid #006d8b;outline-offset:2px}
+.neir-profile-menu-anchor{display:inline-block;position:relative;margin-left:10px}
+.neir-profile-actions-menu{position:absolute;top:calc(100% + 4px);right:6px;min-width:175px;padding:7px;background:#fff;border:1px solid #e4e6e6;box-shadow:0 3px 9px rgba(0,0,0,.15);z-index:20;border-radius:4px}
+.neir-profile-actions-menu button{display:block;width:100%;padding:8px 10px;margin:0 0 5px;background:#fff;border:1px solid #4ebdc8;color:#1ca9b8;border-radius:25px;white-space:nowrap;cursor:pointer;font-size:13px;font-weight:500}
+.neir-profile-actions-menu button:last-child{margin-bottom:0}
+.neir-profile-actions-menu button:hover{background:#e6fbfc}
+.neir-profile-secondary-actions{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 2px;font-size:12px;color:#53757b}
+.neir-profile-secondary-actions button{color:#00838f;text-decoration:underline;cursor:pointer}
+.neir-profile-feedback{font-size:13px;color:#267b87}
+@media(max-width:700px){.neir-profile-reference{padding:0 12px 24px}.neir-profile-table-wrap{width:100%;overflow-x:auto}.neir-profile-device-table{min-width:690px}.neir-profile-device-table thead th,.neir-profile-device-table tbody td{padding-left:12px;padding-right:12px}.neir-profile-device-table th:nth-child(4),.neir-profile-device-table td:nth-child(4){width:32%}}
