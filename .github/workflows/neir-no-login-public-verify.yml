@@ -47,7 +47,7 @@ jobs:
                 assert not blocked,label+' retained old prompt: '+str(blocked)
                 if label=='Admin':
                   version=json.load(urllib.request.urlopen(url+'version.json?probe='+str(attempt),timeout=25))
-                  assert version.get('build')=='4ebf59e59f9d82b48b97e810b14ca1686fd7f0b5',version
+                  assert version.get('build')=='b8d3cc053c6df3478f092d7acdda28ec406a7a2f',version
                 print('PASS',label,'public JS and exact deployed status:',url)
                 break
               except Exception as exc:
