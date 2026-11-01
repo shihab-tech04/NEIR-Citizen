@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import './components/NeirSharedModal.css';
 import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
