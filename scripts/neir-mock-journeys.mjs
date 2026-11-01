@@ -110,7 +110,7 @@ try{
     const resumedWizard=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(resumedWizard,'guest login resumes Special Registration');
     assert.equal(new URL(desktop.url()).pathname,'/');
-    assert.equal(await resumedWizard.getByPlaceholder('IMEI Number').inputValue(),'');
+    assert.equal(await resumedWizard.locator('#neir-v7-imei').inputValue(),'');
     await resumedWizard.getByRole('button',{name:'Close special registration'}).click();
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'My Profile'}).click();
@@ -220,12 +220,14 @@ try{
     await guide.getByRole('button',{name:'Apply for Special Registration'}).click();
     const wizard=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(wizard,'same Special Registration wizard');
-    assert.equal(await wizard.getByPlaceholder('IMEI Number').inputValue(),'','home entry must start with blank IMEI');
+    assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'','home entry must start with blank IMEI');
+    assert.equal(await wizard.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.','IMEI instructions appear inside input');
+    assert.equal(await wizard.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no IMEI message outside input');
     assert.equal(await wizard.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'home entry uses one stepper-free modal');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'home displays IMEI and three acquisition choices on initial modal');
     await expectVisible(wizard.getByRole('heading',{name:'Enter the IMEI number of the device you want to register'}),'IMEI heading');
     assert.equal((await wizard.locator('.neir-v7-reason-fieldset legend').innerText()).trim().replace(/\s*\*$/,''),'Select how you purchased or received the device');
-    await wizard.getByPlaceholder('IMEI Number').fill('99000100000001');
+    await wizard.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3,'homepage retains the same three choices after IMEI entry');
     await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await expectVisible(wizard.locator('#neir-v7-arrival'),'home acquisition reason reveals details');
@@ -252,6 +254,8 @@ try{
     assert.equal(await dlg.locator('.neir-v7-progress,.neir-sr-stepper').count(),0,'no stepper');
     assert.equal(await dlg.locator('select').count(),0,'no reason dropdown');
     assert.equal(await dlg.locator('input#neir-v7-imei').inputValue(),'12004089900331','pending IMEI prefills');
+    assert.equal(await dlg.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.');
+    assert.equal(await dlg.locator('.neir-v7-imei-section small').count(),0,'IMEI helper and immediate error text removed');
     assert.equal(await dlg.locator('.neir-v7-reason-card').count(),3,'the first modal shows IMEI and three acquisition cards');
     assert.equal(await dlg.locator('.neir-v7-reason-copy>span').count(),0,'the cards have no subtitles');
     await expectVisible(dlg.getByRole('heading',{name:'Enter the IMEI number of the device you want to register'}),'IMEI introduction');
@@ -304,6 +308,12 @@ try{
     await expectVisible(dlg.getByRole('alert').filter({hasText:'at most 1 MB'}),'file validation retained');
     const file={name:'sample.png',mimeType:'image/png',buffer:Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082','hex')};
     for(let i=0;i<3;i++) await dlg.locator('input[type=file]').nth(i).setInputFiles(file);
+    const endGap=await dlg.locator('.neir-v7-body').evaluate(el=>{
+      el.scrollTop=el.scrollHeight;
+      const last=el.querySelector('.neir-v7-bmet-section').getBoundingClientRect();
+      return Math.round(el.getBoundingClientRect().bottom-last.bottom);
+    });
+    assert(endGap>=0 && endGap<=20,'no large blank gap below BMET before footer: '+endGap+'px');
     assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'valid documents enable submit');
     await dlg.getByRole('button',{name:'Submit'}).click();
     await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'no false real submission');
@@ -389,7 +399,9 @@ try{
     const narrow=await dialog.boundingBox();
     assert(narrow && narrow.width<=320 && narrow.height<=640,'registration dialog fits 320px viewport');
     assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'320px initial modal shows IMEI and three cards');
-    await dialog.getByPlaceholder('IMEI Number').fill('99000100000001');
+    assert.equal(await dialog.locator('#neir-v7-imei').getAttribute('placeholder'),'Enter 14 or 15 IMEI digits to continue.','mobile hint is inside input');
+    assert.equal(await dialog.locator('.neir-v7-imei-section .neir-v7-hint,.neir-v7-imei-section .neir-v7-error').count(),0,'no mobile external IMEI hint');
+    await dialog.locator('#neir-v7-imei').fill('99000100000001');
     assert.equal(await dialog.locator('.neir-v7-reason-card').count(),3,'same reason cards on mobile home');
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
