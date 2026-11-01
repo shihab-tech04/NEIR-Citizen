@@ -84,7 +84,7 @@ export const FigmaSpecialRegistrationModal: React.FC<Props> = ({
     };
     document.addEventListener('keydown', onKeyDown);
     return () => { document.body.style.overflow = originalOverflow; document.removeEventListener('keydown', onKeyDown); };
-  }, [onClose]);
+  }, []);
 
   const change = (name: string, setter: (value: string) => void, value: string) => {
     setter(value);
