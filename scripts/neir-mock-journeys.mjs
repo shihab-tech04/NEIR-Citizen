@@ -312,8 +312,7 @@ try{
     await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'prototype does not falsely claim real registration');
     await dlg.getByRole('button',{name:'Cancel'}).click();
 
-    await table.getByRole('button',{name:'Actions for IMEI 12004089900331'}).click();
-    await table.getByRole('menuitem',{name:'Special Registration'}).click();
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
       ['Passport Info Page (Donor) *','Passport Arrival Date Seal (Donor) *','Device Box IMEI Number *','Gift Deed (Donor) *'],
@@ -407,11 +406,15 @@ try{
     await mobile.getByRole('button',{name:'Citizen mobile profile menu'}).click();
     await mobile.locator('.neir-mobile-profile-dropdown').getByRole('button',{name:/My Profile|আমার প্রোফাইল/}).click();
     await mobile.waitForURL('**/dashboard');
-    assert.equal(await mobile.locator('.neir-profile-device-table tbody tr').count(),10);
+    await expectVisible(mobile.getByRole('heading',{name:'Your device information will appear here'}),'mobile empty state');
     await mobile.setViewportSize({width:320,height:640});
-    const row=mobile.locator('.neir-profile-device-table tbody tr').nth(3);
-    await row.getByRole('button',{name:/Actions for IMEI/}).click();
-    await row.getByRole('menuitem',{name:'Special Registration'}).click();
+    await noOverflow(mobile,320);
+    const mobileSearch=mobile.getByRole('search');
+    await mobileSearch.getByLabel('Device IMEI number').fill('12004089900331');
+    await mobileSearch.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(mobile.locator('.neir-profile-device-result'),'mobile device result');
+    await noOverflow(mobile,320);
+    await mobile.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
     const profileModal=mobile.getByRole('dialog',{name:'Special Registration'});
     const bounds=await profileModal.boundingBox();
     assert(bounds&&bounds.width<=320&&bounds.height<=640,'320px v7 mobile bottom sheet fits');
