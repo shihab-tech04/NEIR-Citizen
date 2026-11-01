@@ -1,0 +1,53 @@
+name: NEIR no-login Special Registration SQL status roundtrip
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  end-to-end-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify direct Citizen submit to SQL, Admin accept and Citizen refresh
+        run: |
+          node --input-type=module <<'EOF'
+          import assert from 'node:assert/strict';
+          const base='https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/';
+          const imei='99202611019876';
+          async function send(endpoint,action,payload={}){
+            const response=await fetch(base+endpoint,{method:'POST',
+              headers:{'Content-Type':'application/json','Origin':'https://shihab-tech04.github.io'},
+              body:JSON.stringify({action,...payload})});
+            const json=await response.json();
+            return {status:response.status,json};
+          }
+          const list=await send('neir-prototype-special','citizen_list');
+          assert.equal(list.status,200,'Citizens should access shared prototype applications without login');
+          assert(Array.isArray(list.json.items),'Citizen list must be an array');
+          let id;
+          const first=await send('neir-prototype-special','submit',{
+            imei,reason:'airmail',arrivalDate:'2026-10-09',documents:['commercialInvoice']});
+          assert.equal(first.status,201,'Citizen submission must persist');
+          id=first.json.record.id;
+          assert(id && first.json.record.status==='Pending');
+          const admin=await send('neir-prototype-special','admin_list');
+          assert.equal(admin.status,200,'Admin table must open without login');
+          assert(admin.json.items.find(x=>x.id===id)?.status==='Pending','Admin must see submitted registration');
+          assert(!('citizenMobile' in admin.json.items.find(x=>x.id===id)),'must not expose private citizen identifiers');
+          const detail=await send('neir-prototype-special','admin_details',{id});
+          assert.equal(detail.status,200,'Admin details must work');
+          assert.equal(detail.json.record.documents[0].title,'Commercial Invoice','document checklist must persist');
+          const accept=await send('neir-prototype-special','admin_update',{id,status:'Accepted',remarks:'Checked'});
+          assert.equal(accept.status,200,'Admin review must persist');
+          const refresh=await send('neir-prototype-special','citizen_list');
+          assert.equal(refresh.json.items.find(x=>x.id===id)?.status,'Accepted',
+            'Citizen must receive Admin decision on refresh');
+          const duplicate=await send('neir-prototype-special','submit',{
+            imei,reason:'airmail',arrivalDate:'2026-10-09',documents:['commercialInvoice']});
+          assert.equal(duplicate.status,409,'repeat IMEI must be rejected');
+          const privateResult=await send('neir-special-registration','admin_list');
+          assert.equal(privateResult.status,401,'old private Citizen records must remain protected');
+          console.log('PASS: direct Citizen → SQL → Admin → SQL → Citizen status sync, validation and data isolation');
+          console.log('Synthetic test record ID:',id);
+          EOF
