@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { UiButton } from '../ui/index.ts';
 import type { Language } from '../types.ts';
 
 type Props = {
@@ -34,10 +35,10 @@ export const SpecialRegistrationSection: React.FC<Props> = ({ language, onApply,
               : 'Register a device brought from abroad or needing additional verification. Have your device details and documents ready.'}
           </p>
           <div className="neir-special-registration-action">
-            <button className="neir-special-registration-button" type="button" onClick={onApply}>
+            <UiButton variant="primary" className="neir-special-registration-button" onClick={onApply}>
               {bn ? 'বিশেষ নিবন্ধনের আবেদন করুন' : 'Apply for Special Registration'}
               <ArrowRight size={20} aria-hidden="true" />
-            </button>
+            </UiButton>
           </div>
           {completionMessage && <p role="status" className="neir-special-registration-status">{completionMessage}</p>}
         </div>
