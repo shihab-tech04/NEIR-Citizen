@@ -181,3 +181,6 @@
   .neir-v7-doc-panel .neir-v7-help-trigger{padding-left:2px;padding-right:4px}
   .neir-v7-doc-panel .neir-v7-upload-pick{padding:8px 10px}
 }
+
+/* One file-size note per document panel, rather than repeating it in each row. */
+.neir-v7-doc-panel-hint{margin:0;padding:1px 0 14px;color:#65768b;font-family:inherit;font-size:14px;line-height:1.5}
