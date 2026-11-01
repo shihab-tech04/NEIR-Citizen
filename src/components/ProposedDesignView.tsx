@@ -42,7 +42,7 @@ export const ProposedDesignView: React.FC<ProposedDesignViewProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-400/30">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{isBn ? 'ভবিষ্যতের প্রস্তাবিত নতুন ডিজাইন রূপরেখা' : 'Future Proposed Design Prototype (Sandbox)'}</span>
+            <span>{isBn ? 'ভবিষ্যতের প্রস্তাবিত নতুন ডিজাইন রূপরেখা' : 'Future Design Proposal'}</span>
           </div>
 
           <button
@@ -62,7 +62,7 @@ export const ProposedDesignView: React.FC<ProposedDesignViewProps> = ({
           <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
             {isBn
               ? 'স্কোপ প্রটেকশন নিশ্চিত করতে মূল সরকারি পোর্টালের ১:১ বেইসলাইন পুরোপুরি অপরিবর্তিত রাখা হয়েছে। এই স্ক্রিনটি স্টেকহোল্ডারদের জন্য আধুনিক মোবাইল-ফার্স্ট ও ডিজিটাল সার্ভিস স্ট্যান্ডার্ড (GDS) রূপরেখা উপস্থাপন করে।'
-              : 'Isolated design sandbox. The current 1:1 government portal baseline remains untouched in its original route, while this view explores modern ergonomic layouts, instant verification streams, and simplified baggage clearance.'}
+              : 'Explore device verification, registration and baggage clearance with a streamlined interface.'}
           </p>
         </div>
 
