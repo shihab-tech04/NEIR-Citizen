@@ -55,22 +55,22 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
    if(!password)return;
    setIsAuthenticating(true);
    try{
-     const response=await fetch('https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-demo-login',{
+     const response=await fetch('https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-special-registration',{
        method:'POST',
        headers:{'Content-Type':'application/json'},
-       body:JSON.stringify({mobile,password}),
+       body:JSON.stringify({action:'citizen_login',mobile,password}),
      });
      if(!response.ok){
        setError(response.status===401?'Incorrect mobile number or password.':'Demo sign-in is temporarily unavailable. Please try again.');
        return;
      }
      const result:unknown=await response.json();
-     if(!result||typeof result!=='object'||!('mobile' in result)||!('name' in result)||
-        typeof result.mobile!=='string'||typeof result.name!=='string'){
+     if(!result||typeof result!=='object'||!('mobile' in result)||!('name' in result)||!('token' in result)||
+        typeof result.mobile!=='string'||typeof result.name!=='string'||typeof result.token!=='string'){
        setError('Demo sign-in is temporarily unavailable. Please try again.');
        return;
      }
-     onLoginSuccess({isLoggedIn:true,name:result.name,nameBangla:'',mobile:result.mobile,nid:'DEMO-NID',email:'',registeredHandsets:[]});
+     onLoginSuccess({isLoggedIn:true,name:result.name,nameBangla:'',mobile:result.mobile,specialToken:result.token,nid:'DEMO-NID',email:'',registeredHandsets:[]});
      if(!registrationIntent)onClose();
    }catch{
      setError('Unable to reach the demo sign-in service. Please try again.');
