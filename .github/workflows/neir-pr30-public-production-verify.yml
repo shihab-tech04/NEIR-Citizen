@@ -1,0 +1,66 @@
+name: Verify published NEIR PR30 production release
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Verify exact compiled Pages deployment and public bundle
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="19e3d5afca76685250bee1deb0c9b2b008e868a8"
+          URL="https://shihab-tech04.github.io/NEIR-Citizen/"
+          for attempt in $(seq 1 48); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$TARGET\") | .id" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id" --jq '.status + " " + (.conclusion // "pending")')"
+              echo "Pages run $run_id: $state"
+              if [[ "$state" == "completed success" ]]; then
+                echo "PASS exact Pages production workflow for $TARGET"
+                echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+                break
+              fi
+              if [[ "$state" == "completed failure" || "$state" == "completed cancelled" ]]; then
+                echo "FAIL: Pages workflow did not succeed"; exit 1
+              fi
+            else
+              echo "Waiting for Pages workflow on target commit"
+            fi
+            if [[ "$attempt" == 48 ]]; then echo "FAIL: Pages not verified"; exit 1; fi
+            sleep 10
+          done
+          for attempt in $(seq 1 15); do
+            if curl -fsSL --max-time 20 "$URL" -o /tmp/neir.html && grep -Fq '/NEIR-Citizen/assets/' /tmp/neir.html; then break; fi
+            if [[ "$attempt" == 15 ]]; then echo 'FAIL public HTML'; exit 1; fi
+            sleep 5
+          done
+          python - <<'PY'
+          import re,urllib.request,time
+          root='https://shihab-tech04.github.io'
+          html=open('/tmp/neir.html',encoding='utf-8').read()
+          jsurls=re.findall(r'(?:src|href)="(/NEIR-Citizen/assets/[^"]+\.js)"',html)
+          assert jsurls, 'No deployed Vite JavaScript assets found'
+          for attempt in range(10):
+              try:
+                  content=''.join(urllib.request.urlopen(root+js,timeout=25).read().decode('utf-8') for js in jsurls)
+                  assert 'Log in to apply for Special Registration' in content, 'Missing contextual login notice'
+                  assert 'Opening your Special Registration form' in content, 'Missing auth transition status'
+                  assert 'neir-v7-stage' in content, 'Missing two-stage form component'
+                  assert 'Continue' in content and 'Back' in content, 'Missing stage navigation'
+                  assert 'neir-v7-arrival' in content, 'Missing arrival date'
+                  print('PASS: public deployed JavaScript has PR30 authentication and arrival-stage features')
+                  break
+              except Exception as e:
+                  if attempt==9: raise
+                  print(f'Public asset retry {attempt}: {e}')
+                  time.sleep(6)
+          PY
+          echo "PASS production deployment commit $TARGET and public bundle at $URL"
