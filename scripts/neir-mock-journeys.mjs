@@ -433,7 +433,8 @@ try{
     const cards=await profileModal.locator('.neir-v7-reason-card').evaluateAll(nodes=>nodes.map(n=>({left:n.getBoundingClientRect().left,right:n.getBoundingClientRect().right})));
     assert(cards.every(x=>x.left>=-1 && x.right<=321),'cards fit 320px');
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
-    await expectVisible(profileModal.locator('#neir-v7-arrival'),'immediate reveal on mobile');
+    await profileModal.getByRole('button',{name:'Continue'}).click();
+    await expectVisible(profileModal.locator('#neir-v7-arrival'),'arrival after Continue on mobile');
     await expectVisible(profileModal.getByRole('button',{name:'View guidance for Commercial Invoice'}),'mobile document guidance');
     assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),4,'four responsive document rows');
     assert.equal(await profileModal.locator('.neir-v7-upload-pick').count(),4,'four mobile file pickers');
