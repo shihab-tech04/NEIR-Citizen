@@ -244,6 +244,18 @@ try{
     const dlg=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dlg,'Special Registration');
     assert.equal(await dlg.getByPlaceholder('IMEI Number').inputValue(),'99000100000001');
+    assert.equal(await dlg.locator('select').count(),0,'registration dropdowns must be custom components');
+    const deviceSelect=dlg.getByRole('combobox',{name:'Select Device'});
+    await deviceSelect.click();
+    await expectVisible(dlg.getByRole('listbox',{name:'Select Device'}),'custom device dropdown list');
+    await dlg.getByRole('option',{name:'Smart Phone'}).click();
+    assert.equal(await deviceSelect.getAttribute('aria-expanded'),'false');
+    await deviceSelect.focus();
+    await desktop.keyboard.press('ArrowDown');
+    assert.equal(await deviceSelect.getAttribute('aria-expanded'),'true','keyboard opens custom dropdown');
+    await desktop.keyboard.press('Escape');
+    assert.equal(await deviceSelect.getAttribute('aria-expanded'),'false','Escape closes only dropdown');
+    await expectVisible(dlg,'registration dialog remains open after closing dropdown');
     await snap(desktop,'11-registration-eligibility');
     await dlg.getByRole('button',{name:'Add New Device by Special Registration'}).click();
     await expectVisible(dlg.getByRole('alert').filter({hasText:'Select your SIM-holder eligibility.'}),'eligibility required');
