@@ -172,7 +172,7 @@ try{
     await form.getByLabel('Device IMEI number').fill('49115420325851');
     await form.getByRole('button',{name:'Search device'}).click();
     await expectVisible(desktop.locator('.neir-profile-status').getByText('Registered'),'matching reference status');
-    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).count(),0,'registered records do not register again');
+    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}).count(),0,'registered records do not register again');
     await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'View details'}).click();
     await expectVisible(desktop.getByRole('dialog',{name:'IMEI details'}),'device detail modal retained');
     await desktop.getByRole('button',{name:'Close details'}).click();
@@ -280,7 +280,7 @@ try{
     await profileSearch.getByLabel('Device IMEI number').fill('12004089900331');
     await profileSearch.getByRole('button',{name:'Search device'}).click();
     await expectVisible(desktop.locator('.neir-profile-device-result'),'matching IMEI appears');
-    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}).click();
     const dlg=desktop.getByRole('dialog',{name:'Special Registration'});
     await expectVisible(dlg,'Special Registration from My Profile');
     assert.equal(await dlg.locator('#neir-v7-imei').inputValue(),'12004089900331','profile pending IMEI is prefilled');
@@ -359,11 +359,12 @@ try{
       return Math.round(el.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom);
     });
     assert(gap>=0 && gap<=20,'no phantom whitespace after documents: '+gap+'px');
-    await dlg.getByRole('button',{name:'Submit'}).click();
-    await expectVisible(dlg.getByRole('status').filter({hasText:'not been submitted to NEIR'}),'prototype does not falsely claim real registration');
+    // Live SQL submissions must not be triggered by a frontend-only screenshot regression.
+    assert(await dlg.getByRole('button',{name:'Submit'}).isEnabled(),'form ready for server-verified submission');
+    assert.equal(await dlg.getByRole('status').filter({hasText:'submitted for review'}).count(),0,'no success is shown before server response');
     await dlg.getByRole('button',{name:'Close special registration'}).click();
 
-    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).click();
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}).click();
     await dlg.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
     await dlg.getByRole('button',{name:'Continue'}).click();
     assert.deepEqual((await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' ')),
@@ -398,14 +399,14 @@ try{
     await form.getByLabel('Device IMEI number').fill('352093081234567');
     await form.getByRole('button',{name:'Search device'}).click();
     await expectVisible(desktop.locator('.neir-profile-status').getByText('Whitelisted'),'approved sample status');
-    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).count(),0,'whitelisted needs no registration');
+    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}).count(),0,'whitelisted needs no registration');
     await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'View details'}).click();
     await expectVisible(desktop.getByRole('dialog',{name:'IMEI details'}),'details preserved');
     await desktop.getByRole('button',{name:'Close details'}).click();
     await form.getByLabel('Device IMEI number').fill('359203112345678');
     await form.getByRole('button',{name:'Search device'}).click();
     await expectVisible(desktop.locator('.neir-profile-status').getByText('Greylisted'),'greylisted sample');
-    await expectVisible(desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}),'greylisted requires registration');
+    await expectVisible(desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Apply for Special Registration'}),'greylisted requires registration');
     await snap(desktop,'13-profile-greylisted-result');
     await form.getByLabel('Device IMEI number').fill('111111111111111');
     await form.getByRole('button',{name:'Search device'}).click();
