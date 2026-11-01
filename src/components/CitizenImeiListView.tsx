@@ -186,10 +186,9 @@ export const CitizenImeiListView: React.FC<Props> = ({
           <div className="neir-profile-identity-copy">
             <p className="neir-profile-eyebrow">{isBn ? 'আমার প্রোফাইল' : 'My Profile'}</p>
             <h1 id="neir-profile-title">{profileName}</h1>
-            {session.nameBangla && session.nameBangla !== profileName && <p className="neir-profile-alternate-name">{session.nameBangla}</p>}
             <div className="neir-profile-contact">
               {session.mobile && <span><Phone size={16} aria-hidden="true" /> {session.mobile}</span>}
-              {session.email && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
+              {session.email && !session.email.endsWith('.invalid') && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
             </div>
           </div>
           <button type="button" className="neir-profile-edit" onClick={editProfile}>
