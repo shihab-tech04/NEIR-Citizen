@@ -4,8 +4,7 @@ import type { Language, UserSession } from '../types.ts';
 import { SAMPLE_HANDSETS, type HandsetRecord } from '../utils/imei.ts';
 import { ProfileSpecialRegistrationModal } from './ProfileSpecialRegistrationModal.tsx';
 import { listCitizenSpecialRegistrations, type SpecialApplication } from '../utils/neirSpecialRegistrationApi.ts';
-import { NeirModalFrame } from './NeirModalFrame.tsx';
-import { UiButton, UiInput, UiDataTable, UiStatusBadge } from '../ui/index.ts';
+import { UiButton, UiInput, UiDataTable, UiStatusBadge, UiDialog } from '../ui/index.ts';
 import type { UiColumn } from '../ui/index.ts';
 import './CitizenImeiListView.css';
 
@@ -347,7 +346,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
       </div>
     </section>}
 
-    {detail && <NeirModalFrame title={isBn ? 'IMEI বিস্তারিত' : 'IMEI Details'} ariaLabel="IMEI details" size="medium" closeLabel="Close details"
+    {detail && <UiDialog title={isBn ? 'IMEI বিস্তারিত' : 'IMEI Details'} ariaLabel="IMEI details" size="medium" closeLabel="Close details"
       onClose={() => setDetail(null)} footer={requiresSpecialRegistration(detail.status) ?
       <UiButton variant="secondary" className="neir-shared-button" onClick={() => startProfileRegistration(detail.imei)}>Special Registration</UiButton> : undefined}>
       <dl className="neir-shared-kv"><dt>IMEI Number</dt><dd>{detail.imei}</dd>
@@ -355,8 +354,8 @@ export const CitizenImeiListView: React.FC<Props> = ({
         {detail.model && <><dt>Model</dt><dd>{detail.model}</dd></>}
         <dt>Device Status</dt><dd>{statusLabel(detail.status)}</dd></dl>
       <p className="neir-shared-note" style={{ marginTop: 16 }}>{note}</p>
-    </NeirModalFrame>}
-    {stolenTarget && <NeirModalFrame title="Mark as Stolen" ariaLabel="Mark IMEI as stolen" role="alertdialog" size="compact"
+    </UiDialog>}
+    {stolenTarget && <UiDialog title="Mark as Stolen" ariaLabel="Mark IMEI as stolen" role="alertdialog" size="compact"
       closeLabel="Close stolen status confirmation" onClose={() => setStolenTarget(null)} footer={<>
       <UiButton variant="quiet" className="neir-shared-button neir-shared-button--text" onClick={() => setStolenTarget(null)}>Cancel</UiButton>
       <UiButton variant="danger" className="neir-shared-button neir-shared-button--danger" onClick={() => {
@@ -366,8 +365,8 @@ export const CitizenImeiListView: React.FC<Props> = ({
       }}>Confirm demo action</UiButton>
     </>}>
       <p>This changes only the sample status for IMEI <strong>{stolenTarget.imei}</strong>. It does not report a device to BTRC.</p>
-    </NeirModalFrame>}
-    {profileOpen && <NeirModalFrame title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
+    </UiDialog>}
+    {profileOpen && <UiDialog title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
       closeLabel="Close profile" onClose={() => setProfileOpen(false)}
       footer={<UiButton variant="secondary" className="neir-shared-button" onClick={saveProfile}>Save demo changes</UiButton>}>
       <label className="block text-sm" htmlFor="neir-profile-name-field">Full Name</label>
@@ -375,10 +374,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
         onChange={event => { setProfileDraft(event.target.value); setProfileError(''); }} />
       {profileError && <p role="alert" className="neir-profile-search-error">{profileError}</p>}
       <p className="neir-shared-note" style={{ marginTop: 14 }}>This updates the profile name locally for this page; no identity data is updated on a server.</p>
-    </NeirModalFrame>}
-    {applicationDetail && <NeirModalFrame title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
+    </UiDialog>}
+    {applicationDetail && <UiDialog title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
       <dl className="neir-shared-kv"><dt>Reference</dt><dd>{applicationDetail.id}</dd><dt>IMEI</dt><dd>{applicationDetail.imei}</dd><dt>Status</dt><dd>{applicationDetail.status}</dd><dt>Applied on</dt><dd>{applicationDetail.appliedAt ? new Date(applicationDetail.appliedAt).toLocaleString() : '—'}</dd><dt>Arrival date</dt><dd>{applicationDetail.arrivalDate}</dd><dt>Remarks</dt><dd>{applicationDetail.remarks || '—'}</dd></dl>
-    </NeirModalFrame>}
+    </UiDialog>}
     {wizard && <ProfileSpecialRegistrationModal specialToken={session.specialToken} initialImei={wizard.imei}
       onClose={() => setWizard(null)} onComplete={completeRegistration} />}
   </>;
