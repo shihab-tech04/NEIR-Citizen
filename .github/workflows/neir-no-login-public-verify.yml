@@ -1,0 +1,71 @@
+name: Verify public NEIR Citizen and Admin no-login releases
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  public-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Verify exact production versions, public JS and SQL isolation
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET_CITIZEN="5e49addf3162bd998dcde03d6fb1983be0ce3570"
+          for attempt in $(seq 1 55); do
+            result="$(gh api 'repos/shihab-tech04/NEIR-Citizen/actions/runs?per_page=100' --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$TARGET_CITIZEN\") | .status + \" \" + (.conclusion // \"pending\")" | head -1)"
+            echo "Citizen Pages: $result"
+            if [[ "$result" == "completed success" ]]; then break; fi
+            if [[ "$result" == "completed failure" || "$result" == "completed cancelled" ]]; then echo "FAIL Citizen Pages"; exit 1; fi
+            if [[ "$attempt" == 55 ]]; then echo "FAIL Citizen Pages timeout"; exit 1; fi
+            sleep 10
+          done
+          python - <<'PY'
+          import urllib.request,urllib.error,json,re,time
+          base='https://shihab-tech04.github.io'
+          sites=[
+            ('Admin',base+'/NEIR/',['neir-prototype-special','No Special Registration applications yet','admin_update'],
+              ['Reviewer password','Live Special Registration records are unavailable in this Admin preview.','This static frontend uses mock sign-in.']),
+            ('Citizen',base+'/NEIR-Citizen/',['neir-prototype-special','Special Registration applications','Apply for Special Registration'],
+              ['Log in to apply for Special Registration','You must log in to your account before applying','Demo only: no live BTRC/NEIR device lookup was performed.'])
+          ]
+          for label,url,required,forbidden in sites:
+            for attempt in range(30):
+              try:
+                html=urllib.request.urlopen(url+'?probe='+str(attempt),timeout=25).read().decode('utf-8')
+                paths=re.findall(r'(?:src|href)="([^"]+/assets/[^"]+\.js)"',html)
+                assert paths,label+' missing compiled JavaScript'
+                text=''.join(urllib.request.urlopen(urllib.request.urljoin(url,p),timeout=30).read().decode('utf-8') for p in paths)
+                missing=[x for x in required if x not in text]
+                blocked=[x for x in forbidden if x in text]
+                assert not missing,label+' missing: '+str(missing)
+                assert not blocked,label+' retained old prompt: '+str(blocked)
+                if label=='Admin':
+                  version=json.load(urllib.request.urlopen(url+'version.json?probe='+str(attempt),timeout=25))
+                  assert version.get('build')=='4ebf59e59f9d82b48b97e810b14ca1686fd7f0b5',version
+                print('PASS',label,'public JS and exact deployed status:',url)
+                break
+              except Exception as exc:
+                if attempt==29: raise
+                print(label,'retry',attempt,str(exc)[:160])
+                time.sleep(6)
+          endpoint='https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/'
+          def post(name,action):
+            req=urllib.request.Request(endpoint+name,data=json.dumps({'action':action}).encode(),method='POST',
+              headers={'Content-Type':'application/json','Origin':base})
+            try:
+              response=urllib.request.urlopen(req,timeout=25)
+              return response.status,json.loads(response.read().decode())
+            except urllib.error.HTTPError as error:
+              return error.code,json.loads(error.read().decode())
+          status,data=post('neir-prototype-special','admin_list')
+          assert status==200 and isinstance(data.get('items'),list),'public Special Registration table API inaccessible'
+          status,_=post('neir-special-registration','admin_list')
+          assert status==401,'private historical records must not be accessible'
+          print('PASS open Special Registration SQL and isolated private records')
+          PY
