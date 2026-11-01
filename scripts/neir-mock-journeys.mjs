@@ -395,7 +395,7 @@ try{
     const columns=await dialog.locator('.neir-v7-reason-list').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
     assert.equal(columns,1,'320px uses stacked cards');
     await dialog.getByRole('radio',{name:'Gift Deed from his relative/ Friends'}).check();
-    assert.equal(await dialog.locator('.neir-v7-upload-title').count(),3,'simplified home mobile gift attachments');
+    assert.equal(await dialog.locator('.neir-v7-upload-title').count(),4,'PDF Gift checklist on homepage mobile');
     await snap(mobile,'19-registration-320px-responsive');
     await mobile.setViewportSize({width:390,height:844});
     await dialog.getByRole('button',{name:'Close special registration'}).click();
@@ -419,10 +419,13 @@ try{
     assert(cards.every(x=>x.left>=-1 && x.right<=321),'cards fit 320px');
     await profileModal.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
     await expectVisible(profileModal.locator('#neir-v7-arrival'),'immediate reveal on mobile');
-    await expectVisible(profileModal.getByRole('button',{name:'About Commercial Invoice attachment'}),'mobile attachment help');
-    assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),1,'compact single-row mobile upload');
-    await profileModal.getByRole('button',{name:'About Commercial Invoice attachment'}).click();
-    await expectVisible(profileModal.getByRole('tooltip').filter({hasText:'sender and item details'}),'mobile attachment explanation');
+    await expectVisible(profileModal.getByRole('button',{name:'View guidance for Commercial Invoice'}),'mobile document guidance');
+    assert.equal(await profileModal.locator('.neir-v7-upload-line').count(),4,'four responsive document rows');
+    assert.equal(await profileModal.locator('.neir-v7-upload-pick').count(),4,'four mobile file pickers');
+    const mobileActions=await profileModal.locator('.neir-v7-upload-actions').first().boundingBox();
+    assert(mobileActions && mobileActions.x>=0 && mobileActions.x+mobileActions.width<=320.5,'document actions fit 320px');
+    await profileModal.getByRole('button',{name:'View guidance for Commercial Invoice'}).click();
+    await expectVisible(profileModal.getByRole('note').filter({hasText:'invoice identifying the sender'}),'mobile attachment explanation');
     await snap(mobile,'20-v7-profile-modal-320');
     await profileModal.getByRole('button',{name:'Close special registration'}).click();
     await mobile.setViewportSize({width:390,height:844});
