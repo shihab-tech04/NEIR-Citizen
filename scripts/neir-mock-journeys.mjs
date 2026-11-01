@@ -578,7 +578,7 @@ try{
     assert(introBounds && introBounds.width<=390 && introBounds.height<=844,'mobile explanation fits');
     await guestIntro.getByRole('button',{name:'Proceed to login'}).click();
     await expectVisible(mobile.getByRole('dialog',{name:'Login'}),'mobile guest proceeds to login');
-    await expectVisible(mobile.locator('.neir-login-registration-message'),'registration login explanation shown on mobile');
+    assert.equal(await mobile.locator('.neir-login-registration-message').count(),0,'redundant login explanation removed on mobile');
     await mobile.getByRole('dialog',{name:'Login'}).getByRole('button',{name:'Close'}).click();
     await noOverflow(mobile,390);
   });
