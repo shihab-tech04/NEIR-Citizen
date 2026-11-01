@@ -10,7 +10,7 @@ export const HomeHero:React.FC<Props> = ({language}) => {
   const verify=(event:React.FormEvent)=>{
     event.preventDefault();setError('');setDemoResult('');
     if(!/^\d{14}$/.test(imei)){setError(bn?'আইএমইআই-এর প্রথম ১৪টি সংখ্যা লিখুন।':'Please enter the first 14 digits of your IMEI.');return;}
-    setDemoResult(bn?'ডেমো: প্রকৃত NEIR ডাটাবেজ যাচাই হয়নি।':'Demo only: no live BTRC/NEIR device lookup was performed.');
+    setDemoResult(bn?'ডিভাইসের তথ্য জানতে আমার প্রোফাইলের IMEI অনুসন্ধান ব্যবহার করুন।':'Open My Profile to search device details and registration status.');
   };
   return <section className="neir-source-hero" aria-label="NEIR IMEI verification">
     <div className="neir-source-hero-inner">
