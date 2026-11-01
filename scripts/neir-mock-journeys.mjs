@@ -326,6 +326,29 @@ try{
       'Foreign Tour checklist follows reference PDF with optional travel evidence');
     await dlg.getByRole('button',{name:'Cancel'}).click();
   });
+  await check('My Profile search: known whitelist, greylist, unknown and validation',async()=>{
+    const form=desktop.getByRole('search');
+    await expectVisible(desktop.getByRole('heading',{name:'Search your device info'}),'search section below profile card');
+    await form.getByLabel('Device IMEI number').fill('abc');
+    await form.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.getByRole('alert').filter({hasText:'14- or 15-digit'}),'reject invalid format');
+    await form.getByLabel('Device IMEI number').fill('352093081234567');
+    await form.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.locator('.neir-profile-status').getByText('Whitelisted'),'approved sample status');
+    assert.equal(await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}).count(),0,'whitelisted needs no registration');
+    await desktop.locator('.neir-profile-device-result').getByRole('button',{name:'View details'}).click();
+    await expectVisible(desktop.getByRole('dialog',{name:'IMEI details'}),'details preserved');
+    await desktop.getByRole('button',{name:'Close details'}).click();
+    await form.getByLabel('Device IMEI number').fill('359203112345678');
+    await form.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.locator('.neir-profile-status').getByText('Greylisted'),'greylisted sample');
+    await expectVisible(desktop.locator('.neir-profile-device-result').getByRole('button',{name:'Special Registration'}),'greylisted requires registration');
+    await snap(desktop,'13-profile-greylisted-result');
+    await form.getByLabel('Device IMEI number').fill('111111111111111');
+    await form.getByRole('button',{name:'Search device'}).click();
+    await expectVisible(desktop.getByRole('heading',{name:'No matching device in reference records'}),'unknown not classified');
+    assert.equal(await desktop.locator('.neir-profile-device-result').count(),0);
+  });
   await check('Profile editing, logout and mock registration screens',async()=>{
     await desktop.getByRole('button',{name:'Edit Profile Informations'}).click();
     await expectVisible(desktop.getByRole('dialog',{name:'Edit profile information'}),'profile mock');
