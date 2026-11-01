@@ -110,3 +110,18 @@
   :where(.neir-shared-dialog,.neir-original-dialog,.neir-v7-dialog,.neir-sr-dialog){border-radius:16px 16px 0 0}
 }
 @media(prefers-reduced-motion:reduce){.neir-ui-button{transition:none}}
+
+/* Shared selectable option tabs (Contact / future workflows). */
+.neir-ui-choice-tab{
+  flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  width:100%;min-height:96px;padding:16px 18px;
+  border:1px solid var(--neir-ui-stroke);border-radius:12px;
+  background:#fff;color:var(--neir-ui-text);font-weight:500;
+}
+.neir-ui-choice-tab[aria-pressed=true]{border:2px solid var(--neir-ui-primary-bright);
+  background:#edf9fb;color:var(--neir-ui-primary);
+  box-shadow:inset 0 0 0 1px #b6e2e8}
+.neir-ui-choice-tab:hover:not(:disabled){border-color:var(--neir-ui-primary-bright);background:#f5fcfd}
+.neir-ui-form-action{min-width:148px}
+.neir-ui-form-control{margin-top:6px}
+@media(max-width:700px){.neir-ui-choice-tab{min-height:84px;padding:12px}.neir-ui-form-action{width:100%}}
