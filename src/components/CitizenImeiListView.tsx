@@ -3,6 +3,7 @@ import { AlertTriangle, CheckCircle2, FileSearch2, Info, Mail, Phone, Search, Sh
 import type { Language, UserSession } from '../types.ts';
 import { SAMPLE_HANDSETS, type HandsetRecord } from '../utils/imei.ts';
 import { ProfileSpecialRegistrationModal } from './ProfileSpecialRegistrationModal.tsx';
+import { listCitizenSpecialRegistrations, type SpecialApplication } from '../utils/neirSpecialRegistrationApi.ts';
 import { NeirModalFrame } from './NeirModalFrame.tsx';
 import './CitizenImeiListView.css';
 
@@ -14,6 +15,8 @@ type Device = { imei: string; status: DeviceStatus; brand?: string; model?: stri
 
 // Historical HTML v7 prototype records. These are fixtures, not verified NEIR account records.
 const referenceDevices: Device[] = [
+  { imei: '12345678901234', status: 'Registered', brand:'Sample', model:'Handset A' },
+  { imei: '23456789012345', status: 'Greylisted', brand:'Sample', model:'Handset B' },
   { imei: '49115420325851', status: 'Registered' },
   { imei: '12104089900331', status: 'Applied for registration' },
   { imei: '12304089900331', status: 'Registered' },
@@ -107,9 +110,25 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [profileError, setProfileError] = useState('');
   const [wizard, setWizard] = useState<{ source: 'home' | 'profile'; imei: string } | null>(null);
   const [result, setResult] = useState('');
+  const [specialApplications, setSpecialApplications] = useState<SpecialApplication[]>([]);
+  const [applicationError, setApplicationError] = useState('');
+  const [applicationDetail, setApplicationDetail] = useState<SpecialApplication | null>(null);
   const observedRegistrationTrigger = useRef<number | null>(null);
 
   useEffect(() => { setProfileName(session.name); setProfileDraft(session.name); }, [session.name]);
+  useEffect(() => {
+    if (!session.specialToken) { setSpecialApplications([]); return; }
+    let active = true;
+    listCitizenSpecialRegistrations(session.specialToken).then(records => {
+      if (active) { setSpecialApplications(records); setApplicationError(''); }
+    }).catch(error => { if (active) setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); });
+    return () => { active = false; };
+  }, [session.specialToken, result]);
+  const refreshApplications = async () => {
+    if (!session.specialToken) return;
+    try { setSpecialApplications(await listCitizenSpecialRegistrations(session.specialToken)); setApplicationError(''); }
+    catch (error) { setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); }
+  };
 
   // Homepage and My Profile share the same progressive registration modal.
   useEffect(() => {
@@ -131,8 +150,12 @@ export const CitizenImeiListView: React.FC<Props> = ({
     status: statusFromSample[sample.registrationStatus],
     explanation: isBn ? sample.detailsBangla : sample.detailsEnglish,
   } : null);
+  const applicationForSearch = specialApplications.find(app => app.imei === searchedImei);
   const matchedDevice = originalDevice && {
-    ...originalDevice, status: statusOverrides[originalDevice.imei] ?? originalDevice.status,
+    ...originalDevice,
+    status: applicationForSearch?.status === 'Accepted' ? 'Registered'
+      : applicationForSearch?.status === 'Pending' || applicationForSearch?.status === 'In Progress' ? 'Applied for registration'
+      : statusOverrides[originalDevice.imei] ?? originalDevice.status,
   };
 
   const searchDevice = (event: React.FormEvent<HTMLFormElement>) => {
@@ -155,6 +178,8 @@ export const CitizenImeiListView: React.FC<Props> = ({
   };
   const completeRegistration = (message: string) => {
     setResult(message);
+    setWizard(null);
+    void refreshApplications();
     onRegistrationComplete?.(message);
   };
   const editProfile = () => {
@@ -218,7 +243,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
                     setSearchError('');
                   }} />
               </div>
-              <button className="neir-profile-search-button" type="submit">
+              <button className="neir-profile-search-button" type="submit" disabled={!imeiQuery.trim()}>
                 <Search size={18} aria-hidden="true" />
                 {isBn ? 'খুঁজুন' : 'Search device'}
               </button>
@@ -251,10 +276,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
                 <p>{explanations[matchedDevice.status][isBn ? 'bn' : 'en']}</p>
               </div>
               <div className="neir-profile-result-actions">
-                {requiresSpecialRegistration(matchedDevice.status) &&
+                {requiresSpecialRegistration(matchedDevice.status) && !applicationForSearch &&
                   <button type="button" className="neir-profile-primary-action"
                     onClick={() => startProfileRegistration(matchedDevice.imei)}>
-                    {isBn ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
+                    {isBn ? 'বিশেষ নিবন্ধনের আবেদন করুন' : 'Apply for Special Registration'}
                   </button>}
                 <button type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
                   <Info size={17} aria-hidden="true" /> {isBn ? 'বিস্তারিত দেখুন' : 'View details'}
@@ -273,8 +298,34 @@ export const CitizenImeiListView: React.FC<Props> = ({
             </div>}
           </div>
           <p className="neir-profile-data-note">{note}</p>
+          {applicationError && <p role="alert" className="neir-profile-search-error">{applicationError}
+            <button type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</button></p>}
           {result && <p role="status" className="neir-profile-feedback">{result}</p>}
         </section>
+        {specialApplications.length > 0 && <section className="neir-special-applications" aria-labelledby="neir-special-applications-title">
+          <div className="neir-special-table-heading">
+            <h2 id="neir-special-applications-title">{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Special Registration applications'} ({specialApplications.length})</h2>
+            <button type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</button>
+          </div>
+          <div className="neir-special-table-scroll">
+            <table className="neir-special-table">
+              <thead><tr>
+                <th scope="col">#</th><th scope="col">IMEI Number</th>
+                <th scope="col">{isBn ? 'ডিভাইস' : 'Device'}</th>
+                <th scope="col">{isBn ? 'আবেদনের অবস্থা' : 'Status'}</th>
+                <th scope="col">{isBn ? 'আবেদনের তারিখ' : 'Applied on'}</th>
+                <th scope="col">{isBn ? 'বিস্তারিত' : 'Action'}</th>
+              </tr></thead>
+              <tbody>{specialApplications.map((application,index) => <tr key={application.id}>
+                <td>{index + 1}</td><td className="neir-special-imei">{application.imei}</td>
+                <td>{application.reason === 'airmail' ? 'Air Mail' : application.reason === 'gift' ? 'Gift' : 'Foreign Tour'}</td>
+                <td><span className={'neir-special-table-status is-' + application.status.toLowerCase().replace(/\s+/g,'-')}>{application.status}</span></td>
+                <td>{application.appliedAt ? new Date(application.appliedAt).toLocaleDateString(isBn ? 'bn-BD' : 'en-GB') : '—'}</td>
+                <td><button type="button" className="neir-special-details-button" onClick={() => setApplicationDetail(application)}>{isBn ? 'বিস্তারিত' : 'Details'}</button></td>
+              </tr>)}</tbody>
+            </table>
+          </div>
+        </section>}
       </div>
     </section>}
 
@@ -307,7 +358,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
       {profileError && <p role="alert" className="neir-profile-search-error">{profileError}</p>}
       <p className="neir-shared-note" style={{ marginTop: 14 }}>This updates the profile name locally for this page; no identity data is updated on a server.</p>
     </NeirModalFrame>}
-    {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei}
+    {applicationDetail && <NeirModalFrame title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
+      <dl className="neir-shared-kv"><dt>Reference</dt><dd>{applicationDetail.id}</dd><dt>IMEI</dt><dd>{applicationDetail.imei}</dd><dt>Status</dt><dd>{applicationDetail.status}</dd><dt>Applied on</dt><dd>{applicationDetail.appliedAt ? new Date(applicationDetail.appliedAt).toLocaleString() : '—'}</dd><dt>Arrival date</dt><dd>{applicationDetail.arrivalDate}</dd><dt>Remarks</dt><dd>{applicationDetail.remarks || '—'}</dd></dl>
+    </NeirModalFrame>}
+    {wizard && <ProfileSpecialRegistrationModal specialToken={session.specialToken} initialImei={wizard.imei}
       onClose={() => setWizard(null)} onComplete={completeRegistration} />}
   </>;
 };

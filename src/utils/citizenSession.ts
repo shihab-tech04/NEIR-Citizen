@@ -2,6 +2,7 @@ import type { UserSession } from '../types.ts';
 
 /** Browser-only persistence for synthetic NEIR citizens. Not a server auth credential. */
 export const CITIZEN_SESSION_KEY = 'neir-citizen-demo-session-v1';
+const SPECIAL_TOKEN_KEY = 'neir-special-citizen-auth-v1';
 
 type StoredCitizen = {
   version: 1;
@@ -43,6 +44,7 @@ export function restoreCitizenSession(base: UserSession): UserSession {
       nid: 'DEMO-NID',
       email: '',
       registeredHandsets: [],
+      specialToken: window.sessionStorage.getItem(SPECIAL_TOKEN_KEY) || undefined,
     };
   } catch {
     return base;
@@ -57,6 +59,7 @@ export function rememberCitizenSession(session: UserSession): void {
   try {
     const stored: StoredCitizen = { version: 1, mobile: session.mobile, name: session.name };
     window.localStorage.setItem(CITIZEN_SESSION_KEY, JSON.stringify(stored));
+    if (session.specialToken) window.sessionStorage.setItem(SPECIAL_TOKEN_KEY,session.specialToken);
   } catch {
     // If storage is unavailable, the current-tab demo session still works.
   }
@@ -66,6 +69,7 @@ export function forgetCitizenSession(): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.removeItem(CITIZEN_SESSION_KEY);
+    window.sessionStorage.removeItem(SPECIAL_TOKEN_KEY);
   } catch {
     // Browser storage may be disabled.
   }

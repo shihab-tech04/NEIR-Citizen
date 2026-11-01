@@ -90,3 +90,30 @@
  .neir-profile-result-title{min-width:calc(100% - 70px)}
  .neir-profile-result-actions>*{width:100%}
 }
+
+/* Special Registration entries only: Figma Admin table rhythm, current Citizen tokens. */
+.neir-profile-search-button:disabled{opacity:.48;background:#9eb8c1;border-color:#9eb8c1;cursor:not-allowed}
+.neir-profile-search-button:disabled:hover{background:#9eb8c1;border-color:#9eb8c1}
+.neir-profile-retry{margin-left:12px;border:1px solid #abd6dc;border-radius:8px;padding:6px 12px;background:#fff;color:var(--neir-primary-900);cursor:pointer}
+.neir-special-applications{min-width:0;border:1px solid var(--neir-border);border-radius:20px;background:#fff;padding:20px;box-shadow:0 3px 16px #103e450b}
+.neir-special-table-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.neir-special-table-heading h2{margin:0;font-size:20px;line-height:1.4;font-weight:600;color:#152331}
+.neir-special-table-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.neir-special-table{border-collapse:separate;border-spacing:0 8px;width:100%;min-width:740px;font-family:Poppins,Arial,sans-serif;font-size:14px;text-align:left;color:#202020}
+.neir-special-table thead th{height:48px;padding:12px 16px;background:#f5f6f7;border-block:1px solid #e9eced;color:#626a73;font-weight:500}
+.neir-special-table thead th:first-child{border-left:1px solid #e9eced;border-radius:8px 0 0 8px}
+.neir-special-table thead th:last-child{border-right:1px solid #e9eced;border-radius:0 8px 8px 0}
+.neir-special-table tbody td{height:48px;padding:12px 16px;vertical-align:middle;border-block:1px solid #e9eced;background:#fff;line-height:1.5}
+.neir-special-table tbody td:first-child{border-left:1px solid #e9eced;border-radius:8px 0 0 8px}
+.neir-special-table tbody td:last-child{border-right:1px solid #e9eced;border-radius:0 8px 8px 0}
+.neir-special-table tbody tr:hover td{background:#f7fbfc}
+.neir-special-imei{font-variant-numeric:tabular-nums}
+.neir-special-table-status{display:inline-flex;align-items:center;justify-content:center;border-radius:5px;padding:6px 12px;font-size:13px;white-space:nowrap;color:#56636f;background:#edf0f3}
+.neir-special-table-status.is-pending{background:#fff2d7;color:#925400}
+.neir-special-table-status.is-in-progress{background:#e1f7fa;color:#0c738b}
+.neir-special-table-status.is-accepted{background:#def4e6;color:#24753e}
+.neir-special-table-status.is-rejected{background:#ffebeb;color:#a13030}
+.neir-special-details-button{min-height:36px;border:1px solid #d9e1e7;border-radius:7px;background:#fff;padding:6px 12px;color:#41546a;font-size:14px;cursor:pointer}
+.neir-special-details-button:hover{border-color:var(--neir-primary-600);color:var(--neir-primary-900)}
+.neir-special-details-button:focus-visible{outline:3px solid var(--neir-primary-600);outline-offset:2px}
+@media(max-width:400px){.neir-special-applications{padding:12px;border-radius:15px}.neir-special-table-heading h2{font-size:17px}.neir-special-table-heading .neir-profile-secondary-action{min-height:36px;padding:6px 10px}}

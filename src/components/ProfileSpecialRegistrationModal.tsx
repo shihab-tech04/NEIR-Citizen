@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 import { NeirDocumentDemo } from './NeirDocumentDemo';
+import { submitNeirSpecialRegistration } from '../utils/neirSpecialRegistrationApi.ts';
 
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
@@ -34,8 +35,8 @@ const localDate = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-type Props = { initialImei?: string; onClose: () => void; onComplete?: (message: string) => void };
-export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', onClose, onComplete }) => {
+type Props = { initialImei?: string; specialToken?: string; onClose: () => void; onComplete?: (message: string) => void };
+export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', specialToken, onClose, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
   const [stage, setStage] = useState<1 | 2>(1);
   const [reason, setReason] = useState<Reason>('');
@@ -48,6 +49,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const [documentsExpanded, setDocumentsExpanded] = useState(true);
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const arrivalRef = useRef<HTMLInputElement>(null);
@@ -139,15 +141,33 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     setFiles({}); setFileErrors({}); setDocumentsExpanded(true);
     setFeedback(''); setSubmitted(false); setDemoDoc(null);
   };
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (submitting) return;
     if (stage === 1) {
       if (canContinue) { setStage(2); setDemoDoc(null); setFeedback(''); }
       return;
     }
     if (!enabled || submitted) return;
-    const message = 'Prototype only — registration has not been submitted to NEIR.';
-    setFeedback(message); setSubmitted(true); onComplete?.(message);
+    if (!specialToken) {
+      setFeedback('Your secure sign-in has expired. Sign out and sign in again to apply.');
+      return;
+    }
+    setSubmitting(true);
+    setFeedback('');
+    try {
+      const response = await submitNeirSpecialRegistration({
+        token:specialToken,imei:imei.trim(),reason,arrivalDate:arrival,
+        passportNumber:passport.trim(),files
+      });
+      setSubmitted(true);
+      setFeedback('Special Registration submitted for review. Reference: ' + response.record.id);
+      onComplete?.('Special Registration submitted. Reference: ' + response.record.id);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : 'Unable to submit. Please retry.');
+    } finally {
+      setSubmitting(false);
+    }
   };
   // Document checklist uses the existing NEIR design tokens, with the row
   // hierarchy and separate file-picker action from the supplied UX reference.
@@ -274,7 +294,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
           <button className="neir-v7-cancel" type="button" onClick={stage === 1 ? onClose : () => { setStage(1); setDemoDoc(null); setFeedback(''); }}>{stage === 1 ? 'Cancel' : 'Back'}</button>
-          <button className="neir-v7-next" disabled={stage === 1 ? !canContinue : !enabled || submitted} type="submit">{stage === 1 ? 'Continue' : 'Submit'}</button>
+          <button className="neir-v7-next" disabled={submitting || (stage === 1 ? !canContinue : !enabled || submitted)} type="submit" aria-busy={submitting}>{stage === 1 ? 'Continue' : submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</button>
         </footer>
       </form>
       {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">

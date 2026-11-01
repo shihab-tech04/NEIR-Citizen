@@ -9,6 +9,7 @@ export type AppRoute = 'home' | 'guides' | 'faq' | 'contact' | 'dashboard' | 'pr
 
 export interface UserSession {
   isLoggedIn: boolean;
+  specialToken?: string;
   name: string;
   nameBangla: string;
   nid: string;
