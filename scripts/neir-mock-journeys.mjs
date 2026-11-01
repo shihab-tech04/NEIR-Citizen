@@ -307,7 +307,7 @@ try{
     await desktop.keyboard.press('Escape');
     assert.equal(await desktop.getByRole('dialog',{name:'Demo · Courier Bill'}).count(),0,'escape closes only sample');
     await expectVisible(dlg,'registration remains open after demo Escape');
-    assert(await viewDemo.isFocused(),'focus returns to View demo trigger');
+    assert(await viewDemo.evaluate(el=>document.activeElement===el),'focus returns to View demo trigger');
     await snap(desktop,'11-neir-document-rows-airmail');
     await dlg.locator('#neir-v7-arrival').fill('2026-10-20');
     const inputs=dlg.locator('input[type=file]');
