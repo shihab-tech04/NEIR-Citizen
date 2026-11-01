@@ -1,0 +1,46 @@
+name: NEIR pre-release independent Git bundle backup
+on:
+  push:
+    branches: ['fix/special-registration-figma-parity-20261101']
+    paths: ['.github/workflows/neir-citizen-prerelease-backup.yml']
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Create and restore-test pre-release source/history bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          original="d946a92914bf651a36237e2097a2567e876953d6"
+          mkdir -p out
+          git cat-file -e "$original^{commit}"
+          git bundle create out/neir-citizen-before-figma-release.bundle --all
+          sha256sum out/neir-citizen-before-figma-release.bundle > out/SHA256SUMS
+          git bundle verify out/neir-citizen-before-figma-release.bundle
+          git clone --quiet out/neir-citizen-before-figma-release.bundle /tmp/neir-citizen-restored
+          git -C /tmp/neir-citizen-restored checkout --quiet "$original"
+          test "$(git -C /tmp/neir-citizen-restored rev-parse HEAD)" = "$original"
+          test -f /tmp/neir-citizen-restored/src/components/CitizenImeiListView.tsx
+          test -f /tmp/neir-citizen-restored/src/App.tsx
+          (cd out && sha256sum --check SHA256SUMS)
+          {
+            echo "repository=shihab-tech04/NEIR-Citizen"
+            echo "pre_release_main=$original"
+            echo "branch=$GITHUB_REF_NAME"
+            echo "restored_main=$(git -C /tmp/neir-citizen-restored rev-parse HEAD)"
+            echo "bundle_integrity=PASS"
+            echo "restore_test=PASS"
+          } > out/RESTORE-RESULT.txt
+          du -h out/neir-citizen-before-figma-release.bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: neir-citizen-full-git-bundle-before-figma
+          path: out/
+          retention-days: 7
+          if-no-files-found: error
