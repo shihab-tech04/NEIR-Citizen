@@ -1,0 +1,63 @@
+name: Verify NEIR Special Registration submit fix is LIVE
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  live-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Require exact GitHub Pages publication and public attachment UI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TARGET="d9804e755a1f54277e3619ad2ae2b23666bd9b79"
+          for attempt in $(seq 1 55); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$TARGET\") | .id" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id" --jq '.status + " " + (.conclusion // "pending")')"
+              echo "Pages run $run_id: $state"
+              if [[ "$state" == "completed success" ]]; then break; fi
+              if [[ "$state" == "completed failure" || "$state" == "completed cancelled" ]]; then
+                echo "FAIL: release did not deploy"; exit 1
+              fi
+            fi
+            if [[ "$attempt" == 55 ]]; then echo "FAIL: target release not verified"; exit 1; fi
+            sleep 10
+          done
+          python - <<'PY'
+          import urllib.request,urllib.error,json,re,time
+          root="https://shihab-tech04.github.io"
+          public=root+"/NEIR-Citizen/"
+          for attempt in range(18):
+              try:
+                  html=urllib.request.urlopen(public,timeout=25).read().decode('utf-8')
+                  scripts=re.findall(r'(?:src|href)="(/NEIR-Citizen/assets/[^"]+\.js)"',html)
+                  cssfiles=re.findall(r'href="(/NEIR-Citizen/assets/[^"]+\.css)"',html)
+                  assert scripts and cssfiles,'Missing compiled frontend files'
+                  js=''.join(urllib.request.urlopen(root+url,timeout=30).read().decode('utf-8') for url in scripts)
+                  css=''.join(urllib.request.urlopen(root+url,timeout=30).read().decode('utf-8') for url in cssfiles)
+                  for marker in ('neir-v7-uploaded-file','neir-v7-uploaded-remove','Choose file','specialToken','neir-special-registration'):
+                      assert marker in js, 'Public JavaScript missing '+marker
+                  assert 'neir-v7-uploaded-file' in css, 'Published stylesheet missing separate attached file row'
+                  print('PASS public compiled Citizen includes SQL submission and improved completed-file UI')
+                  break
+              except Exception as err:
+                  if attempt==17: raise
+                  print('Retry public assets',str(err)[:110])
+                  time.sleep(5)
+          endpoint='https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-special-registration'
+          request=urllib.request.Request(endpoint,data=json.dumps({'action':'admin_list'}).encode(),
+            method='POST',headers={'Content-Type':'application/json','Origin':root})
+          try:
+              urllib.request.urlopen(request,timeout=30)
+              raise AssertionError('Anonymous reviewer data should be denied')
+          except urllib.error.HTTPError as err:
+              assert err.code==401,'Unexpected unauthorized API status: '+str(err.code)
+              print('PASS live Special Registration API rejects anonymous Admin access')
+          PY
