@@ -1,0 +1,40 @@
+name: Verify exact NEIR Citizen unified UI library release
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  release-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Verify production Pages assets and unified library selectors
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://shihab-tech04.github.io/NEIR-Citizen"
+          JS="index-CqQQdfti.js"
+          CSS="index-EWhlHnHq.css"
+          echo "Main merge release: c5399118defca5f673aeb932df12b71cc9291808"
+          for i in $(seq 1 65); do
+            if curl -fsSL --max-time 15 "$BASE/" -o /tmp/neir-live.html && grep -Fq "$JS" /tmp/neir-live.html && grep -Fq "$CSS" /tmp/neir-live.html; then
+              echo "PASS: exact merged UI library JS and CSS referenced by public HTML"
+              break
+            fi
+            if [[ "$i" -eq 65 ]]; then echo "FAIL: exact UI release not deployed"; exit 1; fi
+            sleep 5
+          done
+          curl -fsSL --max-time 30 "$BASE/assets/$JS" -o /tmp/neir-live.js
+          curl -fsSL --max-time 30 "$BASE/assets/$CSS" -o /tmp/neir-live.css
+          test "$(wc -c </tmp/neir-live.js)" -gt 100000
+          for feature in "Search by IMEI, device or status" "Proceed to special registration" "Special Registration applications" "Submit Your Query"; do
+            grep -Fq "$feature" /tmp/neir-live.js || { echo "FAIL missing active UI feature: $feature"; exit 1; }
+            echo "PASS active flow: $feature"
+          done
+          for selector in ".neir-ui-button--primary" ".neir-ui-control" ".neir-ui-status--success" ".neir-ui-table" ".neir-ui-choice-tab" ".neir-v7-dialog"; do
+            grep -Fq "$selector" /tmp/neir-live.css || { echo "FAIL missing UI library selector: $selector"; exit 1; }
+            echo "PASS style: $selector"
+          done
+          sha256sum /tmp/neir-live.js /tmp/neir-live.css
+          echo "PASS: live public release c5399118defca5f673aeb932df12b71cc9291808 matches compiled production UI assets"
