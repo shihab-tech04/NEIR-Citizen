@@ -1,65 +1,92 @@
 import React, { useState } from 'react';
+import { ClipboardCheck, FileText, Search, Smartphone, CheckCircle2 } from 'lucide-react';
 import type { Language } from '../types.ts';
 
-type Props = { language: Language; onOpenLogin?: () => void };
-type Guide = 'register' | 'reset';
-const registration = [
-  { title: 'Step 1: Initiate Account Registration', description: 'Access the system and click the “Register” button to begin the account creation process.', image: 'acc-guide-web-step-1.png' },
-  { title: 'Step 2: Provide Mobile Number & Verification Details', description: 'Enter your mobile number and input the last four (4) digits of the document ID used at the time of SIM purchase. Click “Request OTP” to receive a one-time password on your registered mobile number.', image: 'acc-guide-web-step-2.png' },
-  { title: 'Step 3: Request OTP & Verify OTP', description: 'Enter the received OTP and click “Verify and Proceed”.', image: 'acc-guide-web-step-3.png' },
-  { title: 'Step 4: Set Account Password', description: 'Create a new password and re-enter it to confirm. Then click “Create Account” to complete the registration.', image: 'acc-guide-web-step-4.png' },
-];
-const mobileRegistration = [
-  { title: 'Step 1: Initiate Account Registration', description: 'Access the system and click the “Log In” button to begin the account creation process.', image: 'acc-guide-mobile-step-1.png' },
-  { title: 'Step 2: Proceed to Sign up', description: 'Click on the “Sign up” button to proceed registration.', image: 'acc-guide-mobile-step-2.png' },
-  { title: 'Step 3: Provide Mobile Number & Verification Details', description: 'Enter your mobile number and input the last four (4) digits of the document ID used at the time of SIM purchase. Click “Request OTP” to receive a one-time password on your registered mobile number.', image: 'acc-guide-mobile-step-3.png' },
-  { title: 'Step 4: Request OTP & Verify OTP', description: 'Enter the received OTP and click “Verify and Proceed”.', image: 'acc-guide-mobile-step-4.png' },
-  { title: 'Step 5: Set Account Password', description: 'Create a new password and re-enter it to confirm. Then click “Create Account” to complete the registration.', image: 'acc-guide-mobile-step-5.png' },
-];
-const reset = [
-  { title: 'Step 1: Open the Login Screen', description: 'Access the system and click the “Login” button to begin the Password Reset process', image: 'pwd-guide-web-step-1.png' },
-  { title: 'Step 2: Select Reset Password', description: 'Tap “Reset Password” to begin the password reset process.', image: 'pwd-guide-web-step-2.png' },
-  { title: 'Step 3: Enter Mobile Number', description: 'Your account is linked to a document ID (NID, Smart NID, Passport, etc.) that may have up to 10 registered mobile numbers. Enter any one of those numbers to receive an OTP and continue resetting your password.', image: 'pwd-guide-web-step-3.png' },
-  { title: 'Step 4: Enter OTP', description: 'Enter the OTP sent to your registered mobile number. And then tap on “Verify And Proceed”.', image: 'pwd-guide-web-step-4.png' },
-  { title: 'Step 5: Set and Confirm a New Password', description: 'Enter your new password and re-enter it to confirm. Tap “Reset Password” to complete the process.', image: 'pwd-guide-web-step-5.png' },
-];
-export const UserGuidesView: React.FC<Props> = () => {
-  const [guide,setGuide] = useState<Guide>('register');
-  const [platform,setPlatform] = useState<'web' | 'mobile'>('web');
-  const [broken,setBroken] = useState<string[]>([]);
-  const isReg = guide === 'register';
-  const isMobileReg = isReg && platform === 'mobile';
-  const steps = isMobileReg ? mobileRegistration : isReg ? registration : reset;
-  const base = isReg ? (isMobileReg ? 'acc-guide-mobile-steps/' : 'acc-guide-web-steps/') : 'pwd-guide-web-steps/';
-  const fullImage = isReg ? (isMobileReg ? 'acc-guide-mobile-full-process.png' : 'acc-guide-web-full-process.png') : 'pwd-guide-web-full-process.png';
-  const url = (file:string) => import.meta.env.BASE_URL + 'neir-source/user-guides/' + base + file;
-  const image = (file:string, alt:string) => broken.includes(file)
-    ? <div className="bg-slate-50 border rounded-2xl py-12 px-4 text-center text-sm text-slate-500">Illustration unavailable: {alt}</div>
-    : <img src={url(file)} alt={alt} loading="lazy" onError={() => setBroken(v => [...v, file])} className="w-full rounded-xl object-contain border border-slate-100 bg-white" />;
-  return <section className="neir-source-subpage neir-source-guide-page space-y-8">
-    <header className="text-center space-y-3"><h1 className="text-3xl md:text-[44px] text-slate-950 font-bold">User Guide of NEIR</h1>
-      <p className="text-base sm:text-lg text-slate-700">A complete user guide to help you navigate the system.</p></header>
-    <div className="grid grid-cols-2 gap-3 sm:gap-6 max-w-xl mx-auto">
-      <button onClick={() => {setGuide('register');setPlatform('web');}} aria-pressed={isReg} className={isReg ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/acc-reg.png`} alt=""/>Account Registration</button>
-      <button onClick={() => {setGuide('reset');setPlatform('web');}} aria-pressed={!isReg} className={!isReg ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/pwd-res.png`} alt=""/>Password Reset</button>
-    </div>
-    <div className="neir-source-guide-content bg-white rounded-[32px] p-5 sm:p-8 lg:p-12 space-y-7">
-      <div className="neir-source-guide-intro space-y-4"><h2 className="text-2xl sm:text-3xl font-semibold">{isReg ? 'Account Registration' : 'Password Reset'}</h2>
-        <p className="leading-relaxed text-slate-700">{isReg
-          ? 'Account registration feature allows you to verify your identity, securely manage your registered devices and SIMs, check their status, and access services like device whitelisting, ensuring only legally registered devices are connected to you.'
-          : 'Use this feature if you forget your password or cannot sign in. Enter any registered mobile number linked to your account. An OTP will be sent to that number to verify your identity and help you create a new password.'}</p>
-        <p className="font-medium text-slate-900">{isReg ? 'Quick steps to help you create your account easily.' : 'Quick steps to help you reset your password easily.'}</p></div>
-      <div className="neir-source-guide-platform flex gap-2 border-b border-slate-200 pb-3" role="tablist" aria-label="Guide platform">
-        <button role="tab" aria-selected={platform === 'web'} onClick={() => setPlatform('web')} className={platform === 'web' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Web</button>
-        <button role="tab" aria-selected={platform === 'mobile'} onClick={() => setPlatform('mobile')} className={platform === 'mobile' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Mobile</button>
+type Props = { language: Language };
+type Guide = 'imei' | 'special';
+const guideContent = {
+  en: {
+    title: 'User Guide of NEIR',
+    intro: 'Find device information and apply for Special Registration.',
+    imei: 'Check IMEI',
+    special: 'Special Registration',
+    imeiSteps: [
+      ['Open My Profile', 'Select My Profile from the navigation.', 'profile'],
+      ['Search for a device', 'Enter a complete 14- or 15-digit IMEI number and select Search device.', 'search'],
+      ['Review device information', 'Check the registration status and device details.', 'device'],
+      ['Next step', 'If the handset is greylisted, select Apply for Special Registration.', 'complete'],
+    ],
+    specialSteps: [
+      ['Enter IMEI', 'Enter the complete 14- or 15-digit IMEI number.', 'device'],
+      ['Select acquisition method', 'Choose Air Mail, Gift or Foreign Tour.', 'search'],
+      ['Complete the details', 'Enter the arrival date and attach the required documents.', 'file'],
+      ['Submit the application', 'Submit and track its status under Special Registration applications.', 'complete'],
+    ],
+    hint: 'Your application status is available in My Profile after submission.',
+  },
+  bn: {
+    title: 'NEIR ব্যবহার নির্দেশিকা',
+    intro: 'ডিভাইসের তথ্য দেখুন এবং বিশেষ নিবন্ধনের আবেদন করুন।',
+    imei: 'আইএমইআই যাচাই',
+    special: 'বিশেষ নিবন্ধন',
+    imeiSteps: [
+      ['আমার প্রোফাইল খুলুন', 'নেভিগেশন থেকে আমার প্রোফাইল নির্বাচন করুন।', 'profile'],
+      ['ডিভাইস খুঁজুন', '১৪ বা ১৫ সংখ্যার পূর্ণ আইএমইআই লিখে ডিভাইস খুঁজুন নির্বাচন করুন।', 'search'],
+      ['ডিভাইসের তথ্য দেখুন', 'নিবন্ধনের অবস্থা ও ডিভাইসের বিস্তারিত দেখুন।', 'device'],
+      ['পরবর্তী ধাপ', 'ডিভাইসটি গ্রেলিস্টেড হলে বিশেষ নিবন্ধনের আবেদন করুন।', 'complete'],
+    ],
+    specialSteps: [
+      ['আইএমইআই লিখুন', '১৪ বা ১৫ সংখ্যার পূর্ণ আইএমইআই লিখুন।', 'device'],
+      ['ডিভাইস পাওয়ার উপায় বাছুন', 'এয়ার মেইল, উপহার বা বিদেশ ভ্রমণ নির্বাচন করুন।', 'search'],
+      ['তথ্য পূরণ করুন', 'আগমনের তারিখ এবং প্রয়োজনীয় নথি সংযুক্ত করুন।', 'file'],
+      ['আবেদন জমা দিন', 'আবেদন জমা দিয়ে বিশেষ নিবন্ধনের তালিকায় অগ্রগতি দেখুন।', 'complete'],
+    ],
+    hint: 'আবেদন জমা দেওয়ার পর আমার প্রোফাইলে তার অবস্থা দেখতে পারবেন।',
+  },
+} as const;
+
+const icons = {
+  profile: Smartphone, search: Search, device: Smartphone, file: FileText, complete: CheckCircle2,
+};
+
+export const UserGuidesView: React.FC<Props> = ({ language }) => {
+  const [guide, setGuide] = useState<Guide>('imei');
+  const content = guideContent[language === 'bn' ? 'bn' : 'en'];
+  const steps = guide === 'imei' ? content.imeiSteps : content.specialSteps;
+  return (
+    <section className="neir-source-subpage neir-source-guide-page space-y-8">
+      <header className="text-center space-y-3">
+        <h1 className="text-3xl md:text-[44px] text-slate-950 font-bold">{content.title}</h1>
+        <p className="text-base sm:text-lg text-slate-700">{content.intro}</p>
+      </header>
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 max-w-xl mx-auto" role="tablist" aria-label={content.title}>
+        <button type="button" role="tab" aria-selected={guide === 'imei'} onClick={() => setGuide('imei')}
+          className={guide === 'imei' ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}>
+          <Search className="mx-auto mb-3" size={30} aria-hidden="true"/>{content.imei}
+        </button>
+        <button type="button" role="tab" aria-selected={guide === 'special'} onClick={() => setGuide('special')}
+          className={guide === 'special' ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}>
+          <ClipboardCheck className="mx-auto mb-3" size={30} aria-hidden="true"/>{content.special}
+        </button>
       </div>
-        <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="neir-guide-step-card grid grid-cols-1 md:grid-cols-2 items-center gap-5 md:gap-8">
-          <div className="neir-guide-step-text"><h3 className="text-lg sm:text-xl font-semibold mb-3">{step.title}</h3><p className="text-sm sm:text-base text-slate-700 leading-7">{step.description}</p></div>
-          <div className="neir-guide-step-visual">{image(step.image, step.title)}</div>
-        </article>)}
-          <div className="neir-guide-overview pt-5 border-t space-y-4"><h3 className="text-xl font-semibold">{isReg ? 'User Registration Process at a glance' : 'Reset Password Process at a glance'}</h3>
-          {image(fullImage, 'Complete ' + (isReg ? 'registration' : 'password reset') + ' process')}</div>
+      <div className="neir-source-guide-content bg-white rounded-[32px] p-5 sm:p-8 lg:p-12 space-y-7">
+        <h2 className="text-2xl sm:text-3xl font-semibold">{guide === 'imei' ? content.imei : content.special}</h2>
+        <div className="space-y-7">
+          {steps.map(([title,description,kind],index) => {
+            const Icon = icons[kind];
+            return <article key={title} className="neir-guide-step-card grid grid-cols-1 md:grid-cols-2 items-center gap-5 md:gap-8">
+              <div className="neir-guide-step-text">
+                <h3 className="text-lg sm:text-xl font-semibold mb-3">{index+1}. {title}</h3>
+                <p className="text-sm sm:text-base text-slate-700 leading-7">{description}</p>
+              </div>
+              <div className="neir-guide-step-visual flex items-center justify-center min-h-36 rounded-xl border border-slate-100 bg-slate-50 text-[#00838F]">
+                <Icon size={58} strokeWidth={1.5} aria-label={title}/>
+              </div>
+            </article>;
+          })}
         </div>
-    </div>
-  </section>;
+        <p className="font-medium text-slate-900 border-t border-slate-200 pt-5">{content.hint}</p>
+      </div>
+    </section>
+  );
 };
