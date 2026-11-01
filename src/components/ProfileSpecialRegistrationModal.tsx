@@ -189,9 +189,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
               <span>IMEI Number <b aria-hidden="true">*</b></span>
               <input id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15}
                 onChange={event => { setImei(event.target.value.replace(/\D/g, '').slice(0,15)); setSubmitted(false); }}
-                inputMode="numeric" autoComplete="off" placeholder="IMEI Number" required aria-invalid={!!imei && !validImei} />
-              {!!imei && !validImei && <small className="neir-v7-error" role="alert">Enter a 14- or 15-digit IMEI number.</small>}
-              {!validImei && <small className="neir-v7-hint">Enter 14 or 15 IMEI digits to continue.</small>}
+                inputMode="numeric" autoComplete="off" placeholder="Enter 14 or 15 IMEI digits to continue."
+                aria-description="The IMEI number must contain 14 or 15 digits." required aria-invalid={!!imei && !validImei} />
             </label>
           </section>
           {showReason && <>
