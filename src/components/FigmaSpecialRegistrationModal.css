@@ -71,7 +71,7 @@
 .neir-sr-control input::placeholder{color:#757575;opacity:1}
 .neir-sr-control input[type=date]{color:#315c51;min-width:0}
 .neir-sr-control svg{flex-shrink:0}
-.neir-sr-control-readonly{background:#e4e4e4}
+.neir-sr-control-readonly,.neir-sr-control:has(#neir-sr-imei){background:#e4e4e4}
 .neir-sr-select select{appearance:none;cursor:pointer}
 .neir-sr-select svg{pointer-events:none;color:#202020}
 .neir-sr-error{font-size:12px;line-height:18px;font-weight:500;color:#b42318;margin-top:5px}
