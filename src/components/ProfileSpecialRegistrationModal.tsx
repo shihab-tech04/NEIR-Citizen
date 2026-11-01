@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 import { NeirDocumentDemo } from './NeirDocumentDemo';
 
@@ -22,10 +22,9 @@ const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
     { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Declaration naming donor, recipient and handset.' },
   ],
   airmail: [
-    { id: 'courierBill', label: 'Courier Bill', required: true, purpose: 'Courier receipt with tracking and recipient details.' },
-    { id: 'packingList', label: 'Packing List', required: true, purpose: 'Item list showing the handset in the parcel.' },
+    { id: 'courierBill', label: 'Courier Bill', required: false, purpose: 'Courier receipt with tracking and recipient details.' },
+    { id: 'packingList', label: 'Packing List', required: false, purpose: 'Item list showing the handset in the parcel.' },
     { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Invoice identifying the seller and handset.' },
-    { id: 'applicantTax', label: 'Applicant Tax Document', required: true, purpose: 'Applicant’s customs or tax payment receipt.' },
   ],
 };
 const maxFileSize = 1024 * 1024;
@@ -58,7 +57,6 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   closeRef.current = onClose;
   const demoDocRef = useRef(demoDoc);
   demoDocRef.current = demoDoc;
-  const demoRef = useRef<HTMLElement>(null);
   const demoCloseRef = useRef<HTMLButtonElement>(null);
   const demoReturnFocusRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
@@ -78,7 +76,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         event.preventDefault(); closeRef.current(); return;
       }
       if (event.key !== 'Tab') return;
-      const focusRoot = demoRef.current || rootRef.current;
+      const focusRoot = rootRef.current;
       const tabbable = Array.from(focusRoot?.querySelectorAll<HTMLElement>(
         'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex="0"]',
       ) || []).filter(node => node.getClientRects().length > 0 && !node.closest('[hidden]'));
@@ -157,9 +155,9 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     <div className="neir-v7-upload-line">
       <Paperclip className="neir-v7-document-icon" size={18} aria-hidden="true" />
       <div className="neir-v7-upload-text">
-        <div className="neir-v7-upload-title">{doc.label} {doc.required
-          ? <b className="neir-v7-required" aria-hidden="true">*</b>
-          : <span className="neir-v7-optional">(optional)</span>}</div>
+        <div className="neir-v7-upload-title">{doc.label}
+          {doc.required && <> <b className="neir-v7-required" aria-hidden="true">*</b></>}
+        </div>
         <p className="neir-v7-upload-desc">{doc.purpose}</p>
         {files[doc.id] && <p className="neir-v7-upload-selected">
           <FileText size={15} aria-hidden="true" />
@@ -169,12 +167,13 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
       </div>
       <div className="neir-v7-upload-actions">
         <button type="button" className="neir-v7-help-trigger"
-          aria-label={'View demo of ' + doc.label} aria-haspopup="dialog"
+          aria-label={'View sample of ' + doc.label}
           onClick={event => { demoReturnFocusRef.current = event.currentTarget; setDemoDoc(doc); }}>
-          <Eye size={16} aria-hidden="true" /> <span>View demo</span>
+          <Eye size={16} aria-hidden="true" /> <span>View sample</span>
         </button>
         <input type="file" className="neir-v7-file-input"
           id={'neir-v7-file-' + doc.id} aria-label={'Upload ' + doc.label}
+          aria-required={doc.required} required={doc.required}
           accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
           onChange={event => {
             const selected = event.target.files?.[0];
@@ -198,10 +197,16 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   return <div className="neir-v7-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) closeRef.current(); }}>
     <section className="neir-v7-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef}>
       <header className="neir-v7-header">
-        <h2 id="neir-v7-title">Special Registration</h2>
-        <button type="button" className="neir-v7-close" aria-label="Close special registration" onClick={onClose}><X size={24} /></button>
+        <h2 id="neir-v7-title">{demoDoc ? 'Sample · ' + demoDoc.label : 'Special Registration'}</h2>
+        <button type="button" className="neir-v7-close"
+          ref={demoDoc ? demoCloseRef : undefined}
+          aria-label={demoDoc ? 'Back to registration' : 'Close special registration'}
+          onClick={demoDoc ? () => setDemoDoc(null) : onClose}>
+          {demoDoc ? <ArrowLeft size={24} aria-hidden="true" /> : <X size={24} aria-hidden="true" />}
+        </button>
       </header>
-      <form noValidate className="neir-v7-form" onSubmit={submit} aria-hidden={!!demoDoc}>
+      <form noValidate className="neir-v7-form" onSubmit={submit}
+        aria-hidden={!!demoDoc} style={demoDoc ? { display: 'none' } : undefined}>
         <div className="neir-v7-body" ref={bodyRef}>
           <div className="neir-v7-stage" key="device">
           <section className="neir-v7-section neir-v7-imei-section" aria-labelledby="neir-v7-imei-heading">
@@ -272,22 +277,15 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
           <button className="neir-v7-next" disabled={stage === 1 ? !canContinue : !enabled || submitted} type="submit">{stage === 1 ? 'Continue' : 'Submit'}</button>
         </footer>
       </form>
-      {demoDoc && <div className="neir-v7-demo-overlay" onMouseDown={event => {
-        if (event.target === event.currentTarget) setDemoDoc(null);
-      }}>
-        <section className="neir-v7-demo-dialog" role="dialog" aria-modal="true"
-          aria-labelledby="neir-v7-demo-title" ref={demoRef}>
-          <header className="neir-v7-demo-header">
-            <h3 id="neir-v7-demo-title">Demo · {demoDoc.label}</h3>
-            <button className="neir-v7-demo-close" ref={demoCloseRef} type="button"
-              aria-label="Close document demo" onClick={() => setDemoDoc(null)}>
-              <X size={20} aria-hidden="true" />
-            </button>
-          </header>
-          <div className="neir-v7-demo-content">
-            <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
-          </div>
-        </section>
+      {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">
+        <div className="neir-v7-demo-content">
+          <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
+        </div>
+        <footer className="neir-v7-footer neir-v7-sample-footer">
+          <button className="neir-v7-cancel" type="button" onClick={() => setDemoDoc(null)}>
+            <ArrowLeft size={18} aria-hidden="true" /> Back to form
+          </button>
+        </footer>
       </div>}
     </section>
   </div>;
