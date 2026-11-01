@@ -1,0 +1,38 @@
+name: NEIR citizen independent pre-release recovery
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  restore-tested-git-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify full Git backup and independent restore
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags
+          BEFORE="ebc12a5bd20ba94e9a03a1accc84023cad7ca35a"
+          test "$(git rev-parse origin/main)" = "$BEFORE"
+          mkdir -p neir-recovery
+          git bundle create neir-recovery/citizen-pre-release-ebc12a5b.bundle --all
+          git bundle verify neir-recovery/citizen-pre-release-ebc12a5b.bundle
+          git clone neir-recovery/citizen-pre-release-ebc12a5b.bundle /tmp/neir-restore
+          git -C /tmp/neir-restore cat-file -e "$BEFORE^{commit}"
+          for path in src/components/CitizenImeiListView.tsx src/components/ProfileSpecialRegistrationModal.tsx; do
+            git show "$BEFORE:$path" > /tmp/pre-release-file
+            git -C /tmp/neir-restore show "$BEFORE:$path" > /tmp/independent-restore-file
+            cmp /tmp/pre-release-file /tmp/independent-restore-file
+          done
+          (cd neir-recovery && sha256sum citizen-pre-release-ebc12a5b.bundle > bundle.sha256)
+          printf 'pre_release_commit=%s\nrepository=shihab-tech04/NEIR-Citizen\nrestore_test=PASS\nsource_byte_comparison=PASS\n' "$BEFORE" > neir-recovery/manifest.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEIR-citizen-pre-release-full-Git
+          path: neir-recovery/
+          retention-days: 7
