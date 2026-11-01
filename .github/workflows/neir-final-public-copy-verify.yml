@@ -1,0 +1,51 @@
+name: Verify final NEIR Citizen published copy
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Verify exact published commit and no prototype disclaimers
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          EXPECTED="36ee8edf60f993980cd9997886da0fdda8088b76"
+          for attempt in $(seq 1 50); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq ".workflow_runs[] | select(.name == \"Publish compiled NEIR Citizen frontend to GitHub Pages\" and .head_sha == \"$EXPECTED\") | .id" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$run_id" --jq '.status + " " + (.conclusion // "pending")')"
+              echo "Publish $run_id: $status"
+              if [[ "$status" == "completed success" ]]; then break; fi
+              if [[ "$status" == "completed failure" || "$status" == "completed cancelled" ]]; then exit 1; fi
+            fi
+            if [[ "$attempt" == 50 ]]; then echo 'FAIL: exact deployment not verified'; exit 1; fi
+            sleep 8
+          done
+          python - <<'PY'
+          import urllib.request,re,time
+          root='https://shihab-tech04.github.io'
+          base=root+'/NEIR-Citizen/'
+          for attempt in range(20):
+            try:
+              html=urllib.request.urlopen(base+'?readback='+str(attempt),timeout=25).read().decode()
+              scripts=re.findall(r'(?:src|href)="(/NEIR-Citizen/assets/[^"]+\.js)"',html)
+              assert scripts,'No published JavaScript assets'
+              js=''.join(urllib.request.urlopen(root+path,timeout=30).read().decode() for path in scripts)
+              for token in ('Independent NEIR UX prototype','No live BTRC services','This prototype cannot retrieve BTRC status','Submission is local validation only','Future Proposed Design Prototype (Sandbox)'):
+                  assert token not in js,'Removed disclosure still on site: '+token
+              for token in ('neir-prototype-special','Special Registration','My Profile','View sample'):
+                  assert token in js,'Missing required live UI: '+token
+              print('PASS latest public Citizen bundle: required workflows remain and obsolete disclaimers absent')
+              break
+            except Exception as err:
+              if attempt == 19: raise
+              print('retry:',str(err)[:120])
+              time.sleep(5)
+          PY
