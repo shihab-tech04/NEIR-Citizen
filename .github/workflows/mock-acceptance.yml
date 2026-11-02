@@ -58,6 +58,19 @@ jobs:
           const admin=await call('admin_list');
           assert.equal(admin.status,200,'Admin reads the same SQL table');
           assert(Array.isArray(admin.payload.items),'Admin list array');
+          const known=admin.payload.items.find(item=>item.id==='29954ad5-c7b0-40a4-9679-25fea5f7b6c8');
+          if(known){
+            const details=await call('admin_details',{id:known.id});
+            assert.equal(details.status,200,'Admin details must mirror the citizen dossier');
+            assert.equal(details.payload.record.documents.length,3,'three exact citizen uploads recovered');
+            const types=details.payload.record.documents.map(d=>d.type).sort();
+            assert.deepEqual(types,['commercialInvoice','courierBill','packingList'].sort());
+            for(const doc of details.payload.record.documents){
+              assert.equal(doc.available,true,'original uploaded file must exist');
+              assert(typeof doc.filename==='string'&&doc.filename.length>1,'original filename retained');
+              assert(/^https:\/\//.test(doc.uri),'private file has a short-lived view URL');
+            }
+          }
           const invalid=await call('citizen_list',{mobile:'wrong'});
           assert.equal(invalid.status,400,'citizen list requires a valid account mobile');
           const invalidSubmit=await call('submit',{imei:'23456789012345',reason:'airmail',
