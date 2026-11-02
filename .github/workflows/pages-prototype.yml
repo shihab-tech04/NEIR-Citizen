@@ -36,6 +36,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import os
           import re
           root=Path('dist')
           html=(root/'index.html').read_text()
@@ -51,6 +52,9 @@ jobs:
           js=''.join(p.read_text() for p in (root/'assets').glob('*.js'))
           assert '/NEIR-Citizen/' in js and 'neir-source/' in js, 'Pages image base is incorrect'
           assert 'user-guides' in js and 'contact-us' in js, 'Subpage code missing'
+          assert 'You are ready to apply!' in js and 'Proceed to special registration' in js, 'Approved login-success modal missing'
+          assert 'Next: Enter your device IMEI and how you received it' not in js, 'Old login-success Next panel returned'
+          (root/'RELEASE_COMMIT.txt').write_text(os.environ['GITHUB_SHA'] + chr(10))
           (root/'404.html').write_text(html)
           (root/'.nojekyll').touch()
           print('PASS: compiled base, image references and SPA fallback')
@@ -124,3 +128,26 @@ jobs:
           test "$(wc -c </tmp/btrc-logo.png)" -gt 1000
           test "$(wc -c </tmp/neir-reset-guide.png)" -gt 1000
           echo "PASS: source BTRC logo and complete password reset guide publicly available"
+          for attempt in $(seq 1 15); do
+            curl -fsSL --max-time 20 "$url/RELEASE_COMMIT.txt?sha=$GITHUB_SHA" -o /tmp/neir-live-version.txt || true
+            published_sha="$(tr -d '[:space:]' </tmp/neir-live-version.txt)"
+            if [[ "$published_sha" == "$GITHUB_SHA" ]]; then
+              echo "PASS: public Pages serves exact source SHA $GITHUB_SHA"
+              break
+            fi
+            if [[ "$attempt" -eq 15 ]]; then
+              echo "FAIL: public Pages source SHA does not match deployment"
+              exit 1
+            fi
+            sleep 4
+          done
+          js_asset="$(grep -oE 'src="/NEIR-Citizen/assets/[^"]+[.]js"' /tmp/neir-live.html | head -1 | cut -d'"' -f2)"
+          test -n "$js_asset"
+          curl -fsSL --max-time 20 "$url/${js_asset#/NEIR-Citizen/}" -o /tmp/neir-live-bundle.js
+          grep -Fq 'You are ready to apply!' /tmp/neir-live-bundle.js
+          grep -Fq 'Proceed to special registration' /tmp/neir-live-bundle.js
+          if grep -Fq 'Next: Enter your device IMEI and how you received it' /tmp/neir-live-bundle.js; then
+            echo "FAIL: obsolete login-success Next panel remains live"
+            exit 1
+          fi
+          echo "PASS: approved Login successful modal published without obsolete Next panel"
