@@ -64,15 +64,43 @@ const signedDocument=async(path:string)=>{
   return signed.startsWith('https://')?signed:URL+'/storage/v1'+signed;
 };
 
+
+const allowedFiles:Record<string,string[]>={
+ airmail:['commercialInvoice','courierBill','packingList'],
+ gift:['donorPassport','donorArrivalSeal','imeiBox','giftDeed'],
+ 'foreign-tour':['passportInfo','arrivalSeal','imeiBox','travelDocument']
+};
+const base64Bytes=(str:string)=>Uint8Array.from(atob(str),x=>x.charCodeAt(0));
+const fileMatches=(v:Uint8Array,m:string)=>
+ m==='application/pdf'?v[0]===37&&v[1]===80&&v[2]===68&&v[3]===70:
+ m==='image/png'?v[0]===137&&v[1]===80&&v[2]===78&&v[3]===71:
+ m==='image/jpeg'&&v[0]===255&&v[1]===216&&v[2]===255;
+const uploadPrivate=async(path:string,data:Uint8Array,mime:string)=>{
+ const response=await fetch(URL+'/storage/v1/object/neir-special-documents/'+path,{
+  method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,
+  'Content-Type':mime,'x-upsert':'false'},body:data});
+ if(!response.ok)throw Error('Uploaded document could not be saved.');
+};
+const cleanupPrivate=async(paths:string[])=>{
+ if(!paths.length)return;
+ const response=await fetch(URL+'/storage/v1/object/neir-special-documents',{
+  method:'DELETE',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+  body:JSON.stringify({prefixes:paths})
+ });
+ if(!response.ok)console.error('Unfinished Special Registration files could not be cleaned',response.status);
+};
+
 Deno.serve(async(req:Request)=>{
   const origin=req.headers.get('origin');
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(origin)});
   if(req.method!=='POST')return json({error:'Method not allowed'},405,origin);
   if(!URL||!KEY)return json({error:'Special Registration service unavailable'},503,origin);
   try{
-    if(Number(req.headers.get('content-length')||0)>10240)
+    if(Number(req.headers.get('content-length')||0)>6000000)
       return json({error:'Request is too large'},413,origin);
-    const payload=await req.json();
+    const bodyText=await req.text();
+    if(bodyText.length>6000000)return json({error:'Request is too large'},413,origin);
+    const payload=JSON.parse(bodyText);
     if(!payload || typeof payload.action!=='string')return json({error:'Missing action'},400,origin);
     const action=payload.action;
     if(action==='list' || action==='admin_list' || action==='citizen_list'){
@@ -115,19 +143,45 @@ Deno.serve(async(req:Request)=>{
       return json({record:{...row,documents}},200,origin);
     }
     if(action==='submit'){
-      const mobile=payload.mobile,imei=payload.imei,reason=payload.reason,arrivalDate=payload.arrivalDate,docTypes=payload.documents;
-      if(typeof mobile!=='string'||!/^01\d{9}$/.test(mobile)||
+      const {mobile,imei,reason,arrivalDate,files}=payload;
+      if(typeof mobile!=='string'||!/^01\\d{9}$/.test(mobile)||
         typeof imei!=='string'||!/^[0-9]{14,15}$/.test(imei)||
-        !Object.prototype.hasOwnProperty.call(reasons,reason)||
-        typeof arrivalDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(arrivalDate)||
+        typeof reason!=='string'||!allowedFiles[reason]||
+        typeof arrivalDate!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(arrivalDate)||
         arrivalDate>new Date().toISOString().slice(0,10)||
-        !Array.isArray(docTypes)||docTypes.length>8||docTypes.some((d:unknown)=>typeof d!=='string'))
-        return json({error:'Complete the IMEI, arrival information and required documents.'},400,origin);
-      const rows=await requestDB('rpc/neir_prototype_submit_special_citizen','POST',{
-        p_mobile:mobile,p_imei:imei,p_reason:reason,p_arrival:arrivalDate,p_documents:docTypes
-      });
-      return json({record:{id:rows[0].id,imei,status:rows[0].status,submittedAt:rows[0].submitted_at},
-        message:'Special Registration submitted successfully.'},201,origin);
+        !Array.isArray(files)||files.length<1||files.length>8||
+        files.length>allowedFiles[reason].length)
+        return json({error:'Complete the IMEI, arrival information and uploaded documents.'},400,origin);
+      const selected=files.map((f:any)=>f?.type);
+      if(new Set(selected).size!==selected.length||
+        selected.some((type:string)=>!allowedFiles[reason].includes(type))||
+        (reason==='airmail'&&!selected.includes('commercialInvoice'))||
+        (reason==='gift'&&['donorPassport','donorArrivalSeal','imeiBox','giftDeed'].some(type=>!selected.includes(type)))||
+        (reason==='foreign-tour'&&['passportInfo','arrivalSeal','imeiBox'].some(type=>!selected.includes(type))))
+        return json({error:'Required uploaded documents are missing.'},400,origin);
+      const requestId=crypto.randomUUID(),paths:string[]=[],manifest:any[]=[];
+      try{
+        for(const f of files){
+          if(typeof f?.name!=='string'||f.name.length<1||f.name.length>180||
+            !['application/pdf','image/jpeg','image/png'].includes(f.mime)||
+            typeof f.data!=='string'||f.data.length>1450000||
+            !Number.isInteger(f.size)||f.size<1||f.size>1048576)
+            throw Error('Invalid uploaded attachment.');
+          const bytes=base64Bytes(f.data);
+          if(bytes.length!==f.size||!fileMatches(bytes,f.mime))
+            throw Error('Uploaded file content does not match the selected file.');
+          const path='prototype/'+requestId+'/'+f.type+'-'+crypto.randomUUID();
+          await uploadPrivate(path,bytes,f.mime);
+          paths.push(path);
+          manifest.push({type:f.type,name:f.name,mime:f.mime,size:f.size,path});
+        }
+        const rows=await requestDB('rpc/neir_prototype_submit_special_citizen_files','POST',{
+          p_mobile:mobile,p_imei:imei,p_reason:reason,p_arrival:arrivalDate,
+          p_document_types:selected,p_files:manifest
+        });
+        return json({record:{id:rows[0].id,imei,status:rows[0].status,submittedAt:rows[0].submitted_at},
+          message:'Special Registration submitted successfully.'},201,origin);
+      }catch(err){await cleanupPrivate(paths);throw err;}
     }
     if(action==='update'||action==='admin_update'){
       if(typeof payload.id!=='string'||!/^[a-f0-9-]{36}$/i.test(payload.id)||
@@ -144,6 +198,7 @@ Deno.serve(async(req:Request)=>{
     const message=err instanceof Error?err.message:'Unexpected error';
     if(message.includes('already has')||message.includes('limit is 20'))return json({error:message},409,origin);
     if(message.includes('Request is too large'))return json({error:message},413,origin);
+    if(message.includes('Invalid uploaded')||message.includes('file content'))return json({error:message},400,origin);
     console.error('Special Registration endpoint:',message);
     return json({error:'Special Registration operation could not be completed. Please retry.'},503,origin);
   }
