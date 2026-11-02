@@ -11,11 +11,13 @@ import { HomeHero } from './components/HomeHero.tsx';
 import { SpecialRegistrationSection } from './components/SpecialRegistrationSection.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
+import { LoginModal } from './components/LoginModal.tsx';
 import { CitizenImeiListView } from './components/CitizenImeiListView.tsx';
 import { UserGuidesView } from './components/UserGuidesView.tsx';
 import { ContactUsView } from './components/ContactUsView.tsx';
 import { ProposedDesignView } from './components/ProposedDesignView.tsx';
 import { QueryTicket } from './utils/queryTracker.ts';
+import { CITIZEN_SESSION_KEY, restoreCitizenSession, rememberCitizenSession, forgetCitizenSession } from './utils/citizenSession.ts';
 
 export default function App() {
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -44,9 +46,9 @@ export default function App() {
   }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
 
-  // Static profile display data; no account login is required.
+  // Restore the existing citizen sign-in state without changing the approved UI.
   const defaultCitizenSession: UserSession = {
-    isLoggedIn: true,
+    isLoggedIn: false,
     name: 'Md. Zahid Hasan',
     nameBangla: 'মো: জাহিদ হাসান',
     nid: '19942691234567890',
@@ -69,7 +71,46 @@ export default function App() {
       },
     ],
   };
-  const [session] = useState<UserSession>(defaultCitizenSession);
+  const [session, setSession] = useState<UserSession>(() => restoreCitizenSession(defaultCitizenSession));
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginInitialView, setLoginInitialView] = useState<'login'|'register'>('login');
+  const [loginForSpecialRegistration, setLoginForSpecialRegistration] = useState(false);
+  const [registrationHandoffPending, setRegistrationHandoffPending] = useState(false);
+
+  useEffect(() => {
+    const syncSession = (event: StorageEvent) => {
+      if (event.key !== CITIZEN_SESSION_KEY && event.key !== null) return;
+      const restored = restoreCitizenSession(defaultCitizenSession);
+      setSession(restored);
+      if (!restored.isLoggedIn) {
+        setCurrentRoute('home');
+        setIsLoginOpen(false);
+        setLoginForSpecialRegistration(false);
+        setRegistrationHandoffPending(false);
+        setSpecialRegistrationMessage('');
+        setSpecialRegistrationTrigger(null);
+      }
+    };
+    window.addEventListener('storage', syncSession);
+    return () => window.removeEventListener('storage', syncSession);
+  }, []);
+  useEffect(() => {
+    if (currentRoute === 'dashboard' && !session.isLoggedIn) {
+      setCurrentRoute('home');
+      setLoginInitialView('login');
+      setIsLoginOpen(true);
+    }
+  }, [currentRoute, session.isLoggedIn]);
+  useEffect(() => {
+    if (!registrationHandoffPending) return;
+    const timer = window.setTimeout(() => {
+      setIsLoginOpen(false);
+      setLoginForSpecialRegistration(false);
+      setSpecialRegistrationTrigger(Date.now());
+      setRegistrationHandoffPending(false);
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [registrationHandoffPending]);
 
   const [specialRegistrationTrigger, setSpecialRegistrationTrigger] = useState<number | null>(null);
   const [specialRegistrationMessage, setSpecialRegistrationMessage] = useState('');
@@ -77,7 +118,13 @@ export default function App() {
   const requestSpecialRegistration = () => {
     setSpecialRegistrationMessage('');
     setCurrentRoute('home');
-    setSpecialRegistrationTrigger(Date.now());
+    if (session.isLoggedIn) {
+      setSpecialRegistrationTrigger(Date.now());
+      return;
+    }
+    setLoginForSpecialRegistration(true);
+    setLoginInitialView('login');
+    setIsLoginOpen(true);
   };
 
   // Queries state
@@ -114,6 +161,18 @@ export default function App() {
         onLanguageChange={setLanguage}
         session={session}
         onOpenDashboard={() => setCurrentRoute('dashboard')}
+        onOpenLogin={() => { setLoginForSpecialRegistration(false); setLoginInitialView('login'); setIsLoginOpen(true); }}
+        onOpenRegister={() => { setLoginForSpecialRegistration(false); setLoginInitialView('register'); setIsLoginOpen(true); }}
+        onLogout={() => {
+          forgetCitizenSession();
+          setSession(defaultCitizenSession);
+          setSpecialRegistrationMessage('');
+          setSpecialRegistrationTrigger(null);
+          setLoginForSpecialRegistration(false);
+          setRegistrationHandoffPending(false);
+          setIsLoginOpen(false);
+          setCurrentRoute('home');
+        }}
       />
 
       {/* Main Content Area */}
@@ -134,10 +193,10 @@ export default function App() {
             {/* Everybody sees the guide; users apply through the existing registration modal. */}
             <SpecialRegistrationSection
               language={language}
-              completionMessage={specialRegistrationMessage}
+              completionMessage={session.isLoggedIn ? specialRegistrationMessage : undefined}
               onApply={requestSpecialRegistration}
             />
-            {(
+            {session.isLoggedIn && (
               <CitizenImeiListView
                 language={language}
                 session={session}
@@ -199,13 +258,36 @@ export default function App() {
           />
         )}
         {/* Citizen IMEI list */}
-        {currentRoute === 'dashboard' && (
+        {currentRoute === 'dashboard' && session.isLoggedIn && (
           <div className="w-full"><CitizenImeiListView language={language} session={session} /></div>
         )}
       </main>
 
       {/* Footer */}
       <Footer language={language} onContactUs={() => {setCurrentRoute('contact'); window.scrollTo({top:0});}} />
+      <LoginModal
+        initialView={loginInitialView}
+        isOpen={isLoginOpen}
+        registrationIntent={loginForSpecialRegistration}
+        handoffPending={registrationHandoffPending}
+        language={language}
+        onClose={() => {
+          if (registrationHandoffPending) return;
+          setIsLoginOpen(false);
+          setLoginForSpecialRegistration(false);
+        }}
+        onLoginSuccess={newSessionData => {
+          const citizen: UserSession = { ...defaultCitizenSession, ...newSessionData, isLoggedIn: true };
+          rememberCitizenSession(citizen);
+          setSession(citizen);
+          if (loginForSpecialRegistration) {
+            setCurrentRoute('home');
+            setRegistrationHandoffPending(true);
+          } else {
+            setCurrentRoute('dashboard');
+          }
+        }}
+      />
 
     </div>
   );

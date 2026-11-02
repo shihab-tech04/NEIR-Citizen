@@ -34,14 +34,19 @@ const library = requireText('src/ui/NeirUI.tsx', [
 requireText('src/ui/index.ts', ['UiButton', 'UiInput', 'UiDialog', 'UiDataTable', 'UiStatusBadge']);
 requireText('src/main.tsx', ["import './ui/neir-ui.css';"]);
 const app = read('src/App.tsx');
-assert(!app.includes('LoginModal') && !app.includes('registrationLoginSuccessOpen') &&
-  !app.includes('isLoginOpen'), 'Citizen entry must have no account/login gates');
+assert(app.includes('<LoginModal') && app.includes('onLogout=') &&
+  app.includes('session.isLoggedIn'), 'Restore the existing signed-out and logout journeys');
+requireText('src/components/Header.tsx', ['onLogout', 'onOpenLogin', 'session.isLoggedIn']);
+requireText('src/utils/neirSpecialRegistrationApi.ts', ['mobile:input.mobile', "('citizen_list',{mobile})"]);
+requireText('supabase/migrations/20261102081500_neir_citizen_special_20_slot_limit.sql', [
+  "status <> 'Accepted'", 'pg_advisory_xact_lock', '>= 20'
+]);
 requireText('src/components/HomeHero.tsx', ['<UiInput', '<UiButton']);
 
 const contact = requireText('src/components/ContactUsView.tsx', ['<UiInput', '<UiSelect', '<UiTextarea', '<UiButton', 'neir-ui-choice-tab']);
 assert(!contact.includes('border-[8px]'), 'Contact tabs must not have oversized independent selection borders');
 const profile = requireText('src/components/CitizenImeiListView.tsx', [
-  '<UiInput', '<UiDataTable', '<UiStatusBadge', '<UiDialog', 'onRowClick={setApplicationDetail}',
+  '<UiInput', '<UiDataTable', '<UiStatusBadge', '<UiDialog', 'onRowClick={setApplicationDetail}', '20 - activeApplicationCount',
 ]);
 assert(!profile.includes('<table className="neir-special-table">'), 'Active application table must use UiDataTable');
 const wizard = requireText('src/components/ProfileSpecialRegistrationModal.tsx', [
