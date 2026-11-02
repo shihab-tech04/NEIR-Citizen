@@ -54,7 +54,7 @@ jobs:
           assert 'user-guides' in js and 'contact-us' in js, 'Subpage code missing'
           assert 'You are ready to apply!' in js and 'Proceed to special registration' in js, 'Approved login-success modal missing'
           assert 'Next: Enter your device IMEI and how you received it' not in js, 'Old login-success Next panel returned'
-          (root/'RELEASE_COMMIT.txt').write_text(os.environ['GITHUB_SHA']+'\\n')
+          (root/'RELEASE_COMMIT.txt').write_text(os.environ['GITHUB_SHA'] + chr(10))
           (root/'404.html').write_text(html)
           (root/'.nojekyll').touch()
           print('PASS: compiled base, image references and SPA fallback')
@@ -130,7 +130,7 @@ jobs:
           echo "PASS: source BTRC logo and complete password reset guide publicly available"
           for attempt in $(seq 1 15); do
             curl -fsSL --max-time 20 "$url/RELEASE_COMMIT.txt?sha=$GITHUB_SHA" -o /tmp/neir-live-version.txt || true
-            published_sha="$(tr -d '\\r\\n' </tmp/neir-live-version.txt)"
+            published_sha="$(tr -d '[:space:]' </tmp/neir-live-version.txt)"
             if [[ "$published_sha" == "$GITHUB_SHA" ]]; then
               echo "PASS: public Pages serves exact source SHA $GITHUB_SHA"
               break
@@ -141,7 +141,7 @@ jobs:
             fi
             sleep 4
           done
-          js_asset="$(grep -oE 'src="/NEIR-Citizen/assets/[^"]+\\.js"' /tmp/neir-live.html | head -1 | cut -d'"' -f2)"
+          js_asset="$(grep -oE 'src="/NEIR-Citizen/assets/[^"]+[.]js"' /tmp/neir-live.html | head -1 | cut -d'"' -f2)"
           test -n "$js_asset"
           curl -fsSL --max-time 20 "$url/${js_asset#/NEIR-Citizen/}" -o /tmp/neir-live-bundle.js
           grep -Fq 'You are ready to apply!' /tmp/neir-live-bundle.js
