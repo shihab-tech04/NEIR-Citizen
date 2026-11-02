@@ -37,6 +37,20 @@ const app = read('src/App.tsx');
 assert(app.includes('<LoginModal') && app.includes('onLogout=') &&
   app.includes('session.isLoggedIn'), 'Restore the existing signed-out and logout journeys');
 requireText('src/components/Header.tsx', ['onLogout', 'onOpenLogin', 'session.isLoggedIn']);
+const loginModal = read('src/components/LoginModal.tsx');
+requireText('src/App.tsx', [
+  'setGuestRegistrationIntroOpen(true)', 'setRegistrationLoginSuccessOpen(true)',
+  'What is Special Registration?', 'Who may need to apply?', 'Proceed to login',
+  'Login successful', 'Proceed to special registration', '<NeirModalFrame',
+]);
+assert(!loginModal.includes('Log in to apply for Special Registration'),
+  'Obsolete blue registration notice must not return to Login');
+assert(!app.includes('registrationHandoffPending'),
+  'Guest must explicitly proceed from success to the existing registration form');
+requireText('src/index.css', [
+  '.neir-shared-backdrop', '.neir-registration-intro', '.neir-registration-success',
+]);
+
 requireText('src/utils/neirSpecialRegistrationApi.ts', ['mobile:input.mobile', "('citizen_list',{mobile})"]);
 requireText('supabase/migrations/20261102081500_neir_citizen_special_20_slot_limit.sql', [
   "status <> 'Accepted'", 'pg_advisory_xact_lock', '>= 20'
