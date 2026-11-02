@@ -45,6 +45,25 @@ const adminRow=(r:any)=>({
   brand:'',model:'Handset',requesterName:'',requesterNid:'',
   customsChallanNo:'',attachments:Array.isArray(r.documents)?r.documents:[],
 });
+
+const titles:Record<string,string>={
+ commercialInvoice:'Commercial Invoice',courierBill:'Courier Bill',packingList:'Packing List',
+ donorPassport:'Donor Passport',donorArrivalSeal:'Arrival Seal',imeiBox:'IMEI Box',
+ giftDeed:'Gift Deed',passportInfo:'Passport Information',
+ arrivalSeal:'Arrival Seal',travelDocument:'Travel Document'
+};
+const signedDocument=async(path:string)=>{
+  const resp=await fetch(URL+'/storage/v1/object/sign/neir-special-documents/'+path,{
+    method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({expiresIn:90})
+  });
+  if(!resp.ok)throw Error('Unable to open uploaded file.');
+  const result=await resp.json();
+  const signed=result.signedURL||result.signedUrl;
+  if(typeof signed!=='string'||!signed)throw Error('Unable to open uploaded file.');
+  return signed.startsWith('https://')?signed:URL+'/storage/v1'+signed;
+};
+
 Deno.serve(async(req:Request)=>{
   const origin=req.headers.get('origin');
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors(origin)});
@@ -70,15 +89,30 @@ Deno.serve(async(req:Request)=>{
       const rows=await requestDB('neir_prototype_special_applications?select=id,citizen_mobile,imei,reason,status,arrival_date,remarks,documents,submitted_at,updated_at&id=eq.'+encodeURIComponent(payload.id));
       if(!rows.length)return json({error:'Application not found'},404,origin);
       const row=adminRow(rows[0]);
-      // A checklist is persisted, not the uploaded files or private identity data.
-      return json({record:{...row,documents:row.documents.map((type:string,index:number)=>({
-        id:String(index+1),type,title:{
-          commercialInvoice:'Commercial Invoice',courierBill:'Courier Bill',packingList:'Packing List',
-          donorPassport:'Donor Passport',donorArrivalSeal:'Arrival Seal',imeiBox:'IMEI Box',
-          giftDeed:'Gift Deed',passportInfo:'Passport Information',
-          arrivalSeal:'Arrival Seal',travelDocument:'Travel Document'
-        }[type]||type,checked:true
-      }))}},200,origin);
+      // Mirror the exact documents already stored by the earlier Citizen upload flow.
+      // A matching UUID alone is insufficient: also verify the submitted IMEI.
+      const legacy=await requestDB('neir_special_registrations?select=id,imei&id=eq.'+encodeURIComponent(payload.id));
+      const existing=legacy[0]?.imei===row.imei
+        ?await requestDB('neir_special_documents?select=id,document_type,file_name,mime_type,size_bytes,storage_path,uploaded_at&registration_id=eq.'+encodeURIComponent(payload.id)+'&order=uploaded_at.asc')
+        :[];
+      const matchingFiles=new Map(existing.map((d:any)=>[d.document_type,d]));
+      const manifest=Array.isArray(row.documents)?row.documents:[];
+      const documents=await Promise.all(manifest.map(async(item:any,index:number)=>{
+        const type=typeof item==='string'?item:item.type;
+        const legacyDoc=matchingFiles.get(type) as any;
+        const saved=typeof item==='object'&&item?.path?item:null;
+        const path=saved?.path||legacyDoc?.storage_path;
+        const filename=saved?.name||legacyDoc?.file_name;
+        const size=saved?.size||legacyDoc?.size_bytes;
+        return {id:saved?.path||legacyDoc?.id||String(index+1),type,title:titles[type]||type,
+          checked:true,available:!!path,filename,
+          size:size?(Number(size)/1024).toFixed(1)+' KB':undefined,
+          date:saved?.date||legacyDoc?.uploaded_at,
+          mime:saved?.mime||legacyDoc?.mime_type,
+          ...(path?{uri:await signedDocument(path)}:{})
+        };
+      }));
+      return json({record:{...row,documents}},200,origin);
     }
     if(action==='submit'){
       const mobile=payload.mobile,imei=payload.imei,reason=payload.reason,arrivalDate=payload.arrivalDate,docTypes=payload.documents;
