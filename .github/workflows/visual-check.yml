@@ -90,6 +90,10 @@ jobs:
             if(!(await desktop.getByRole('heading',{name:"We're here to help!"}).isVisible())) throw Error('Contact reload lost content');
             await desktop.screenshot({path:'screenshots/neir-contact-1918.png',fullPage:false});
             await desktop.goto('http://127.0.0.1:4567/', {waitUntil:'networkidle'});
+            await desktop.evaluate(() => localStorage.setItem('neir-citizen-demo-session-v1', JSON.stringify({
+              version:1,mobile:'01711223344',name:'Md. Zahid Hasan'
+            })));
+            await desktop.reload({waitUntil:'networkidle'});
             await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
             await desktop.screenshot({path:'screenshots/neir-profile-menu-1918.png',fullPage:false});
           } finally {await browser.close()}
