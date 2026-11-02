@@ -70,6 +70,11 @@ try{
   await login(desktop);
   const success=desktop.getByRole('dialog',{name:'Special Registration login successful'});
   await visible(success,'explicit successful-login confirmation');
+  await visible(success.getByText('You are ready to apply!'),'approved confirmation headline');
+  await visible(success.locator('.neir-registration-success-mark'),'approved confirmation icon');
+  assert.equal(await success.locator('.neir-registration-success-next').count(),0,
+    'removed Next-step panel must not return to the approved success modal');
+  await screenshot(desktop,'02-login-success-approved');
   assert.equal(await desktop.getByRole('dialog',{name:'Special Registration',exact:true}).count(),0,
     'form must wait for Proceed to special registration');
   await success.getByRole('button',{name:'Proceed to special registration'}).click();
