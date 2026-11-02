@@ -36,8 +36,8 @@ const localDate = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-type Props = { initialImei?: string; onClose: () => void; onComplete?: (message: string) => void };
-export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', onClose, onComplete }) => {
+type Props = { initialImei?: string; citizenMobile: string; onClose: () => void; onComplete?: (message: string) => void };
+export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', citizenMobile, onClose, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
@@ -147,7 +147,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     setFeedback('');
     try {
       const response = await submitNeirSpecialRegistration({
-        imei:imei.trim(),reason,arrivalDate:arrival,
+        imei:imei.trim(),reason,arrivalDate:arrival,mobile:citizenMobile,
         passportNumber:passport.trim(),files
       });
       setSubmitted(true);
