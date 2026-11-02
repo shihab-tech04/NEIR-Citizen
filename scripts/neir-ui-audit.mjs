@@ -47,6 +47,8 @@ assert(!loginModal.includes('Log in to apply for Special Registration'),
   'Obsolete blue registration notice must not return to Login');
 assert(!app.includes('registrationHandoffPending'),
   'Guest must explicitly proceed from success to the existing registration form');
+assert(!app.includes('neir-registration-success-next') && !app.includes('Next: Enter your device IMEI and how you received it'),
+  'Previously removed Next-step panel must not return to Login successful modal');
 requireText('src/index.css', [
   '.neir-shared-backdrop', '.neir-registration-intro', '.neir-registration-success',
 ]);
