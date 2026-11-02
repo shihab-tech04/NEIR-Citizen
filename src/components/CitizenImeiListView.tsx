@@ -115,17 +115,21 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [applicationError, setApplicationError] = useState('');
   const [applicationDetail, setApplicationDetail] = useState<SpecialApplication | null>(null);
   const observedRegistrationTrigger = useRef<number | null>(null);
+  // Only acceptance releases a slot; rejected submissions remain in the counted history.
+  const activeApplicationCount = specialApplications.filter(application => application.status !== 'Accepted').length;
+  const availableSlots = Math.max(0, 20 - activeApplicationCount);
+  const reachedLimit = availableSlots === 0;
 
   useEffect(() => { setProfileName(session.name); setProfileDraft(session.name); }, [session.name]);
   useEffect(() => {
     let active = true;
-    listCitizenSpecialRegistrations().then(records => {
+    listCitizenSpecialRegistrations(session.mobile).then(records => {
       if (active) { setSpecialApplications(records); setApplicationError(''); }
     }).catch(error => { if (active) setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); });
     return () => { active = false; };
-  }, [result]);
+  }, [result, session.mobile]);
   const refreshApplications = async () => {
-    try { setSpecialApplications(await listCitizenSpecialRegistrations()); setApplicationError(''); }
+    try { setSpecialApplications(await listCitizenSpecialRegistrations(session.mobile)); setApplicationError(''); }
     catch (error) { setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); }
   };
 
@@ -134,8 +138,12 @@ export const CitizenImeiListView: React.FC<Props> = ({
     if (registrationTrigger === null) { observedRegistrationTrigger.current = null; return; }
     if (registrationOnly && registrationTrigger !== observedRegistrationTrigger.current) {
       observedRegistrationTrigger.current = registrationTrigger;
-      setResult('');
-      setWizard({ source: 'home', imei: '' });
+      if (reachedLimit) {
+        setResult(isBn ? '২০টি আবেদন পূর্ণ হয়েছে। নতুন আবেদন করতে একটি আবেদন গ্রহণ হওয়া পর্যন্ত অপেক্ষা করুন।' : '20 applications are in use. A new slot opens after an application is accepted.');
+      } else {
+        setResult('');
+        setWizard({ source: 'home', imei: '' });
+      }
       onRegistrationHandled?.();
     }
   }, [registrationOnly, registrationTrigger, onRegistrationHandled]);
@@ -172,7 +180,12 @@ export const CitizenImeiListView: React.FC<Props> = ({
     setSearchedImei(clean);
   };
   const startProfileRegistration = (imei: string) => {
-    setResult(''); setDetail(null);
+    setDetail(null);
+    if (reachedLimit) {
+      setResult(isBn ? '২০টি আবেদন পূর্ণ হয়েছে। নতুন আবেদন করতে একটি আবেদন গ্রহণ হওয়া পর্যন্ত অপেক্ষা করুন।' : '20 applications are in use. A new slot opens after an application is accepted.');
+      return;
+    }
+    setResult('');
     setWizard({ source: 'profile', imei });
   };
   const completeRegistration = (message: string) => {
@@ -323,9 +336,13 @@ export const CitizenImeiListView: React.FC<Props> = ({
             <UiButton variant="quiet" type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</UiButton></p>}
           {result && <p role="status" className="neir-profile-feedback">{result}</p>}
         </section>
-        {specialApplications.length > 0 && <section className="neir-special-applications" aria-labelledby="neir-special-applications-title">
+        {<section className="neir-special-applications" aria-labelledby="neir-special-applications-title">
           <div className="neir-special-table-heading">
-            <h2 id="neir-special-applications-title">{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Special Registration applications'} ({specialApplications.length})</h2>
+            <div>
+              <h2 id="neir-special-applications-title">{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Special Registration applications'} ({specialApplications.length})</h2>
+              <p className="neir-special-quota" role="status">{isBn ? `${activeApplicationCount}/২০টি আবেদন ব্যবহৃত · ${availableSlots}টি খালি` : `${activeApplicationCount}/20 applications in use · ${availableSlots} available`}</p>
+              {reachedLimit && <p className="neir-special-quota-warning">{isBn ? 'একটি আবেদন গ্রহণ হলে নতুন IMEI যোগ করতে পারবেন।' : 'You can apply for another IMEI after an application is accepted.'}</p>}
+            </div>
             <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</UiButton>
           </div>
           <UiDataTable
@@ -376,7 +393,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
     {applicationDetail && <UiDialog title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
       <dl className="neir-shared-kv"><dt>Reference</dt><dd>{applicationDetail.id}</dd><dt>IMEI</dt><dd>{applicationDetail.imei}</dd><dt>Status</dt><dd>{applicationDetail.status}</dd><dt>Applied on</dt><dd>{applicationDetail.appliedAt ? new Date(applicationDetail.appliedAt).toLocaleString() : '—'}</dd><dt>Arrival date</dt><dd>{applicationDetail.arrivalDate}</dd><dt>Remarks</dt><dd>{applicationDetail.remarks || '—'}</dd></dl>
     </UiDialog>}
-    {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei}
+    {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei} citizenMobile={session.mobile}
       onClose={() => setWizard(null)} onComplete={completeRegistration} />}
   </>;
 };
