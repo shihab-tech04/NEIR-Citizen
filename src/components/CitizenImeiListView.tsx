@@ -132,6 +132,21 @@ export const CitizenImeiListView: React.FC<Props> = ({
     try { setSpecialApplications(await listCitizenSpecialRegistrations(session.mobile)); setApplicationError(''); }
     catch (error) { setApplicationError(error instanceof Error ? error.message : 'Unable to load applications.'); }
   };
+  // Admin decisions are reflected without a full profile reload. Keep the
+  // explicit Refresh control and recheck when returning to this tab.
+  useEffect(() => {
+    const sync = () => { if (document.visibilityState === 'visible') void refreshApplications(); };
+    const onFocus = () => { void refreshApplications(); };
+    const timer = window.setInterval(sync, 30000);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', sync);
+    };
+  }, [session.mobile]);
+
 
   // Homepage and My Profile share the same progressive registration modal.
   useEffect(() => {
