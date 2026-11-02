@@ -41,8 +41,8 @@ const publicRow=(r:any)=>({
   documents:Array.isArray(r.documents)?r.documents:[]
 });
 const adminRow=(r:any)=>({
-  ...publicRow(r),sl:0,date:r.submitted_at,citizenMobile:r.citizen_mobile,
-  brand:'',model:'Handset',requesterName:r.citizen_mobile,requesterNid:'',
+  ...publicRow(r),sl:0,date:r.submitted_at,
+  brand:'',model:'Handset',requesterName:'',requesterNid:'',
   customsChallanNo:'',attachments:Array.isArray(r.documents)?r.documents:[],
 });
 Deno.serve(async(req:Request)=>{
