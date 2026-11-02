@@ -42,6 +42,29 @@ jobs:
           done
       - name: Verify no-login Special Registration journeys and capture screens
         run: node scripts/neir-public-special-journeys.mjs
+      - name: Verify deployed Citizen/Admin Special Registration service
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const url='https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-prototype-special';
+          const call=async(action,extra={})=>{
+            const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action,...extra})});
+            return {status:response.status,payload:await response.json()};
+          };
+          const citizen=await call('citizen_list',{mobile:'01711223344'});
+          assert.equal(citizen.status,200,'citizen reads shared SQL list');
+          assert(Array.isArray(citizen.payload.items),'citizen list array');
+          const admin=await call('admin_list');
+          assert.equal(admin.status,200,'Admin reads the same SQL table');
+          assert(Array.isArray(admin.payload.items),'Admin list array');
+          const invalid=await call('citizen_list',{mobile:'wrong'});
+          assert.equal(invalid.status,400,'citizen list requires a valid account mobile');
+          const invalidSubmit=await call('submit',{imei:'23456789012345',reason:'airmail',
+            arrivalDate:'2026-10-09',documents:['commercialInvoice']});
+          assert.equal(invalidSubmit.status,400,'anonymous submission lacks citizen identifier');
+          console.log('PASS deployed Citizen/Admin list transport and scoped submission contract');
+          JS
       - name: Preserve screenshots and failure evidence
         if: always()
         uses: actions/upload-artifact@v4
