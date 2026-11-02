@@ -144,10 +144,10 @@ Deno.serve(async(req:Request)=>{
     }
     if(action==='submit'){
       const {mobile,imei,reason,arrivalDate,files}=payload;
-      if(typeof mobile!=='string'||!/^01\\d{9}$/.test(mobile)||
+      if(typeof mobile!=='string'||!/^01\d{9}$/.test(mobile)||
         typeof imei!=='string'||!/^[0-9]{14,15}$/.test(imei)||
         typeof reason!=='string'||!allowedFiles[reason]||
-        typeof arrivalDate!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(arrivalDate)||
+        typeof arrivalDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(arrivalDate)||
         arrivalDate>new Date().toISOString().slice(0,10)||
         !Array.isArray(files)||files.length<1||files.length>8||
         files.length>allowedFiles[reason].length)
