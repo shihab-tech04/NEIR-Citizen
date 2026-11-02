@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/pages-prototype.yml'
       - 'src/**'
+      - 'supabase/functions/neir-prototype-special/**'
       - 'public/**'
       - 'index.html'
       - 'vite.config.ts'
