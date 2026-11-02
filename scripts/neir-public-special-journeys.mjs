@@ -24,6 +24,11 @@ const registerApi=async page=>{
       body={items:records.filter(r=>r.citizenMobile===req.mobile)};
     }else if(req.action==='submit'){
       assert.equal(req.mobile,mobileNumber,'submit links IMEI to the logged-in citizen');
+      assert(Array.isArray(req.files)&&req.files.length===1,'citizen sends the uploaded document, not merely checklist titles');
+      assert.equal(req.files[0].type,'commercialInvoice');
+      assert.equal(req.files[0].name,'invoice.png');
+      assert.equal(req.files[0].mime,'image/png');
+      assert.equal(Buffer.from(req.files[0].data,'base64').length,req.files[0].size,'exact submitted file bytes are preserved');
       const active=records.filter(r=>r.status!=='Accepted'&&r.citizenMobile===req.mobile);
       if(active.length>=20){code=409;body={error:'The limit is 20 active applications.'};}
       else{
