@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight,Info} from 'lucide-react';
+import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
 interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
 type View='login'|'register'|'forgot';
@@ -89,13 +89,6 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
       <button aria-label="Close" onClick={onClose} type="button"><X size={16}/></button>
     </div>
    </div>
-   {registrationIntent && <div className="neir-login-registration-message" role="note">
-     <Info size={20} aria-hidden="true"/>
-     <div>
-       <strong>{language === 'bn' ? 'বিশেষ নিবন্ধনের আবেদন করতে আগে লগইন করুন' : 'Log in to apply for Special Registration'}</strong>
-       <p>{language === 'bn' ? 'লগইন বা অ্যাকাউন্ট তৈরি করার পর আপনার বিশেষ নিবন্ধন ফর্ম স্বয়ংক্রিয়ভাবে খুলবে।' : 'Once you sign in or create an account, your Special Registration form will open automatically.'}</p>
-     </div>
-   </div>}
    {handoffPending && <p className="neir-login-transition-status" role="status">{language === 'bn' ? 'আবেদন ফর্ম খোলা হচ্ছে…' : 'Opening your Special Registration form…'}</p>}
    <div className="neir-original-dialog-body">
     {view==='login' && <form onSubmit={submitLogin} noValidate>

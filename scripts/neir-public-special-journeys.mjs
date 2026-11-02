@@ -58,9 +58,23 @@ try{
   await screenshot(desktop,'01-signed-out-home');
   await desktop.locator('.neir-special-registration-section')
     .getByRole('button',{name:'Apply for Special Registration'}).click();
+  const intro=desktop.getByRole('dialog',{name:'About Special Registration'});
+  await visible(intro,'approved eligibility explanation before login');
+  await visible(intro.getByText('What is Special Registration?'),'special registration explanation');
+  await visible(intro.getByText('Who may need to apply?'),'eligibility information');
+  assert.equal(await desktop.getByRole('dialog',{name:'Login',exact:true}).count(),0,
+    'guest must not land directly on login');
+  await intro.getByRole('button',{name:'Proceed to login'}).click();
+  assert.equal(await desktop.getByText('Log in to apply for Special Registration').count(),0,
+    'obsolete login notice must stay removed');
   await login(desktop);
+  const success=desktop.getByRole('dialog',{name:'Special Registration login successful'});
+  await visible(success,'explicit successful-login confirmation');
+  assert.equal(await desktop.getByRole('dialog',{name:'Special Registration',exact:true}).count(),0,
+    'form must wait for Proceed to special registration');
+  await success.getByRole('button',{name:'Proceed to special registration'}).click();
   const wizard=desktop.getByRole('dialog',{name:'Special Registration',exact:true});
-  await visible(wizard,'special registration after existing login');
+  await visible(wizard,'special registration after explicit success handoff');
   assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3);
   await wizard.locator('#neir-v7-imei').fill('23456789012345');
   await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
@@ -102,7 +116,7 @@ try{
   const geometry=await mobile.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert(geometry.scroll<=geometry.w+4,'mobile overflow: '+JSON.stringify(geometry));
   await screenshot(mobile,'03-mobile-profile-and-quota');
-  console.log('PASS signed-out desktop/mobile, prior login, SQL-synced citizen submissions/list, 20 slot cap, accepted release, logout');
+  console.log('PASS approved guest intro → login → success → registration, signed-out desktop/mobile, SQL-synced citizen submissions/list, 20 slot cap, accepted release, logout');
 }finally{
   await browser.close();
 }

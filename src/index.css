@@ -449,3 +449,79 @@ button,input,select,textarea{font:inherit}
 @keyframes neir-auth-leave{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-10px) scale(.985)}}
 @media(max-width:359px){.neir-login-registration-message{margin:0 16px 12px;padding:12px;gap:9px}}
 @media(prefers-reduced-motion:reduce){.neir-auth-for-registration .neir-original-dialog,.neir-auth-handoff-exit .neir-original-dialog{animation:none!important}}
+
+
+/* Approved Special Registration guest intro and login-success handoff.
+   Match the existing Poppins registration dialog; keep unrelated UI untouched. */
+.neir-shared-backdrop{
+  position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;
+  padding:16px;background:rgba(14,18,25,.55);font-family:Poppins,Arial,sans-serif;
+  animation:neir-v7-overlay-in .22s ease-out both;
+}
+.neir-shared-dialog{
+  box-sizing:border-box;width:min(600px,100%);max-height:min(92dvh,960px);
+  min-width:0;display:flex;flex-direction:column;overflow:hidden;
+  background:#fff;color:#202020;border-radius:16px;
+  box-shadow:0 14px 54px rgba(20,35,52,.16);font-size:16px;
+  animation:neir-auth-enter .22s cubic-bezier(.2,.7,.3,1) both;
+}
+.neir-shared-dialog *{box-sizing:border-box}
+.neir-shared-dialog--compact{width:min(440px,100%)}
+.neir-shared-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  flex:none;padding:24px;border-bottom:1px solid #e3dbd8;
+}
+.neir-shared-header h2{font-size:24px;line-height:30px;font-weight:400;color:#000;margin:0}
+.neir-shared-close{
+  width:28px;height:28px;flex:none;display:grid;place-items:center;
+  border:0;background:transparent;color:#202020;cursor:pointer;padding:0;
+}
+.neir-shared-close:hover{color:#00838f}
+.neir-shared-close:focus-visible,.neir-shared-button:focus-visible{
+  outline:3px solid #00838f;outline-offset:3px;
+}
+.neir-shared-body{padding:24px;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.neir-shared-footer{display:flex;flex:none;padding:16px 24px 24px;border-top:1px solid #e3dbd8}
+.neir-shared-button{
+  display:inline-flex;justify-content:center;align-items:center;gap:12px;
+  min-height:52px;padding:12px 24px;border:1px solid var(--neir-primary-600);
+  border-radius:999px;background:var(--neir-primary-600);color:#fff;
+  font:inherit;font-size:16px;font-weight:600;text-align:center;cursor:pointer;
+}
+.neir-shared-button:hover{background:var(--neir-primary-900)}
+.neir-registration-full-width{width:100%}
+.neir-registration-intro{display:flex;flex-direction:column;gap:12px}
+.neir-registration-intro h3{font-size:18px;font-weight:600;line-height:1.45;color:#202c3c;margin:0}
+.neir-registration-intro p{font-size:15px;line-height:1.65;color:#334155;margin:0 0 12px}
+.neir-registration-intro .neir-registration-intro-note{
+  margin:2px 0 0;padding:14px 16px;border-left:3px solid var(--neir-primary-600);
+  border-radius:8px;background:#f5fbfc;color:#31505d;
+}
+.neir-registration-success{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.neir-registration-success-mark{
+  width:72px;height:72px;display:grid;place-items:center;border-radius:50%;
+  background:#e5f7f8;color:#00838f;
+}
+.neir-registration-success h3{margin:0;font-size:21px;font-weight:600;line-height:1.4;color:#152d37}
+.neir-registration-success>p{margin:0;font-size:15px;line-height:1.6;color:#475569}
+.neir-registration-success-next{
+  display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;
+  padding:14px;border:1px solid #d6e0e4;border-radius:12px;background:#f9fcfd;
+  color:#31505d;text-align:left;font-size:14px;line-height:1.5;
+}
+.neir-registration-success-step{
+  display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;
+  background:#e0f7fa;color:#00838f;font-weight:700;
+}
+.neir-registration-success-next svg{flex:none;margin-left:auto}
+@media(max-width:767px){
+  .neir-shared-backdrop{padding:0;align-items:flex-end}
+  .neir-shared-dialog{width:100%;max-height:90dvh;border-radius:16px 16px 0 0}
+  .neir-shared-header{padding:18px 20px}
+  .neir-shared-header h2{font-size:21px}
+  .neir-shared-body{padding:20px}
+  .neir-shared-footer{padding:14px 20px max(20px,env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){
+  .neir-shared-backdrop,.neir-shared-dialog{animation:none}
+}
