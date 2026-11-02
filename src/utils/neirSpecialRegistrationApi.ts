@@ -1,4 +1,4 @@
-// Shared Special Registration transport for the public, identity-free workflow.
+// Shared Special Registration transport for the existing citizen-profile workflow.
 // The API records the document checklist, not uploaded identity documents.
 const ENDPOINT = 'https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-prototype-special';
 
@@ -27,16 +27,16 @@ export async function neirSpecialRequest<T>(action:string,payload:Record<string,
   return result as T;
 }
 export async function submitNeirSpecialRegistration(input:{
-  imei:string;reason:string;arrivalDate:string;
+  imei:string;reason:string;arrivalDate:string;mobile:string;
   passportNumber:string;files:Record<string,File>;
 }):Promise<{record:{id:string;imei:string;status:string};message:string}>{
   const documents=Object.keys(input.files);
   return neirSpecialRequest('submit',{
     imei:input.imei,reason:input.reason,
-    arrivalDate:input.arrivalDate,documents
+    arrivalDate:input.arrivalDate,mobile:input.mobile,documents
   });
 }
-export async function listCitizenSpecialRegistrations():Promise<SpecialApplication[]>{
-  const response=await neirSpecialRequest<{items:SpecialApplication[]}>('citizen_list');
+export async function listCitizenSpecialRegistrations(mobile:string):Promise<SpecialApplication[]>{
+  const response=await neirSpecialRequest<{items:SpecialApplication[]}>('citizen_list',{mobile});
   return response.items;
 }
