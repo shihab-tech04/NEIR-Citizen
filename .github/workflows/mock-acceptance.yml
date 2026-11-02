@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/**'
       - 'scripts/neir-public-special-journeys.mjs'
+      - 'scripts/neir-special-validation.test.mjs'
+      - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
   pull_request:
@@ -12,6 +14,8 @@ on:
     paths:
       - 'src/**'
       - 'scripts/neir-public-special-journeys.mjs'
+      - 'scripts/neir-special-validation.test.mjs'
+      - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
 permissions:
@@ -30,6 +34,8 @@ jobs:
           npm install --no-audit --no-fund
           npm run lint
           npm run build
+      - name: Check actual Edge handler mobile and date validators
+        run: node scripts/neir-special-validation.test.mjs
       - name: Install Chromium for screenshot and journey tests
         run: |
           npm install --no-save playwright@1.56.1
@@ -76,6 +82,22 @@ jobs:
           const invalidSubmit=await call('submit',{imei:'23456789012345',reason:'airmail',
             arrivalDate:'2026-10-09',documents:['commercialInvoice']});
           assert.equal(invalidSubmit.status,400,'anonymous submission lacks citizen identifier');
+          // Safe, non-persisting probes: each valid mobile/date reaches missing-document
+          // validation before any file upload or SQL insert can occur.
+          for (const [reason,documentType] of [
+            ['airmail','courierBill'],
+            ['gift','giftDeed'],
+            ['foreign-tour','arrivalSeal']
+          ]) {
+            const probe=await call('submit',{
+              mobile:'01711223344',imei:'23456789012345',
+              reason,arrivalDate:'2026-10-09',files:[{type:documentType}]
+            });
+            assert.equal(probe.status,400,reason+' incomplete documents must not create an application');
+            assert.equal(probe.payload.error,'Required uploaded documents are missing.',
+              reason+' valid mobile/date must reach the document rules (regression: double-escaped regex)');
+          }
+          console.log('PASS: deployed mobile/date validation reaches document-specific rules for all acquisition methods');
           console.log('PASS deployed Citizen/Admin list transport and scoped submission contract');
           JS
       - name: Preserve screenshots and failure evidence
