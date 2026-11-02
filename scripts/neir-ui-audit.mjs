@@ -54,6 +54,11 @@ requireText('src/index.css', [
 ]);
 
 requireText('src/utils/neirSpecialRegistrationApi.ts', ['mobile:input.mobile', "('citizen_list',{mobile})"]);
+requireText('src/utils/neirSpecialRegistrationApi.ts', ['reader.readAsDataURL(file)', 'files\n  });']);
+const transport=read('supabase/functions/neir-prototype-special/index.ts');
+assert(transport.includes('neir_special_documents?select') && transport.includes('signedDocument(path)'), 'Admin must read the original uploaded Citizen documents');
+assert(transport.includes('neir_prototype_submit_special_citizen_files') && transport.includes('uploadPrivate(path,bytes'), 'New Citizen submissions must persist file bytes');
+requireText('supabase/migrations/20261102040500_neir_prototype_special_file_mirror.sql', ['neir_prototype_submit_special_citizen_files','neir_prototype_submit_special_citizen(', 'SET documents = p_files']);
 requireText('supabase/migrations/20261102081500_neir_citizen_special_20_slot_limit.sql', [
   "status <> 'Accepted'", 'pg_advisory_xact_lock', '>= 20'
 ]);
