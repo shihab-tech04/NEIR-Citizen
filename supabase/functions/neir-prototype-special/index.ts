@@ -1,6 +1,6 @@
-// Public, identity-free Special Registration workflow.
-// Stores only an IMEI, reason, status, arrival date and document checklist.
-// Citizen identity and attachment bytes remain outside this anonymous data lane.
+// Shared Citizen/Admin Special Registration workflow.
+// Stores the existing citizen mobile for per-citizen quota and history.
+// Attachment bytes remain outside this checklist-only lane.
 const URL = Deno.env.get('SUPABASE_URL') || '';
 const KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const origins = new Set([
@@ -25,7 +25,9 @@ const requestDB=async(path:string,method='GET',body?:unknown)=>{
   const payload=await res.text();
   if(!res.ok) {
     console.error('Special Registration SQL operation',res.status,payload.slice(0,240));
-    const conflict=res.status===409||payload.includes('"23505"');
+    if(payload.includes('SPECIAL_REGISTRATION_LIMIT_REACHED'))
+      throw new Error('The limit is 20 active applications. Another IMEI can be submitted after an existing application is accepted.');
+    const conflict=res.status===409||payload.includes('"23505"')||payload.includes('already has');
     throw new Error(conflict?'This IMEI already has a Special Registration application.':'Unable to save Special Registration. Please retry.');
   }
   return payload?JSON.parse(payload):null;
@@ -39,8 +41,8 @@ const publicRow=(r:any)=>({
   documents:Array.isArray(r.documents)?r.documents:[]
 });
 const adminRow=(r:any)=>({
-  ...publicRow(r),sl:0,date:r.submitted_at,
-  brand:'',model:'Handset',requesterName:'',requesterNid:'',
+  ...publicRow(r),sl:0,date:r.submitted_at,citizenMobile:r.citizen_mobile,
+  brand:'',model:'Handset',requesterName:r.citizen_mobile,requesterNid:'',
   customsChallanNo:'',attachments:Array.isArray(r.documents)?r.documents:[],
 });
 Deno.serve(async(req:Request)=>{
@@ -55,13 +57,17 @@ Deno.serve(async(req:Request)=>{
     if(!payload || typeof payload.action!=='string')return json({error:'Missing action'},400,origin);
     const action=payload.action;
     if(action==='list' || action==='admin_list' || action==='citizen_list'){
-      const rows=await requestDB('neir_prototype_special_applications?select=id,imei,reason,status,arrival_date,remarks,documents,submitted_at,updated_at&order=submitted_at.desc&limit=250');
+      const citizen=action==='citizen_list';
+      if(citizen && (typeof payload.mobile!=='string'||!/^01\d{9}$/.test(payload.mobile)))
+        return json({error:'Select a citizen account to view registrations.'},400,origin);
+      const filtered=citizen?'&citizen_mobile=eq.'+encodeURIComponent(payload.mobile):'';
+      const rows=await requestDB('neir_prototype_special_applications?select=id,citizen_mobile,imei,reason,status,arrival_date,remarks,documents,submitted_at,updated_at&order=submitted_at.desc'+filtered+'&limit=500');
       return json({items:rows.map(action==='admin_list'?adminRow:publicRow)},200,origin);
     }
     if(action==='get'||action==='admin_details'){
       if(typeof payload.id!=='string'||!/^[a-f0-9-]{36}$/i.test(payload.id))
         return json({error:'Invalid application'},400,origin);
-      const rows=await requestDB('neir_prototype_special_applications?select=id,imei,reason,status,arrival_date,remarks,documents,submitted_at,updated_at&id=eq.'+encodeURIComponent(payload.id));
+      const rows=await requestDB('neir_prototype_special_applications?select=id,citizen_mobile,imei,reason,status,arrival_date,remarks,documents,submitted_at,updated_at&id=eq.'+encodeURIComponent(payload.id));
       if(!rows.length)return json({error:'Application not found'},404,origin);
       const row=adminRow(rows[0]);
       // A checklist is persisted, not the uploaded files or private identity data.
@@ -75,15 +81,16 @@ Deno.serve(async(req:Request)=>{
       }))}},200,origin);
     }
     if(action==='submit'){
-      const imei=payload.imei,reason=payload.reason,arrivalDate=payload.arrivalDate,docTypes=payload.documents;
-      if(typeof imei!=='string'||!/^[0-9]{14,15}$/.test(imei)||
+      const mobile=payload.mobile,imei=payload.imei,reason=payload.reason,arrivalDate=payload.arrivalDate,docTypes=payload.documents;
+      if(typeof mobile!=='string'||!/^01\d{9}$/.test(mobile)||
+        typeof imei!=='string'||!/^[0-9]{14,15}$/.test(imei)||
         !Object.prototype.hasOwnProperty.call(reasons,reason)||
         typeof arrivalDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(arrivalDate)||
         arrivalDate>new Date().toISOString().slice(0,10)||
         !Array.isArray(docTypes)||docTypes.length>8||docTypes.some((d:unknown)=>typeof d!=='string'))
         return json({error:'Complete the IMEI, arrival information and required documents.'},400,origin);
-      const rows=await requestDB('rpc/neir_prototype_submit_special','POST',{
-        p_imei:imei,p_reason:reason,p_arrival:arrivalDate,p_documents:docTypes
+      const rows=await requestDB('rpc/neir_prototype_submit_special_citizen','POST',{
+        p_mobile:mobile,p_imei:imei,p_reason:reason,p_arrival:arrivalDate,p_documents:docTypes
       });
       return json({record:{id:rows[0].id,imei,status:rows[0].status,submittedAt:rows[0].submitted_at},
         message:'Special Registration submitted successfully.'},201,origin);
@@ -101,7 +108,7 @@ Deno.serve(async(req:Request)=>{
     return json({error:'Unknown Special Registration action'},400,origin);
   }catch(err){
     const message=err instanceof Error?err.message:'Unexpected error';
-    if(message.includes('already has'))return json({error:message},409,origin);
+    if(message.includes('already has')||message.includes('limit is 20'))return json({error:message},409,origin);
     if(message.includes('Request is too large'))return json({error:message},413,origin);
     console.error('Special Registration endpoint:',message);
     return json({error:'Special Registration operation could not be completed. Please retry.'},503,origin);
