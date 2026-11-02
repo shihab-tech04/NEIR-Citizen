@@ -58,8 +58,8 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended(p_mobile, 0));
   IF EXISTS (SELECT 1 FROM public.neir_prototype_special_applications WHERE imei=p_imei)
   THEN RAISE EXCEPTION 'This IMEI already has a Special Registration application'; END IF;
-  IF (SELECT count(*) FROM public.neir_prototype_special_applications
-      WHERE citizen_mobile=p_mobile AND status <> 'Accepted') >= 20
+  IF (SELECT count(*) FROM public.neir_prototype_special_applications a
+      WHERE a.citizen_mobile=p_mobile AND a.status <> 'Accepted') >= 20
   THEN RAISE EXCEPTION 'SPECIAL_REGISTRATION_LIMIT_REACHED'; END IF;
 
   INSERT INTO public.neir_prototype_special_applications
