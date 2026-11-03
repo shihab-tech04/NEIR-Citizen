@@ -156,8 +156,8 @@ Deno.serve(async(req:Request)=>{
       if(new Set(selected).size!==selected.length||
         selected.some((type:string)=>!allowedFiles[reason].includes(type))||
         (reason==='airmail'&&!selected.includes('commercialInvoice'))||
-        (reason==='gift'&&['donorPassport','donorArrivalSeal','imeiBox','giftDeed'].some(type=>!selected.includes(type)))||
-        (reason==='foreign-tour'&&['passportInfo','arrivalSeal','imeiBox'].some(type=>!selected.includes(type))))
+        (reason==='gift'&&['donorPassport','donorArrivalSeal'].some(type=>!selected.includes(type)))||
+        (reason==='foreign-tour'&&['passportInfo','arrivalSeal'].some(type=>!selected.includes(type))))
         return json({error:'Required uploaded documents are missing.'},400,origin);
       const requestId=crypto.randomUUID(),paths:string[]=[],manifest:any[]=[];
       try{
