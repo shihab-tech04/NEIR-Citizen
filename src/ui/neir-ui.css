@@ -51,7 +51,7 @@
 .neir-ui-button--primary:hover:not(:disabled){background:var(--neir-ui-hover);border-color:var(--neir-ui-hover)}
 .neir-ui-button--link{background:transparent;color:var(--neir-ui-primary);border-color:var(--neir-ui-primary-bright)}
 .neir-ui-button--link:hover:not(:disabled){background:var(--neir-ui-action-bg);color:#fff;border-color:var(--neir-ui-action-bg)}
-.neir-ui-button--compact{min-height:40px;padding:7px 14px;font-size:14px}
+.neir-ui-button--compact{min-height:44px;padding:8px 14px;font-size:14px}
 .neir-ui-button--full{width:100%;flex:1 1 100%;min-width:0}
 .neir-ui-control{
   display:block;box-sizing:border-box;width:100%;min-width:0;
@@ -142,8 +142,8 @@
   background:#fff;color:var(--neir-ui-text);font-weight:500;
 }
 .neir-ui-choice-tab[aria-pressed=true]{border:2px solid var(--neir-ui-primary-bright);
-  background:#edf9fb;color:var(--neir-ui-primary);
-  box-shadow:inset 0 0 0 1px #b6e2e8}
+  background:var(--neir-ui-surface-soft);color:var(--neir-ui-primary);
+  box-shadow:none}
 .neir-ui-choice-tab:hover:not(:disabled){border-color:var(--neir-ui-primary-bright);background:#f5fcfd}
 .neir-ui-form-action{min-width:148px}
 .neir-ui-form-control{margin-top:6px}
