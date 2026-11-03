@@ -5,7 +5,8 @@ import { NeirModalFrame } from '../components/NeirModalFrame.tsx';
 /** NEIR Citizen's shared, accessible controls. Business logic belongs to screens. */
 const classes = (...values: Array<string | false | null | undefined>) => values.filter(Boolean).join(' ');
 
-export type UiButtonVariant = 'primary' | 'secondary' | 'quiet' | 'danger';
+/** Only two visual action styles. Icon, option and tab controls remain separate widgets. */
+export type UiButtonVariant = 'primary' | 'link';
 export type UiButtonSize = 'default' | 'compact';
 
 export type UiButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -15,7 +16,7 @@ export type UiButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(function UiButton({
-  variant = 'secondary', size = 'default', fullWidth = false, loading = false,
+  variant = 'link', size = 'default', fullWidth = false, loading = false,
   className, children, disabled, type = 'button', ...rest
 }, ref) {
   return <button {...rest} ref={ref} type={type} disabled={disabled || loading}
