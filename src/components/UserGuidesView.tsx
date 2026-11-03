@@ -40,8 +40,8 @@ export const UserGuidesView: React.FC<Props> = () => {
     <header className="text-center space-y-3"><h1 className="text-3xl md:text-[44px] text-slate-950 font-bold">User Guide of NEIR</h1>
       <p className="text-base sm:text-lg text-slate-700">A complete user guide to help you navigate the system.</p></header>
     <div className="grid grid-cols-2 gap-3 sm:gap-6 max-w-xl mx-auto">
-      <button onClick={() => {setGuide('register');setPlatform('web');}} aria-pressed={isReg} className={isReg ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/acc-reg.png`} alt=""/>Account Registration</button>
-      <button onClick={() => {setGuide('reset');setPlatform('web');}} aria-pressed={!isReg} className={!isReg ? 'bg-white border-[8px] border-[#00ACC1] text-[#00838F] rounded-3xl p-5 text-sm font-semibold' : 'bg-white border border-slate-200 rounded-3xl p-5 text-sm font-semibold'}><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/pwd-res.png`} alt=""/>Password Reset</button>
+      <button onClick={() => {setGuide('register');setPlatform('web');}} aria-pressed={isReg} className="neir-ui-choice-tab neir-source-guide-tile"><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/acc-reg.png`} alt=""/>Account Registration</button>
+      <button onClick={() => {setGuide('reset');setPlatform('web');}} aria-pressed={!isReg} className="neir-ui-choice-tab neir-source-guide-tile"><img className="neir-source-guide-tile-img" src={`${import.meta.env.BASE_URL}neir-source/user-guides/tab-img/pwd-res.png`} alt=""/>Password Reset</button>
     </div>
     <div className="neir-source-guide-content bg-white rounded-[32px] p-5 sm:p-8 lg:p-12 space-y-7">
       <div className="neir-source-guide-intro space-y-4"><h2 className="text-2xl sm:text-3xl font-semibold">{isReg ? 'Account Registration' : 'Password Reset'}</h2>
@@ -50,8 +50,8 @@ export const UserGuidesView: React.FC<Props> = () => {
           : 'Use this feature if you forget your password or cannot sign in. Enter any registered mobile number linked to your account. An OTP will be sent to that number to verify your identity and help you create a new password.'}</p>
         <p className="font-medium text-slate-900">{isReg ? 'Quick steps to help you create your account easily.' : 'Quick steps to help you reset your password easily.'}</p></div>
       <div className="neir-source-guide-platform flex gap-2 border-b border-slate-200 pb-3" role="tablist" aria-label="Guide platform">
-        <button role="tab" aria-selected={platform === 'web'} onClick={() => setPlatform('web')} className={platform === 'web' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Web</button>
-        <button role="tab" aria-selected={platform === 'mobile'} onClick={() => setPlatform('mobile')} className={platform === 'mobile' ? 'bg-[#00ACC1] text-white rounded-xl py-2 px-6 font-semibold' : 'rounded-xl py-2 px-6 bg-slate-100'}>Mobile</button>
+        <button role="tab" aria-selected={platform === 'web'} onClick={() => setPlatform('web')} className="neir-guide-platform-tab">Web</button>
+        <button role="tab" aria-selected={platform === 'mobile'} onClick={() => setPlatform('mobile')} className="neir-guide-platform-tab">Mobile</button>
       </div>
         <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="neir-guide-step-card grid grid-cols-1 md:grid-cols-2 items-center gap-5 md:gap-8">
           <div className="neir-guide-step-text"><h3 className="text-lg sm:text-xl font-semibold mb-3">{step.title}</h3><p className="text-sm sm:text-base text-slate-700 leading-7">{step.description}</p></div>
