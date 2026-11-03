@@ -2,7 +2,7 @@
    Content is search-first, never an automatic assertion about unknown IMEIs. */
 .neir-profile-page{width:100%;min-height:calc(100vh - 190px);font-family:Poppins,Arial,sans-serif;color:#1b2736}
 .neir-profile-content{width:min(1060px,100%);margin:0 auto;display:flex;flex-direction:column;gap:24px}
-.neir-profile-overview{display:grid;grid-template-columns:minmax(0,1.27fr) minmax(0,.9fr);gap:20px;align-items:stretch}
+.neir-profile-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:stretch}
 .neir-profile-identity,.neir-profile-registration-card,.neir-profile-search-panel{background:#fff;border:1px solid var(--neir-border);border-radius:20px;box-shadow:0 3px 16px #103e450b}
 .neir-profile-identity{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:18px;padding:24px 26px;min-width:0}
 .neir-profile-person{display:flex;align-items:center;gap:18px;min-width:0}
@@ -28,6 +28,13 @@
 .neir-profile-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;min-width:0}
 .neir-profile-apply{min-height:44px;padding:9px 18px;font-size:14px;font-weight:600;border-radius:999px}
 .neir-profile-edit{flex-shrink:0;max-width:100%}
+/* Shared full-width action geometry across both 50:50 cards. */
+.neir-profile-identity .neir-profile-actions{width:100%;align-items:stretch}
+.neir-profile-identity .neir-profile-edit,
+.neir-profile-registration-card .neir-profile-apply{
+ width:100%;min-height:48px;height:auto;padding:10px 16px;border-radius:999px;
+ font-size:14px;font-weight:600;line-height:1.5;text-align:center;white-space:normal
+}
 .neir-profile-edit:hover,.neir-profile-secondary-action:hover{background:#e8fafb;border-color:var(--neir-primary-900)}
 .neir-profile-search-panel{padding:28px 32px}
 .neir-profile-search-header h2{font-size:23px;line-height:1.35;font-weight:700;color:#152331;margin:0 0 6px}
@@ -142,6 +149,34 @@
 .neir-special-details-button{min-height:36px;border:1px solid #d9e1e7;border-radius:7px;background:#fff;padding:6px 12px;color:#41546a;font-size:14px;cursor:pointer}
 .neir-special-details-button:hover{border-color:var(--neir-primary-600);color:var(--neir-primary-900)}
 .neir-special-details-button:focus-visible{outline:3px solid var(--neir-primary-600);outline-offset:2px}
+
+/* NEIR Admin mobile-table pattern: whole record is an accessible card below 1024px. */
+.neir-special-mobile-card{padding:18px 18px 16px;min-width:0;display:flex;flex-direction:column;gap:14px;background:#fff}
+.neir-special-mobile-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0}
+.neir-special-mobile-card-title{min-width:0;flex:1}
+.neir-special-mobile-label{font-size:13px;color:#64748b;line-height:1.5;margin:0 0 4px}
+.neir-special-mobile-card-heading h3{font-size:16px;line-height:1.45;font-weight:600;margin:0;color:#152331;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.neir-special-mobile-category{font-size:14px;line-height:1.5;color:#526273;margin:4px 0 0}
+.neir-special-mobile-card-heading>.neir-ui-status{flex:0 0 auto}
+.neir-special-mobile-card-fields{display:grid;grid-template-columns:minmax(95px,0.9fr) minmax(0,1.1fr);gap:10px;align-items:start}
+.neir-special-mobile-card-fields p{margin:0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.neir-special-mobile-card-fields p:first-child{color:#64748b}
+.neir-special-mobile-card-fields p:last-child{color:#1b2736;font-weight:500}
+.neir-special-mobile-card-footer{border-top:1px solid #e2e8ef;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.neir-special-mobile-card-footer p{margin:0;color:#64748b;font-size:12px;line-height:1.5}
+.neir-special-mobile-card-footer .neir-special-details-button{flex:0 0 auto}
+@media(max-width:1023px){
+ .neir-special-applications .neir-ui-table-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+ .neir-special-applications .neir-ui-table-search-label{min-width:0;width:100%;max-width:none}
+ .neir-special-applications .neir-ui-table-count{white-space:nowrap;padding:0 0 10px}
+ .neir-special-applications .neir-ui-mobile-record-stack{border:1px solid #e2e8ef;border-radius:12px;overflow:hidden}
+}
+@media(max-width:400px){
+ .neir-special-mobile-card{padding:14px;gap:12px}
+ .neir-special-mobile-card-heading{flex-wrap:wrap;gap:8px}
+ .neir-special-mobile-card-footer p{max-width:180px}
+ .neir-special-applications .neir-ui-table-count{font-size:12px}
+}
 @media(max-width:400px){.neir-special-applications{padding:12px;border-radius:15px}.neir-special-table-heading h2{font-size:17px}.neir-special-table-heading .neir-profile-secondary-action{min-height:36px;padding:6px 10px}}
 
 /* Citizen detail dialogs: shared NEIR dialog shell with a readable responsive information hierarchy. */
