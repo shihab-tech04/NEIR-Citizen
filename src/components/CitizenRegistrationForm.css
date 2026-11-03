@@ -1,0 +1,114 @@
+/* NEIR Citizen User Registration: three Figma frames 9007:12574.
+   Uses the existing modal shell, Poppins and approved semantic action tokens. */
+.neir-original-dialog.neir-original-dialog--registration{
+  width:min(956px,calc(100vw - 32px));max-width:956px;
+}
+.neir-original-dialog--registration .neir-original-dialog-body{
+  padding:0;overscroll-behavior:contain;
+}
+.neir-original-dialog--registration .neir-original-dialog-top{
+  margin:0 24px;min-height:86px;padding:22px 0 22px;
+}
+.neir-original-dialog--registration .neir-original-dialog-top h2{
+  font-size:24px;line-height:30px;font-weight:400;
+}
+.neir-reg-form{display:flex;flex-direction:column;gap:0;margin:0;}
+.neir-reg-content{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;
+  padding:24px;min-width:0;animation:neir-modal-content-appear .2s ease-out both;
+}
+.neir-reg-explanation,.neir-reg-fields{min-width:0;display:flex;flex-direction:column;align-items:stretch;}
+.neir-reg-explanation{gap:12px;}
+.neir-reg-explanation h3{
+  font:400 24px/1.4 Poppins,Arial,sans-serif;color:#202020;margin:0;
+}
+.neir-reg-explanation p,.neir-reg-explanation li{
+  color:#343d4c;font:400 14px/1.65 Poppins,Arial,sans-serif;margin:0;
+}
+.neir-reg-explanation ul{padding-left:20px;margin:0;}
+.neir-reg-phone{overflow-wrap:anywhere;display:inline;}
+.neir-reg-fields{gap:16px;}
+.neir-reg-field{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.neir-reg-field label,.neir-reg-fields > label{
+  font:400 14px/1.7 Poppins,Arial,sans-serif;color:#202020;margin:0;
+}
+.neir-reg-field label span{color:var(--neir-ui-error,#b42318);}
+.neir-reg-field .neir-ui-control{
+  box-sizing:border-box;width:100%;height:60px;min-height:60px;border-radius:12px;
+  padding:11px 20px;border:1px solid #e3dbd8;background:#fff;
+  font:400 16px/1.5 Poppins,Arial,sans-serif;color:#202020;
+}
+.neir-reg-field .neir-ui-control:focus-visible,.neir-reg-otp-group input:focus-visible{
+  border-color:var(--neir-ui-primary-bright,#00acc1);
+  outline:2px solid var(--neir-ui-primary-bright,#00acc1);outline-offset:1px;
+}
+.neir-reg-otp-group{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;}
+.neir-reg-otp-group input{
+  box-sizing:border-box;min-width:0;width:100%;height:60px;
+  font:500 22px/1 Poppins,Arial,sans-serif;text-align:center;color:#202020;
+  border:1px solid #e3dbd8;border-radius:12px;background:#fff;outline:0;
+}
+.neir-reg-otp-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.neir-reg-timer{font:600 16px/1.5 Poppins,Arial,sans-serif;color:#ad4a18;margin:0;font-variant-numeric:tabular-nums;}
+.neir-reg-resend,.neir-reg-existing button{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:0;border-radius:6px;background:transparent;color:var(--neir-ui-primary,#00838f);
+  padding:8px;cursor:pointer;font:500 14px/1.5 Poppins,Arial,sans-serif;
+}
+.neir-reg-resend:hover:not(:disabled),.neir-reg-existing button:hover{background:var(--neir-ui-surface-soft,#eaf9fa);}
+.neir-reg-resend:disabled{opacity:.45;cursor:not-allowed;}
+.neir-reg-demo-warning{
+  background:#f4f8fa;border:1px solid #d9e3e8;border-radius:10px;
+  padding:10px 12px!important;margin-top:6px!important;
+}
+.neir-reg-demo-code{
+  background:#f4f8fa;border:1px solid #d9e3e8;border-radius:10px;padding:10px 12px;
+  color:#253244;font:400 14px/1.6 Poppins,Arial,sans-serif;margin:0;
+}
+.neir-reg-demo-code strong{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.1em;}
+.neir-reg-password-rules{list-style:none!important;margin:4px 0 0!important;padding:0!important;display:flex;flex-direction:column;gap:4px;}
+.neir-reg-password-rules li{display:flex;align-items:center;gap:8px;color:#bf4d25;font-size:14px;}
+.neir-reg-password-rules li.is-valid{color:var(--neir-ui-success,#24753e);}
+.neir-reg-password-rules svg{flex:none;}
+.neir-reg-password-wrap{position:relative;}
+.neir-reg-password-wrap .neir-ui-control{padding-right:52px;}
+.neir-reg-password-wrap button{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;display:grid;place-items:center;cursor:pointer;
+  background:transparent;border:0;border-radius:10px;color:var(--neir-ui-primary,#00838f);
+}
+.neir-reg-password-wrap button:hover{background:var(--neir-ui-surface-soft,#eaf9fa);}
+.neir-reg-error{grid-column:1/-1;margin:0;font-size:14px;}
+.neir-reg-footer{
+  display:flex;align-items:center;justify-content:flex-end;gap:16px;
+  border-top:1px solid #e3dbd8;margin:0 24px;padding:24px 0;
+}
+.neir-reg-demo-disclaimer{flex:1;min-width:0;color:#64748b;font:400 12px/1.5 Poppins,Arial,sans-serif;margin:0;}
+.neir-reg-submit.neir-ui-button{flex:none;min-height:60px;padding:11px 28px;gap:12px;font-size:16px;white-space:nowrap;}
+.neir-reg-existing{margin:0 24px 18px;color:#475467;font:400 14px/1.5 Poppins,Arial,sans-serif;}
+.neir-reg-existing button{padding:3px 7px;text-decoration:underline;}
+@media(max-width:767px){
+  .neir-original-dialog.neir-original-dialog--registration{
+    width:100%;max-width:100%;max-height:90dvh;
+  }
+  .neir-original-dialog--registration .neir-original-dialog-top{
+    margin:0 16px;min-height:64px;padding:16px 0;
+  }
+  .neir-original-dialog--registration .neir-original-dialog-top h2{font-size:21px;}
+  .neir-reg-content{grid-template-columns:minmax(0,1fr);gap:18px;padding:18px 16px;}
+  .neir-reg-explanation h3{font-size:20px;}
+  .neir-reg-fields{gap:12px;}
+  .neir-reg-field .neir-ui-control{height:54px;min-height:54px;}
+  .neir-reg-otp-group{gap:7px;}
+  .neir-reg-otp-group input{height:52px;border-radius:9px;font-size:20px;}
+  .neir-reg-footer{margin:0 16px;padding:12px 0 max(12px,env(safe-area-inset-bottom));flex-direction:column;align-items:stretch;}
+  .neir-reg-submit.neir-ui-button{width:100%;min-height:50px;}
+  .neir-reg-existing{margin:0 16px 12px;text-align:center;}
+}
+@media(max-width:359px){
+  .neir-reg-otp-group{gap:5px;}
+  .neir-reg-otp-group input{height:46px;font-size:18px;}
+  .neir-reg-content{padding:14px 12px;}
+  .neir-reg-footer{margin:0 12px;}
+}
+@media(prefers-reduced-motion:reduce){.neir-reg-content{animation:none!important;}}
