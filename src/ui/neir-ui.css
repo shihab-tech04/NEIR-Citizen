@@ -289,6 +289,13 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   .neir-modal-backdrop,.neir-modal-surface{animation:none!important;scroll-behavior:auto}
 }
 
+/* The 768–1000px expanded menu already contains a full auth control group;
+   avoid duplicating Register there. Small phones get one direct Register entry. */
+.neir-mobile-register{display:none}
+@media(max-width:767px){
+  .neir-mobile-menu .neir-mobile-register{display:flex}
+}
+
 /* MOBILE NAVIGATION RESTORATION: keep the approved compact auth/language header,
    but expose the existing Home/Guides menu and its keyboard-accessible controls. */
 @media(max-width:767px){
