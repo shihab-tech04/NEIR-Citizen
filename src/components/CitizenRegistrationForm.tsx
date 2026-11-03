@@ -140,8 +140,6 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
           </> : step === 2 ? <>
             <p>{isBn ? 'এই নম্বরের জন্য ছয় সংখ্যার যাচাইকরণ কোড:' : 'Six-digit verification code for mobile number:'}
               <strong className="neir-reg-phone"> {mobile}</strong></p>
-            <p className="neir-reg-demo-warning">{isBn ? 'এটি প্রদর্শনী: কোনো SMS পাঠানো হয়নি।' :
-              'Demonstration only: no SMS is sent and the document is not verified.'}</p>
           </> : <>
             <p>{isBn ? 'অক্ষর, সংখ্যা ও চিহ্ন দিয়ে একটি শক্তিশালী পাসওয়ার্ড তৈরি করুন।' :
               'Create a strong password with a mix of letters, numbers and symbols.'}</p>
