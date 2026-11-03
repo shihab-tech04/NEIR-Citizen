@@ -19,6 +19,16 @@ try {
     assert(home.headingVisible,'Homepage heading missing at '+width);
     assert(home.overflow<=4,'Home horizontal overflow at '+width+': '+home.overflow);
     assert(home.bodyFont.toLowerCase().includes('poppins'),'Poppins missing at '+width);
+    if(width===320) {
+      const menu=page.getByRole('button',{name:'Navigation menu'});
+      await menu.waitFor({state:'visible'});
+      assert.equal(await menu.getAttribute('aria-expanded'),'false');
+      await menu.click();
+      await page.getByRole('navigation',{name:'Mobile navigation'}).getByRole('button',{name:'User Guides'}).waitFor();
+      assert.equal(await menu.getAttribute('aria-expanded'),'true');
+      await page.keyboard.press('Escape');
+      await page.getByRole('navigation',{name:'Mobile navigation'}).waitFor({state:'hidden'});
+    }
 
     await page.goto(base+'/user-guides',{waitUntil:'networkidle'});
     await page.getByRole('heading',{name:'User Guide of NEIR'}).waitFor();
