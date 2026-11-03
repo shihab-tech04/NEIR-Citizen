@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Language } from '../types.ts';
+import { faqTranslationsBn, faqTitlesBn } from './faqTranslations.bn.ts';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type Group = { title: string; items: { q: string; a: string }[] };
@@ -158,22 +159,24 @@ const recoveredGroups: Record<string, Group[]> = {
   ]
 };
 const categories = ['IMEI Check','Registration','Account & Help','About NEIR'];
-export const FaqSection: React.FC<{language:Language}> = () => {
+export const FaqSection: React.FC<{language:Language}> = ({language}) => {
+  const isBn = language === 'bn';
+  const label = (source: string) => isBn ? (faqTitlesBn[source] || source) : source;
   const [selected,setSelected] = useState('IMEI Check');
   const [open,setOpen] = useState<string[]>([]);
   const activeGroups = selected === 'IMEI Check' ? sourceGroups : recoveredGroups[selected] ?? [];
   const toggle = (id:string) => setOpen(v => v.includes(id) ? v.filter(k => k !== id) : [...v,id]);
   return <section id="faq-section" className="neir-faq-source bg-[#F2F9F4] rounded-[32px] px-4 sm:px-8 lg:px-16 py-12 lg:py-16">
-    <div className="neir-faq-intro text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">FAQ</h2><p className="mt-2 text-lg text-slate-700">Need help?</p></div>
+    <div className="neir-faq-intro text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">{isBn ? 'সাধারণ জিজ্ঞাসা' : 'FAQ'}</h2><p className="mt-2 text-lg text-slate-700">{isBn ? 'সহায়তা প্রয়োজন?' : 'Need help?'}</p></div>
     <div className="neir-faq-content max-w-[1250px] mx-auto">
       <div className="neir-faq-tabs flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
-        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className="neir-faq-tab">{cat}</button>)}
+        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className="neir-faq-tab">{label(cat)}</button>)}
       </div>
       <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="neir-faq-group bg-white rounded-3xl p-5 sm:p-7">
-          <h3 className="neir-faq-group-title text-lg sm:text-xl font-bold mb-5">{group.title}</h3>
+          <h3 className="neir-faq-group-title text-lg sm:text-xl font-bold mb-5">{label(group.title)}</h3>
           <div className="flex flex-col gap-2">{group.items.map((item,i) => {const id=g+'-'+i;const visible=open.includes(id);return <div key={id} className="neir-faq-item border border-[#E3DBD8] rounded-2xl px-4">
-            <button aria-expanded={visible} onClick={() => toggle(id)} className="neir-faq-question w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
-            {visible && <p className="neir-faq-answer text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line pb-4">{item.a}</p>}
+            <button aria-expanded={visible} onClick={() => toggle(id)} className="neir-faq-question w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{isBn ? (faqTranslationsBn[item.q]?.q || item.q) : item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
+            {visible && <p className="neir-faq-answer text-slate-600 leading-relaxed text-sm sm:text-base whitespace-pre-line pb-4">{isBn ? (faqTranslationsBn[item.q]?.a || item.a) : item.a}</p>}
           </div>})}</div>
         </div>)}</div>
     </div>
