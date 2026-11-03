@@ -2,9 +2,21 @@
    Content is search-first, never an automatic assertion about unknown IMEIs. */
 .neir-profile-page{width:100%;min-height:calc(100vh - 190px);font-family:Poppins,Arial,sans-serif;color:#1b2736}
 .neir-profile-content{width:min(1060px,100%);margin:0 auto;display:flex;flex-direction:column;gap:24px}
-.neir-profile-identity,.neir-profile-search-panel{background:#fff;border:1px solid var(--neir-border);border-radius:20px;box-shadow:0 3px 16px #103e450b}
-.neir-profile-identity{display:flex;align-items:center;gap:24px;padding:28px 32px;min-width:0}
-.neir-profile-avatar{display:flex;align-items:center;justify-content:center;width:104px;height:104px;flex:0 0 104px;overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 1px #c7e7e9;border-radius:50%;background:var(--neir-primary-bg);color:var(--neir-primary-900)}
+.neir-profile-overview{display:grid;grid-template-columns:minmax(0,1.27fr) minmax(0,.9fr);gap:20px;align-items:stretch}
+.neir-profile-identity,.neir-profile-registration-card,.neir-profile-search-panel{background:#fff;border:1px solid var(--neir-border);border-radius:20px;box-shadow:0 3px 16px #103e450b}
+.neir-profile-identity{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:18px;padding:24px 26px;min-width:0}
+.neir-profile-person{display:flex;align-items:center;gap:18px;min-width:0}
+.neir-profile-registration-card{display:flex;flex-direction:column;justify-content:space-between;gap:20px;min-width:0;padding:24px 26px}
+.neir-profile-registration-heading{display:flex;align-items:flex-start;gap:14px;min-width:0}
+.neir-profile-registration-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:12px;background:var(--neir-primary-bg);color:var(--neir-primary-900)}
+.neir-profile-registration-heading>div{min-width:0}
+.neir-profile-registration-heading h2{margin:0 0 5px;font-size:19px;line-height:1.4;font-weight:700;color:#152331}
+.neir-profile-registration-heading p{margin:0;font-size:13px;line-height:1.6;color:#526273}
+.neir-profile-registration-action{display:flex;flex-direction:column;align-items:stretch;gap:11px}
+.neir-profile-registration-capacity{margin:0;color:#526273;font-size:13px;line-height:1.5}
+.neir-profile-registration-capacity strong{font-size:16px;font-weight:700;color:var(--neir-primary-900)}
+.neir-profile-registration-card .neir-profile-apply{width:100%;min-height:46px}
+.neir-profile-avatar{display:flex;align-items:center;justify-content:center;width:84px;height:84px;flex:0 0 84px;overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 1px #c7e7e9;border-radius:50%;background:var(--neir-primary-bg);color:var(--neir-primary-900)}
 .neir-profile-identity-copy{flex:1;min-width:0}
 .neir-profile-eyebrow{margin:0 0 4px;color:var(--neir-primary-900);font-size:14px;font-weight:600}
 .neir-profile-identity h1{margin:0;font-size:26px;line-height:1.35;font-weight:700;color:#152331;overflow-wrap:anywhere}
@@ -13,9 +25,9 @@
 .neir-profile-contact span{display:inline-flex;align-items:center;gap:8px;overflow-wrap:anywhere;min-width:0}
 .neir-profile-contact svg{flex-shrink:0;color:var(--neir-primary-900)}
 .neir-profile-edit,.neir-profile-secondary-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #abd6dc;color:var(--neir-primary-900);border-radius:32px;background:#fff;min-height:44px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
-.neir-profile-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;flex-shrink:0}
+.neir-profile-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;min-width:0}
 .neir-profile-apply{min-height:44px;padding:9px 18px;font-size:14px;font-weight:600;border-radius:999px}
-.neir-profile-edit{flex-shrink:0}
+.neir-profile-edit{flex-shrink:0;max-width:100%}
 .neir-profile-edit:hover,.neir-profile-secondary-action:hover{background:#e8fafb;border-color:var(--neir-primary-900)}
 .neir-profile-search-panel{padding:28px 32px}
 .neir-profile-search-header h2{font-size:23px;line-height:1.35;font-weight:700;color:#152331;margin:0 0 6px}
@@ -62,13 +74,18 @@
 .neir-profile-data-note{margin:18px 0 0;font-size:13px;line-height:1.6;color:#64748b}
 .neir-profile-feedback{font-size:14px;color:#267b87;margin:14px 0 0}
 .neir-profile-edit:focus-visible,.neir-profile-search-button:focus-visible,.neir-profile-primary-action:focus-visible,.neir-profile-secondary-action:focus-visible{outline:3px solid var(--neir-primary-900);outline-offset:3px}
+@media(max-width:850px){
+ .neir-profile-overview{grid-template-columns:minmax(0,1fr);gap:16px}
+ .neir-profile-identity,.neir-profile-registration-card{min-height:0}
+ .neir-profile-registration-card{gap:16px}
+}
 @media(max-width:760px){
  .neir-profile-content{gap:16px}
- .neir-profile-identity{padding:22px;gap:15px;flex-wrap:wrap}
+ .neir-profile-identity{padding:22px;gap:18px}
  .neir-profile-avatar{width:76px;height:76px;flex-basis:76px}
  .neir-profile-identity h1{font-size:22px}
- .neir-profile-identity-copy{min-width:calc(100% - 100px)}
- .neir-profile-actions{width:100%;justify-content:flex-start;padding-left:90px}
+ .neir-profile-identity-copy{min-width:0}
+ .neir-profile-actions{width:100%;justify-content:flex-start;padding-left:0}
  .neir-profile-edit{margin-left:0}
  .neir-profile-search-panel{padding:22px}
  .neir-profile-search-header h2{font-size:21px}
@@ -78,14 +95,14 @@
  .neir-profile-status{margin-left:0}
 }
 @media(max-width:400px){
- .neir-profile-identity{padding:17px;gap:12px;border-radius:15px}
+ .neir-profile-identity,.neir-profile-registration-card{padding:17px;gap:14px;border-radius:15px}
  .neir-profile-avatar{width:64px;height:64px;flex-basis:64px}
  .neir-profile-avatar svg{width:33px;height:33px}
- .neir-profile-identity-copy{min-width:calc(100% - 79px)}
+ .neir-profile-identity-copy{min-width:0}
  .neir-profile-identity h1{font-size:19px}
  .neir-profile-contact{margin-top:9px;gap:6px}
  .neir-profile-contact span{font-size:13px}
- .neir-profile-actions{padding-left:0;flex-direction:column}
+ .neir-profile-actions{padding-left:0;flex-direction:column;align-items:stretch}
  .neir-profile-actions .neir-ui-button{width:100%}
  .neir-profile-edit{margin-left:0;width:100%}
  .neir-profile-search-panel{padding:17px;border-radius:15px}
