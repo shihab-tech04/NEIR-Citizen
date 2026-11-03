@@ -23,7 +23,7 @@ export const SpecialRegistrationSection: React.FC<Props> = ({ language, onApply,
   ];
 
   return (
-    <section className="neir-special-registration-section" aria-labelledby="neir-special-registration-heading">
+    <section id="special-registration" className="neir-special-registration-section" aria-labelledby="neir-special-registration-heading">
       <div className="neir-source-guide-inner neir-special-registration-inner">
         <div className="neir-special-registration-content">
           <h2 id="neir-special-registration-heading">

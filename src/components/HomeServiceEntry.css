@@ -2,16 +2,16 @@
 .neir-service-entry{
   position:relative;
   z-index:1;
-  width:min(100%,1300px);
+  width:min(100%,1360px);
   padding:0 24px;
-  margin:-28px auto 48px;
+  margin:0 auto 12px;
 }
 .neir-service-entry-panel{
   background:#fff;
   border:1px solid var(--neir-ui-border,#dae4e8);
   border-radius:22px;
-  box-shadow:0 10px 30px rgba(20,51,64,.075);
-  padding:24px 28px 26px;
+  box-shadow:0 6px 22px rgba(20,51,64,.045);
+  padding:28px 30px;
 }
 .neir-service-entry-heading{
   display:flex;
@@ -23,12 +23,12 @@
 .neir-service-entry-heading-copy{min-width:0;}
 .neir-service-entry-heading h2{
   margin:0 0 4px;
-  font:600 22px/1.4 Poppins,Arial,sans-serif;
+  font:600 24px/1.35 Poppins,Arial,sans-serif;
   color:#202c3a;
 }
 .neir-service-entry-heading p{
   margin:0;
-  font:400 14px/1.6 Poppins,Arial,sans-serif;
+  font:400 16px/1.6 Poppins,Arial,sans-serif;
   color:#4c6071;
 }
 .neir-service-guides.neir-ui-button{flex:none;gap:8px;align-self:start;white-space:nowrap;}
@@ -39,7 +39,7 @@
 }
 .neir-service-card{
   min-width:0;
-  padding:19px 20px;
+  padding:22px;
   border:1px solid #dce8ec;
   border-radius:16px;
   background:#fcfefe;
@@ -57,12 +57,12 @@
 .neir-service-card-copy{min-width:0;}
 .neir-service-card h3{
   margin:0 0 5px;
-  font:600 17px/1.45 Poppins,Arial,sans-serif;
+  font:600 19px/1.45 Poppins,Arial,sans-serif;
   color:#1f3040;
 }
 .neir-service-card p{
   margin:0;color:#536779;
-  font:400 14px/1.55 Poppins,Arial,sans-serif;
+  font:400 15px/1.6 Poppins,Arial,sans-serif;
 }
 .neir-service-card-action.neir-ui-button{
   align-self:flex-start;min-height:44px;gap:8px;
@@ -71,20 +71,20 @@
 }
 .neir-service-card-action svg{flex-shrink:0;}
 @media(max-width:1000px){
-  .neir-service-entry{margin:-18px auto 36px;}
+  .neir-service-entry{margin:0 auto 10px;}
   .neir-service-entry-panel{padding:20px;}
 }
 @media(max-width:767px){
-  .neir-service-entry{padding:0 16px;margin:16px auto 30px;}
+  .neir-service-entry{padding:0 16px;margin:0 auto 12px;}
   .neir-service-entry-panel{padding:18px;border-radius:18px;}
-  .neir-service-entry-heading{align-items:flex-start;gap:10px;}
+  .neir-service-entry-heading{flex-direction:column;align-items:flex-start;gap:12px;}
   .neir-service-entry-heading h2{font-size:20px;}
-  .neir-service-entry-heading p{font-size:14px;}
+  .neir-service-entry-heading p{font-size:15px;}
   .neir-service-guides.neir-ui-button{padding:8px 10px;min-width:44px;white-space:normal;}
   .neir-service-entry-grid{grid-template-columns:minmax(0,1fr);gap:12px;}
   .neir-service-card{padding:15px;gap:12px;}
   .neir-service-card-heading{gap:12px;}
-  .neir-service-card h3{font-size:16px;}
+  .neir-service-card h3{font-size:17px;}
 }
 @media(max-width:390px){
   .neir-service-entry-heading{flex-direction:column;}
