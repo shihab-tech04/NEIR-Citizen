@@ -40,6 +40,17 @@ jobs:
           try {
             const mobile=await browser.newPage({viewport:{width:390,height:844}});
             await mobile.goto('http://127.0.0.1:4567/', {waitUntil:'networkidle'});
+            // The new home service chooser moves the guide below the fold.
+            // Explicitly bring lazy-loaded original guide assets into view before
+            // measuring; still fail if any expected image is actually missing.
+            const originalImages=mobile.locator('.neir-source-step-card img, .neir-source-hero-media img, .neir-logo-wrap img');
+            for(const item of await originalImages.all()){
+              await item.scrollIntoViewIfNeeded();
+              await item.evaluate(async el => {
+                await el.decode();
+              });
+            }
+            await mobile.evaluate(()=>window.scrollTo(0,0));
             const metrics=await mobile.evaluate(()=>{
               const heights=[...document.querySelectorAll('.neir-source-step-card')].map(e=>Math.round(e.getBoundingClientRect().height));
               const badImages=[...document.querySelectorAll('.neir-source-step-card img, .neir-source-hero-media img, .neir-logo-wrap img')].filter(e=>!e.complete || e.naturalWidth===0).map(e=>e.getAttribute('src'));
