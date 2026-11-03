@@ -8,20 +8,17 @@ import { UiInput, UiButton } from '../ui/index.ts';
 type Reason = '' | 'foreign-tour' | 'gift' | 'airmail';
 type DocumentDefinition = { id: string; label: string; required: boolean; purpose: string };
 
-// Document names are based on the earlier 11-page Special Registration reference.
-// The current acquisition-specific document checklist is preserved.
+// Acquisition-specific checklist. Gift and foreign-tour now require only the
+// corresponding passport information and arrival-seal documents; existing files
+// on previously submitted applications are retained in SQL and private storage.
 const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
   'foreign-tour': [
     { id: 'passportInfo', label: 'Passport Info Page', required: true, purpose: 'Passport page showing name, photo and number.' },
     { id: 'arrivalSeal', label: 'Passport Arrival Date Seal', required: true, purpose: 'Passport page showing the arrival stamp.' },
-    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Clear photo of the box label showing the IMEI.' },
-    { id: 'travelDocument', label: 'Ticket / Boarding Pass / Travel Document', required: false, purpose: 'Ticket or boarding pass for this trip.' },
   ],
   gift: [
     { id: 'donorPassport', label: 'Passport Info Page (Donor)', required: true, purpose: 'Donor’s passport page with identity details.' },
     { id: 'donorArrivalSeal', label: 'Passport Arrival Date Seal (Donor)', required: true, purpose: 'Donor’s passport page with arrival stamp.' },
-    { id: 'imeiBox', label: 'Device Box IMEI Number', required: true, purpose: 'Box label showing the handset IMEI.' },
-    { id: 'giftDeed', label: 'Gift Deed (Donor)', required: true, purpose: 'Declaration naming donor, recipient and handset.' },
   ],
   airmail: [
     { id: 'courierBill', label: 'Courier Bill', required: false, purpose: 'Courier receipt with tracking and recipient details.' },
