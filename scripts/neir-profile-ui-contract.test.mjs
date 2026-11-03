@@ -15,6 +15,18 @@ assert(!profile.includes('stolenTarget') && !profile.includes('Mark as Stolen'),
 assert(profile.includes("onClick={() => startProfileRegistration('')}"),
   'Profile must offer the existing Special Registration wizard, respecting the 20-slot limit');
 assert(profile.includes("disabled={reachedLimit}"),'Quota-aware profile action remains guarded');
+assert(profile.includes('className="neir-profile-overview"') &&
+  profile.includes('className="neir-profile-registration-card"'),
+  'Profile and Special Registration must render as two separate overview cards');
+assert(profile.includes('neir-profile-registration-capacity') &&
+  profile.includes("availableSlots.toLocaleString('bn-BD')"),
+  'Registration capacity must use live slot count with EN/BN parity');
+assert(style.includes('grid-template-columns:minmax(0,1.27fr) minmax(0,.9fr)') &&
+  style.includes('@media(max-width:850px)'),
+  'Two cards must share a desktop row and stack responsively on mobile');
+assert(profile.indexOf('className="neir-profile-registration-card"') <
+  profile.indexOf('className={"neir-profile-search-panel"'),
+  'New cards must remain above the untouched device search and application history');
 assert((profile.match(/neir-profile-detail-grid/g)||[]).length === 2,
   'IMEI and Special Registration dialogs must use the same details layout');
 assert(style.includes('.neir-profile-search-input input.neir-ui-control:focus-visible'),
