@@ -45,6 +45,10 @@ try{
     await dialog.locator('#reg-document').fill('1234');
     await dialog.getByRole('button',{name:'Request for OTP'}).click();
     await dialog.locator('#reg-otp').waitFor({state:'visible'});
+    assert.equal(await dialog.locator('.neir-reg-demo-warning').count(),0,
+      'OTP screen must not show the removed warning banner at '+width+'px');
+    assert(await dialog.locator('.neir-reg-demo-code strong').isVisible(),
+      'OTP test flow still exposes the currently generated local test code');
     await dialog.screenshot({path:`acceptance-shots/neir-otp-footer-${width}.png`,animations:'disabled'});
     assert(await dialog.locator('.neir-reg-footer .neir-reg-existing button').isVisible(),
       'Login recovery must remain visible at OTP step');
