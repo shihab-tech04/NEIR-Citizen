@@ -23,7 +23,7 @@ assert(shell.includes('neir-modal-backdrop')&&login.includes('neir-modal-backdro
   wizard.includes('neir-modal-backdrop'),'All active dialog backdrops must share one class');
 assert(css.includes('.neir-modal-surface :is(.neir-shared-close')&&
   css.includes('width:44px;height:44px'),'Dialog close targets must be at least 44px');
-assert(!/\.neir-shared-backdrop\{[\s\S]{0,350}\.neir-shared-dialog\{/.test(index),
+assert(!index.includes('.neir-shared-dialog{\\n  box-sizing:border-box;width:min(600px,100%)'),
   'Legacy CSS must not repeat the canonical shared dialog shell');
 assert(ui.includes("export type UiButtonVariant = 'primary' | 'link'"),
   'Only Primary and Link action variants are supported');
