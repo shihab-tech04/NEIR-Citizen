@@ -31,4 +31,11 @@ assert(!body.includes('Prototype only. This does not verify identity or create a
   'Registration footer must not show unapproved prototype disclaimer');
 assert(body.includes('Demonstration only: no SMS is sent and the document is not verified.'),
   'OTP must still accurately disclose the absence of a real verification service');
+assert(!login.includes('Maximize2') && !login.includes('Minimize2') &&
+  !login.includes('setExpanded') && !login.includes('neir-dialog-maximized') &&
+  !login.includes("aria-label={expanded?'Restore dialog':'Maximize'}"),
+  'Authentication modal must have no maximize/restore control or expansion behavior');
+assert(login.includes('className="neir-modal-back"') &&
+  login.includes('aria-label="Close"'),
+  'Preserve modal Back and Close controls after removing expand');
 console.log('PASS: Figma three-stage UI contract, password rules, safe demo OTP, responsive sizing and Back state.');
