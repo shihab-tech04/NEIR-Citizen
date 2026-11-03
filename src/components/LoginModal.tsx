@@ -22,7 +22,6 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
  const dialogRef=useNeirDialogFocus<HTMLDivElement>({ isOpen, onClose, initialFocusSelector:'[aria-label="Close"]' });
  useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);setMobile('');setPassword('');setIsAuthenticating(false);}},[initialView,isOpen]);
 
- if(!isOpen)return null;
  const demoSignIn=()=>{
   const m=mobile||'01700000000';
   onLoginSuccess({isLoggedIn:true,name:'Demo NEIR Citizen',mobile:m,nid:'DEMO-NID',email:'demo@example.invalid',registeredHandsets:[]});
@@ -76,6 +75,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
      back?.focus({preventScroll:true});
    }
  },[view,regStep,isOpen]);
+ if(!isOpen)return null;
  const inputStyle='neir-original-dialog-input';
  return <div className={"neir-dialog-backdrop neir-modal-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
   <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
