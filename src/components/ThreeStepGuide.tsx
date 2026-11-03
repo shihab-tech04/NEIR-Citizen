@@ -13,21 +13,33 @@ const sections=[
     'You will get an SMS with all mobile numbers registered under your NID (all operators).'
   ]}
 ];
-const imageColors=['#B2EBF2','#D1C4E9','#DCEDC8'];
-export const ThreeStepGuide:React.FC<Props> = () => <div className="neir-source-steps-wrap">
-  {sections.map((section,g)=><section key={section.heading} className="neir-source-guide-section" style={{backgroundColor:section.background}}>
+const headingsBn=['IMEI দিয়ে ফোনের নিবন্ধন অবস্থা জানুন','আপনার NID-এ নিবন্ধিত মোবাইল নম্বর জানুন'];
+const stepsBn=[
+  [
+    'ফোনের মেসেজ অপশনে KYD লিখে একটি স্পেস দিন, তারপর ১৫ সংখ্যার IMEI লিখুন। উদাহরণ: KYD 123456789012345',
+    'মেসেজটি 16002 নম্বরে পাঠান।',
+    'ফোনের বৈধতা ও নিবন্ধনের অবস্থা জানিয়ে একটি ফিরতি মেসেজ পাবেন।'
+  ],
+  [
+    'আপনার NID দিয়ে নিবন্ধিত যেকোনো মোবাইল নম্বর থেকে *16001# ডায়াল করুন।',
+    'অনুরোধ করা হলে NID নম্বরের শেষ ৪টি সংখ্যা লিখুন।',
+    'আপনার NID দিয়ে নিবন্ধিত সব অপারেটরের মোবাইল নম্বরের তালিকা SMS-এ পাবেন।'
+  ]
+];
+export const ThreeStepGuide:React.FC<Props> = ({language}) => <div className="neir-source-steps-wrap">
+  {sections.map((section,g)=><section key={section.heading} className={'neir-source-guide-section neir-guide--'+g} aria-labelledby={'neir-guide-heading-'+g}>
     <div className="neir-source-guide-inner">
       <header className="neir-source-guide-heading">
-        <h2>3 Steps &amp;</h2>
-        <p>{section.heading}</p>
+        <p>{language==='bn'?'৩টি সহজ ধাপ':'3 simple steps'}</p>
+        <h2 id={'neir-guide-heading-'+g}>{language==='bn'?headingsBn[g]:section.heading}</h2>
       </header>
       <div className="neir-source-steps-row">
         {section.steps.map((step,i)=><React.Fragment key={g+'-'+i}>
           <article className="neir-source-step-card">
-            <div className="neir-source-step-art" style={{backgroundColor:imageColors[i]}}>
+            <div className={'neir-source-step-art neir-guide-art--'+i}>
               <img src={`${import.meta.env.BASE_URL}neir-source/images/step-${g*3+i+1}.svg`} alt={`Step ${i+1} illustration`} loading="lazy"/>
             </div>
-            <div className="neir-source-step-content"><h3>Step {i+1}</h3><p>{step}</p></div>
+            <div className="neir-source-step-content"><h3>{language==='bn'?'ধাপ':'Step'} {i+1}</h3><p>{language==='bn'?stepsBn[g][i]:step}</p></div>
           </article>
           {i<2 && <div className="neir-source-step-arrow"><img src={`${import.meta.env.BASE_URL}neir-source/frames/right-arrow.png`} alt="" aria-hidden="true" loading="lazy"/></div>}
         </React.Fragment>)}

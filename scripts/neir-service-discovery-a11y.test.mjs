@@ -7,6 +7,16 @@ const base=process.env.NEIR_BASE_URL||'http://127.0.0.1:4567';
 const app=readFileSync('src/App.tsx','utf8');
 const hero=readFileSync('src/components/HomeHero.tsx','utf8');
 const section=readFileSync('src/components/HomeServiceEntry.tsx','utf8');
+const guide=readFileSync('src/components/ThreeStepGuide.tsx','utf8');
+const faq=readFileSync('src/components/FaqSection.tsx','utf8');
+const serviceStyle=readFileSync('src/components/HomeServiceEntry.css','utf8');
+assert(!guide.includes('3 Steps &amp;') && guide.includes('stepsBn') && !guide.includes('style={{backgroundColor'),
+  'Both three-step guides need meaningful headings, bilingual instructions and CSS backgrounds');
+assert(!serviceStyle.includes('margin:-28px') && !serviceStyle.includes('margin:-18px'),
+  'Service card must not overlap the approved hero');
+assert(faq.includes('onCategoryKeyDown') && faq.includes('role="tabpanel"') &&
+  faq.includes("source === 'Registration'"),
+  'FAQ must have accessible keyboard tabs and distinct Special Registration wording');
 
 assert(app.includes('<HomeServiceEntry') && app.includes('onSpecialRegistration={requestSpecialRegistration}'),
   'New service navigation must reuse the canonical Special Registration journey');
@@ -49,6 +59,13 @@ try{
     else assert(Math.abs(geometry[0].top-geometry[1].top)<=2,'Desktop service cards should align');
     assert(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=4,
       'Home page horizontally overflows at '+width);
+    assert(await page.getByRole('heading',{name:'Check Phone Registration Status by IMEI'}).isVisible(),
+      'SMS registration guide needs a meaningful heading at '+width);
+    assert(await page.getByRole('heading',{name:'Check Mobile Numbers Registered Under Your NID'}).isVisible(),
+      'NID guide needs a meaningful heading at '+width);
+    const faqTab=page.getByRole('tablist',{name:'FAQ categories'});
+    assert(await faqTab.getByRole('tab',{name:'Special Registration'}).isVisible(),
+      'Special Registration FAQ tab must be unambiguous');
     const imei=page.locator('#neir-imei-input');
     assert(await imei.isVisible(),'Original IMEI field must remain unchanged');
     assert.equal(await imei.getAttribute('maxLength'),'14','IMEI contract changed');
@@ -85,6 +102,12 @@ try{
       const language=width===390?'.neir-source-mobile-language select':'.neir-language-select select';
       await page.locator(language).selectOption('bn');
       await page.getByRole('heading',{name:'কোন সেবাটি প্রয়োজন?'}).waitFor();
+      assert(await page.getByRole('heading',{name:'IMEI দিয়ে ফোনের নিবন্ধন অবস্থা জানুন'}).isVisible(),
+        'IMEI SMS guide must be localized');
+      assert(await page.getByRole('heading',{name:'আপনার NID-এ নিবন্ধিত মোবাইল নম্বর জানুন'}).isVisible(),
+        'NID guide must be localized');
+      assert(await page.getByRole('tab',{name:'বিশেষ নিবন্ধন'}).isVisible(),
+        'Special Registration FAQ must be localized');
       assert(await page.getByRole('region',{name:'কোন সেবাটি প্রয়োজন?'})
         .getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন'}).isVisible(),
         'Bengali special-registration entry missing');
@@ -109,4 +132,21 @@ try{
     'Skip link must focus the main landmark');
   await page.close();
   console.log('PASS: keyboard skip link and main-landmark focus');
+  const faqPage=await browser.newPage({viewport:{width:1440,height:900}});
+  await faqPage.goto(base+'/',{waitUntil:'networkidle'});
+  const faqTabs=faqPage.getByRole('tablist',{name:'FAQ categories'});
+  await faqTabs.getByRole('tab',{name:'IMEI Check'}).focus();
+  await faqPage.keyboard.press('ArrowRight');
+  assert.equal(await faqTabs.getByRole('tab',{name:'Special Registration'}).getAttribute('aria-selected'),'true',
+    'ArrowRight must select the next FAQ tab');
+  assert(await faqPage.getByRole('tabpanel').getByRole('heading',{name:'Understanding Special Registration'}).isVisible(),
+    'Active FAQ tab must expose the corresponding panel');
+  await faqPage.keyboard.press('End');
+  assert.equal(await faqTabs.getByRole('tab',{name:'About NEIR'}).getAttribute('aria-selected'),'true',
+    'End must select the last FAQ tab');
+  await faqPage.keyboard.press('Home');
+  assert.equal(await faqTabs.getByRole('tab',{name:'IMEI Check'}).getAttribute('aria-selected'),'true',
+    'Home must select the first FAQ tab');
+  await faqPage.close();
+  console.log('PASS: FAQ keyboard tabs, active panel and localization');
 }finally{await browser.close();}

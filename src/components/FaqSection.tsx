@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { Language } from '../types.ts';
 import { faqTranslationsBn, faqTitlesBn } from './faqTranslations.bn.ts';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -68,15 +68,15 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "How do I create a NEIR account?",
-          "a": "To create a NEIR account:\nClick “Register” on the login screen.\nEnter your mobile number and the last 4 digits of your Document ID (NID/Smart NID/Birth Certificate/Driving License/Passport).\nClick “Request OTP” and enter the received OTP.\nSet and confirm your new password.\nClick “Create Account” to finish.\n\nYour account will be created instantly after successful verification."
+          "a": "The Create Account form currently shows the registration steps but does not create a persistent, identity-verified citizen account. Secure account activation requires an authorized SMS and SIM-document verification service. For an official citizen account, use the BTRC NEIR service."
         },
         {
           "q": "I forgot my password. What should I do?",
-          "a": "Click Forgot Password on the login page\nEnter your registered mobile number or username\nVerify your identity using OTP\nSet a new password\nLog in using your new credentials"
+          "a": "Password recovery for verified citizen accounts is not connected to this portal. Please use the official NEIR recovery service or contact BTRC support. Never share your password or OTP."
         },
         {
           "q": "Why is my account locked?",
-          "a": "Your account may be temporarily locked due to multiple unsuccessful login attempts. Please wait for the lock period to end or reset your password to regain access."
+          "a": "If your login fails, check the mobile number and password. Official citizen account lockout and recovery cannot be handled by this presentation portal. Contact the official NEIR support service."
         }
       ]
     },
@@ -85,15 +85,15 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "How do I login?",
-          "a": "Click “Login” on the home screen.\nEnter your mobile number linked to your Document ID (NID/Smart NID/Passport).\nEnter your password.\nClick “Login” to access your account."
+          "a": "Select Login and enter the credentials for an account authorized on this portal. This sign-in does not authenticate official citizen accounts; use the official NEIR service for those accounts."
         },
         {
           "q": "What if my OTP is not verified during registration?",
-          "a": "If the OTP verification fails or expires:\nReturn to the Login screen.\nSelect “Forgot Password”.\nEnter your registered mobile number and request a new OTP.\nVerify the OTP and set a new password."
+          "a": "The registration walkthrough generates a code within this browser; it does not send an SMS or verify SIM ownership. Verified registration requires the official identity-verification service."
         },
         {
           "q": "What if I don’t receive my OTP?",
-          "a": "Check that you have network signal, wait a few moments, and try resending the OTP. Also ensure that SMS messages are not blocked on your device."
+          "a": "No SMS is sent from this registration form, so there is no message to wait for. For verified registration, use the official BTRC NEIR service."
         }
       ]
     },
@@ -152,7 +152,7 @@ const recoveredGroups: Record<string, Group[]> = {
       "items": [
         {
           "q": "Is my personal information safe?",
-          "a": "Yes, NEIR follows national data protection guidelines. Only authorized personnel can access submitted information."
+          "a": "Do not enter actual private identity-document information into a demonstration account flow. For official services, review the applicable BTRC privacy notice and use only the official channel."
         }
       ]
     }
@@ -161,18 +161,35 @@ const recoveredGroups: Record<string, Group[]> = {
 const categories = ['IMEI Check','Registration','Account & Help','About NEIR'];
 export const FaqSection: React.FC<{language:Language}> = ({language}) => {
   const isBn = language === 'bn';
-  const label = (source: string) => isBn ? (faqTitlesBn[source] || source) : source;
+  const label = (source: string) => source === 'Registration'
+    ? (isBn ? 'বিশেষ নিবন্ধন' : 'Special Registration')
+    : (isBn ? (faqTitlesBn[source] || source) : source);
   const [selected,setSelected] = useState('IMEI Check');
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [open,setOpen] = useState<string[]>([]);
   const activeGroups = selected === 'IMEI Check' ? sourceGroups : recoveredGroups[selected] ?? [];
   const toggle = (id:string) => setOpen(v => v.includes(id) ? v.filter(k => k !== id) : [...v,id]);
+  const chooseCategory = (cat:string) => { setSelected(cat); setOpen([]); };
+  const onCategoryKeyDown = (event:React.KeyboardEvent<HTMLButtonElement>, index:number) => {
+    const next = event.key === 'ArrowRight' ? (index+1)%categories.length :
+      event.key === 'ArrowLeft' ? (index-1+categories.length)%categories.length :
+      event.key === 'Home' ? 0 : event.key === 'End' ? categories.length-1 : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    chooseCategory(categories[next]);
+    tabRefs.current[next]?.focus();
+  };
   return <section id="faq-section" className="neir-faq-source bg-[#F2F9F4] rounded-[32px] px-4 sm:px-8 lg:px-16 py-12 lg:py-16">
     <div className="neir-faq-intro text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">{isBn ? 'সাধারণ জিজ্ঞাসা' : 'FAQ'}</h2><p className="mt-2 text-lg text-slate-700">{isBn ? 'সহায়তা প্রয়োজন?' : 'Need help?'}</p></div>
     <div className="neir-faq-content max-w-[1250px] mx-auto">
-      <div className="neir-faq-tabs flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
-        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className="neir-faq-tab">{label(cat)}</button>)}
+      <div className="neir-faq-tabs flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label={isBn ? 'সাধারণ জিজ্ঞাসার বিভাগ' : 'FAQ categories'}>
+        {categories.map((cat,index) => <button key={cat} id={'neir-faq-tab-'+index} ref={el => {tabRefs.current[index]=el;}}
+          type="button" role="tab" aria-selected={selected===cat} aria-controls="neir-faq-panel"
+          tabIndex={selected===cat?0:-1} onKeyDown={event => onCategoryKeyDown(event,index)}
+          onClick={() => chooseCategory(cat)} className="neir-faq-tab">{label(cat)}</button>)}
       </div>
-      <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="neir-faq-group bg-white rounded-3xl p-5 sm:p-7">
+      <div id="neir-faq-panel" role="tabpanel" tabIndex={0}
+        aria-labelledby={'neir-faq-tab-'+categories.indexOf(selected)} className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="neir-faq-group bg-white rounded-3xl p-5 sm:p-7">
           <h3 className="neir-faq-group-title text-lg sm:text-xl font-bold mb-5">{label(group.title)}</h3>
           <div className="flex flex-col gap-2">{group.items.map((item,i) => {const id=g+'-'+i;const visible=open.includes(id);return <div key={id} className="neir-faq-item border border-[#E3DBD8] rounded-2xl px-4">
             <button aria-expanded={visible} onClick={() => toggle(id)} className="neir-faq-question w-full flex items-center justify-between gap-3 text-left text-sm sm:text-base font-medium py-3 text-slate-800"><span>{isBn ? (faqTranslationsBn[item.q]?.q || item.q) : item.q}</span>{visible ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}</button>
