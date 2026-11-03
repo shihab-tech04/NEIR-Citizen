@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import { useNeirDialogFocus } from '../ui/useNeirDialogFocus.ts';
 import { UiInput, UiButton } from '../ui/index.ts';
-import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight} from 'lucide-react';
+import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight,ArrowLeft} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
-interface Props {isOpen:boolean; onClose:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
+interface Props {isOpen:boolean; onClose:()=>void; onBack?:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
 type View='login'|'register'|'forgot';
-export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initialView='login',language,registrationIntent=false,handoffPending=false}) => {
+export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess,initialView='login',language,registrationIntent=false,handoffPending=false}) => {
  const [view,setView]=useState<View>(initialView);
  const [expanded,setExpanded]=useState(false);
  const [mobile,setMobile]=useState('');
@@ -62,18 +62,38 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
    }
  };
  const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
+ const canGoBack=view!=='login'||regStep>1||Boolean(onBack);
+ const goBack=()=>{
+   setError('');
+   setSubmitted(false);
+   if(view==='register' && regStep>1){setRegStep(step=>step-1);return;}
+   if(view!=='login'){setView('login');return;}
+   onBack?.();
+ };
+ useEffect(()=>{
+   if(isOpen && canGoBack){
+     const back=dialogRef.current?.querySelector<HTMLButtonElement>('.neir-modal-back');
+     back?.focus({preventScroll:true});
+   }
+ },[view,regStep,isOpen]);
  const inputStyle='neir-original-dialog-input';
  return <div className={"neir-dialog-backdrop neir-modal-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
   <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
    <div className="neir-original-dialog-top">
-    <h2 id="neir-dialog-heading">{modalTitle}</h2>
+    <div className="neir-modal-header-leading">
+      {canGoBack && <button type="button" className="neir-modal-back"
+        aria-label={language==='bn'?'পেছনে যান':'Back'} onClick={goBack}>
+        <ArrowLeft size={22} strokeWidth={1.8} aria-hidden="true" />
+      </button>}
+      <h2 id="neir-dialog-heading">{modalTitle}</h2>
+    </div>
     <div className="neir-original-dialog-actions">
       <button aria-label={expanded?'Restore dialog':'Maximize'} onClick={()=>setExpanded(!expanded)} type="button">{expanded?<Minimize2 size={15}/>:<Maximize2 size={15}/>}</button>
       <button aria-label="Close" onClick={onClose} type="button"><X size={16}/></button>
     </div>
    </div>
    {handoffPending && <p className="neir-login-transition-status" role="status">{language === 'bn' ? 'আবেদন ফর্ম খোলা হচ্ছে…' : 'Opening your Special Registration form…'}</p>}
-   <div className="neir-original-dialog-body">
+   <div className="neir-original-dialog-body neir-modal-animated-content" key={view+'-'+(view==='register'?regStep:0)}>
     {view==='login' && <form onSubmit={submitLogin} noValidate>
       <hr/>
       <label htmlFor="login-mobile">Enter your mobile number <span>*</span></label>
