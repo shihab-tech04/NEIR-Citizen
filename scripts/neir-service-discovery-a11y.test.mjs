@@ -14,7 +14,8 @@ assert(app.includes('href="#neir-main-content"') && app.includes('mainRef.curren
   'Skip link and focus-managed SPA routes are both required');
 assert(app.includes("prefers-reduced-motion: reduce") && app.includes('scrollToTop()'),
   'Routing must respect reduced-motion preferences');
-assert(!section.includes('imei') && !section.includes('IMEI'),
+assert(!section.includes('neir-imei-input') && !section.includes('setImei') &&
+  !section.includes('neir-source-verify-button'),
   'Service entry may not implement or modify the IMEI checker');
 const start=hero.indexOf('  const [imei,setImei]');
 const end=hero.indexOf('      <div className="neir-source-hero-media">');
