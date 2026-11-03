@@ -167,7 +167,7 @@ export const FaqSection: React.FC<{language:Language}> = () => {
     <div className="neir-faq-intro text-center mb-9"><h2 className="text-3xl sm:text-4xl font-bold text-slate-950">FAQ</h2><p className="mt-2 text-lg text-slate-700">Need help?</p></div>
     <div className="neir-faq-content max-w-[1250px] mx-auto">
       <div className="neir-faq-tabs flex overflow-x-auto gap-2 mb-6" role="tablist" aria-label="FAQ categories">
-        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className={selected === cat ? 'neir-faq-tab flex-1 min-w-max bg-[#00ACC1] text-white rounded-lg px-5 py-3 font-medium text-sm' : 'neir-faq-tab flex-1 min-w-max bg-white text-slate-600 rounded-lg px-5 py-3 font-medium text-sm hover:bg-cyan-50'}>{cat}</button>)}
+        {categories.map(cat => <button key={cat} role="tab" aria-selected={selected === cat} onClick={() => {setSelected(cat);setOpen([]);}} className="neir-faq-tab">{cat}</button>)}
       </div>
       <div className="space-y-5">{activeGroups.map((group,g) => <div key={group.title} className="neir-faq-group bg-white rounded-3xl p-5 sm:p-7">
           <h3 className="neir-faq-group-title text-lg sm:text-xl font-bold mb-5">{group.title}</h3>

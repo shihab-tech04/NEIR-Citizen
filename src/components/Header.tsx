@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import type {AppRoute, Language, UserSession} from '../types.ts';
 import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut, ArrowRight} from 'lucide-react';
+import { UiSelect } from '../ui/index.ts';
 
 type Props = {
   currentRoute: AppRoute; onRouteChange: (route:AppRoute)=>void;
@@ -40,11 +41,11 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
         {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className={'neir-nav-btn neir-menu-button'+(currentRoute===item.route?' neir-active':'')} aria-current={currentRoute===item.route?'page':undefined}><Icon size={16} strokeWidth={2.5}/>{language==='bn'?item.bn:item.en}</button>})}
       </nav>
       <div className="neir-header-end">
-        <div className="neir-language-select"><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={16} aria-hidden="true"/></div>
+        <div className="neir-language-select"><UiSelect aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect><ChevronDown size={16} aria-hidden="true"/></div>
         {controls}
       </div>
       <div className="neir-source-mobile-auth">
-        <label className="neir-source-mobile-language"><span className="sr-only">Language</span><select aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select><ChevronDown size={15} aria-hidden="true"/></label>
+        <label className="neir-source-mobile-language"><span className="sr-only">Language</span><UiSelect aria-label="Language" value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect><ChevronDown size={15} aria-hidden="true"/></label>
         {session.isLoggedIn ? <div className="neir-mobile-profile-container">
             <button type="button" className="neir-source-mobile-login" aria-label="Citizen mobile profile menu" aria-expanded={mobileProfileOpen} aria-haspopup="true" onClick={()=>setMobileProfileOpen(!mobileProfileOpen)}>
               <UserRound size={16}/> {language==='bn'?'প্রোফাইল':'Profile'} <ChevronDown size={18} aria-hidden="true"/>
@@ -61,7 +62,7 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
     </div>
     {open && <div className="neir-mobile-menu">
       {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className="neir-mobile-menu-item"><Icon size={18}/>{language==='bn'?item.bn:item.en}</button>})}
-      <label className="neir-mobile-language">Language <select value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></select></label>
+      <label className="neir-mobile-language">Language <UiSelect value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect></label>
       {controls}
     </div>}
   </header>;

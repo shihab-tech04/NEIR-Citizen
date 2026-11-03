@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNeirDialogFocus } from '../ui/useNeirDialogFocus.ts';
 import { ArrowLeft, Check, CheckCircle2, ChevronDown, Eye, FileText, Gift, Package, Paperclip, Plane, Upload, X } from 'lucide-react';
 import './ProfileSpecialRegistrationModal.css';
 import { NeirDocumentDemo, downloadNeirDocumentSample } from './NeirDocumentDemo';
@@ -49,15 +50,24 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const rootRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const arrivalRef = useRef<HTMLInputElement>(null);
   const arrivalSectionRef = useRef<HTMLElement>(null);
   const imeiRef = useRef<HTMLInputElement>(null);
-  const closeRef = useRef(onClose);
-  closeRef.current = onClose;
   const demoDocRef = useRef(demoDoc);
   demoDocRef.current = demoDoc;
+  const rootRef = useNeirDialogFocus<HTMLElement>({
+    onClose,
+    initialFocusSelector:'#neir-v7-imei',
+    onEscape: () => {
+      if (demoDocRef.current) {
+        setReturningFromSample(true);
+        setDemoDoc(null);
+        return;
+      }
+      onClose();
+    },
+  });
   const demoCloseRef = useRef<HTMLButtonElement>(null);
   const demoReturnFocusRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
@@ -66,32 +76,6 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     return () => { demoReturnFocusRef.current?.focus(); };
   }, [demoDoc]);
 
-  useEffect(() => {
-    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    imeiRef.current?.focus();
-    const keyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (demoDocRef.current) { setReturningFromSample(true); setDemoDoc(null); event.preventDefault(); return; }
-        event.preventDefault(); closeRef.current(); return;
-      }
-      if (event.key !== 'Tab') return;
-      const focusRoot = rootRef.current;
-      const tabbable = Array.from(focusRoot?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex="0"]',
-      ) || []).filter(node => node.getClientRects().length > 0 && !node.closest('[hidden]'));
-      if (!tabbable.length) return;
-      if (event.shiftKey && document.activeElement === tabbable[0]) { event.preventDefault(); tabbable[tabbable.length - 1].focus(); }
-      else if (!event.shiftKey && document.activeElement === tabbable[tabbable.length - 1]) { event.preventDefault(); tabbable[0].focus(); }
-    };
-    document.addEventListener('keydown', keyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', keyDown);
-      previousFocus?.focus();
-    };
-  }, []);
 
   useEffect(() => {
     // Selecting a purchase method shows the remaining form fields immediately.
@@ -210,8 +194,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     { value: 'gift' as const, label: 'Gift Deed from his relative/ Friends', Icon: Gift },
     { value: 'foreign-tour' as const, label: 'Purchased handset during his foreign tour', Icon: Plane },
   ];
-  return <div className="neir-v7-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) closeRef.current(); }}>
-    <section className="neir-v7-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef}>
+  return <div className="neir-v7-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) onClose(); }}>
+    <section className="neir-v7-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef} tabIndex={-1}>
       <header className="neir-v7-header">
         <div className="neir-v7-title-group">
           {demoDoc && <button type="button" className="neir-v7-back"
@@ -301,8 +285,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <UiButton variant="quiet" className="neir-v7-cancel" onClick={onClose}>Cancel</UiButton>
-           <UiButton variant="secondary" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
+          <UiButton variant="link" className="neir-v7-cancel" onClick={onClose}>Cancel</UiButton>
+           <UiButton variant="primary" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
         </footer>
       </form>
       {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">
@@ -310,7 +294,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
           <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
         </div>
         <footer className="neir-v7-footer neir-v7-sample-footer">
-          <UiButton variant="secondary" className="neir-v7-next" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
+          <UiButton variant="link" className="neir-v7-next" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
             Download sample
           </UiButton>
         </footer>

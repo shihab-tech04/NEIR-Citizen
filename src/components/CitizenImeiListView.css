@@ -67,9 +67,9 @@
 .neir-profile-result-title p{font-size:14px;color:#64748b;margin:0;line-height:1.4}
 .neir-profile-result-title strong{color:#283b4c;font-weight:600;letter-spacing:.3px;font-variant-numeric:tabular-nums}
 .neir-profile-status{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 13px;border-radius:32px;font-size:14px;font-weight:600;line-height:1.3;white-space:normal;text-align:center}
-.neir-profile-status.is-approved{background:#e2f4e7;color:#21723c}
-.neir-profile-status.is-warning{background:#fff1cf;color:#8a530b}
-.neir-profile-status.is-danger{background:#fee2e2;color:#9b2424}
+.neir-profile-status.is-approved{background:var(--neir-ui-success-bg);color:var(--neir-ui-success)}
+.neir-profile-status.is-warning{background:var(--neir-ui-warning-bg);color:var(--neir-ui-warning)}
+.neir-profile-status.is-danger{background:var(--neir-ui-error-bg);color:var(--neir-ui-error)}
 .neir-profile-status.is-neutral{background:#edf1f5;color:#465668}
 .neir-profile-status-description{margin:20px 0 22px;border-left:3px solid #9cbac2;padding:14px 16px;background:#f2f8fa;border-radius:0 10px 10px 0}
 .neir-profile-status-description.is-approved{background:#f0faf2;border-color:#49a76a}
@@ -142,10 +142,10 @@
 .neir-special-table tbody tr:hover td{background:#f7fbfc}
 .neir-special-imei{font-variant-numeric:tabular-nums}
 .neir-special-table-status{display:inline-flex;align-items:center;justify-content:center;border-radius:5px;padding:6px 12px;font-size:13px;white-space:nowrap;color:#56636f;background:#edf0f3}
-.neir-special-table-status.is-pending{background:#fff2d7;color:#925400}
-.neir-special-table-status.is-in-progress{background:#e1f7fa;color:#0c738b}
-.neir-special-table-status.is-accepted{background:#def4e6;color:#24753e}
-.neir-special-table-status.is-rejected{background:#ffebeb;color:#a13030}
+.neir-special-table-status.is-pending{background:var(--neir-ui-warning-bg);color:var(--neir-ui-warning)}
+.neir-special-table-status.is-in-progress{background:var(--neir-ui-info-bg);color:var(--neir-ui-info)}
+.neir-special-table-status.is-accepted{background:var(--neir-ui-success-bg);color:var(--neir-ui-success)}
+.neir-special-table-status.is-rejected{background:var(--neir-ui-error-bg);color:var(--neir-ui-error)}
 .neir-special-details-button{min-height:36px;border:1px solid #d9e1e7;border-radius:7px;background:#fff;padding:6px 12px;color:#41546a;font-size:14px;cursor:pointer}
 .neir-special-details-button:hover{border-color:var(--neir-primary-600);color:var(--neir-primary-900)}
 .neir-special-details-button:focus-visible{outline:3px solid var(--neir-primary-600);outline-offset:2px}

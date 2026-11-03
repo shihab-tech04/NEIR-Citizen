@@ -6,20 +6,23 @@
  */
 :root{
   --neir-dialog-stroke:#e3dbd8;
-  --neir-dialog-ink:#202020;
-  --neir-dialog-action:#00acc1;
-  --neir-dialog-action-dark:#00838f;
+  --neir-dialog-ink:var(--neir-ui-text,#202c3c);
+  --neir-dialog-action:var(--neir-primary-600,#00acc1);
+  --neir-dialog-action-dark:var(--neir-primary-900,#00838f);
+  --neir-dialog-overlay:rgba(14,18,25,.55);
+  --neir-dialog-shadow:0 14px 54px rgba(20,35,52,.16);
+  --neir-dialog-radius:16px;
 }
 .neir-shared-backdrop{
   position:fixed;inset:0;z-index:100;display:flex;justify-content:center;align-items:center;
-  padding:16px;box-sizing:border-box;background:rgba(14,18,25,.55);
+  padding:16px;box-sizing:border-box;background:var(--neir-dialog-overlay);
 }
 .neir-shared-dialog{
   display:flex;flex-direction:column;box-sizing:border-box;
   width:min(820px,100%);max-height:min(92dvh,1020px);
-  min-width:0;overflow:hidden;border-radius:16px;background:#fff;
+  min-width:0;overflow:hidden;border-radius:var(--neir-dialog-radius);background:#fff;
   color:var(--neir-dialog-ink);font-family:Poppins,Arial,sans-serif;
-  box-shadow:0 14px 54px rgba(20,35,52,.16);
+  box-shadow:var(--neir-dialog-shadow);
 }
 .neir-shared-dialog--compact{width:min(480px,100%)}
 .neir-shared-dialog--medium{width:min(560px,100%)}
@@ -40,20 +43,21 @@
   flex:none;display:flex;align-items:center;justify-content:flex-end;gap:24px;
   margin:0 24px;padding:23px 0 24px;border-top:1px solid var(--neir-dialog-stroke);
 }
+/* Legacy native actions use the same two canonical appearances as UiButton. */
 .neir-shared-button{
-  border:1px solid var(--neir-dialog-action);background:transparent;
-  color:var(--neir-dialog-action-dark);border-radius:150px;
+  border:1px solid var(--neir-dialog-action);background:var(--neir-dialog-action);
+  color:#fff;border-radius:var(--neir-ui-button-radius,999px);
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  min-height:60px;padding:0 28px;font-size:16px;font-weight:400;
-  line-height:24px;text-align:center;cursor:pointer;
+  min-height:54px;padding:10px 24px;font-size:16px;font-weight:500;
+  line-height:1.5;text-align:center;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;
 }
-.neir-shared-button:hover{background:#def6fa}
-.neir-shared-button--text{
-  border-color:transparent;background:transparent;color:var(--neir-dialog-action);
-  min-height:48px;padding:0 8px;
+.neir-shared-button:hover:not(:disabled){background:var(--neir-dialog-action-dark);border-color:var(--neir-dialog-action-dark)}
+.neir-shared-button--text,.neir-shared-button--danger{
+  background:transparent;color:var(--neir-dialog-action-dark);
 }
-.neir-shared-button--danger{border-color:#b42318;color:#b42318}
-.neir-shared-button--danger:hover{background:#fff0ed}
+.neir-shared-button--text:hover:not(:disabled),.neir-shared-button--danger:hover:not(:disabled){
+  color:#fff;background:var(--neir-dialog-action);border-color:var(--neir-dialog-action)
+}
 .neir-shared-field{
   display:block;box-sizing:border-box;width:100%;min-width:0;min-height:60px;
   border:1px solid var(--neir-dialog-stroke);border-radius:12px;
@@ -101,11 +105,11 @@
 .neir-dialog-input-icon>svg{color:#757575}
 .neir-dialog-input-icon .neir-original-dialog-input{padding-left:42px}
 .neir-dialog-primary{
-  width:100%;height:60px;min-height:60px;border-radius:150px;
-  border:1px solid var(--neir-dialog-action);background:white;
-  color:var(--neir-dialog-action-dark);font-size:16px;font-weight:400;margin-top:12px;
+  width:100%;height:60px;min-height:60px;border-radius:var(--neir-ui-button-radius,150px);
+  border:1px solid var(--neir-dialog-action);background:var(--neir-dialog-action);
+  color:#fff;font-size:16px;font-weight:500;margin-top:12px;transition:background-color .15s,border-color .15s
 }
-.neir-dialog-primary:hover{background:#def6fa}
+.neir-dialog-primary:hover:not(:disabled){background:var(--neir-dialog-action-dark);border-color:var(--neir-dialog-action-dark)}
 .neir-dialog-primary:focus-visible{outline:2px solid var(--neir-dialog-action-dark);outline-offset:2px}
 .neir-dialog-switch{font-size:14px;line-height:1.5}
 .neir-dialog-switch button{color:var(--neir-dialog-action-dark)}

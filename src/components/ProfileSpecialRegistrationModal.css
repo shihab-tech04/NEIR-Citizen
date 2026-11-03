@@ -86,9 +86,9 @@
 .neir-v7-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;gap:16px;margin:0 24px;padding:20px 0 24px;border-top:1px solid var(--neir-dialog-stroke,#e3dbd8)}
 .neir-v7-footer>p{flex:1;margin:0;font-size:14px;line-height:1.5;color:#267b87}
 .neir-v7-footer button{min-height:54px;white-space:nowrap;padding:0 24px;border-radius:150px;font-family:inherit;font-size:16px;font-weight:400;cursor:pointer}
-.neir-v7-cancel{background:transparent;border:0;color:#00838f}
-.neir-v7-next{min-width:144px;border:1px solid #00acc1;background:#fff;color:#00838f}
-.neir-v7-next:hover:not(:disabled){background:#def6fa}
+/* Wizard action geometry comes from the two shared Primary/Link button variants. */
+.neir-v7-cancel{min-width:112px}
+.neir-v7-next{min-width:144px}
 .neir-v7-next:disabled{border-color:#edf2f4;background:#edf2f4;color:#789097;cursor:not-allowed}
 .neir-v7-dialog button:focus-visible{outline:2px solid #00838f;outline-offset:2px}
 @media(max-width:700px){

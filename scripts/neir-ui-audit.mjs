@@ -20,11 +20,13 @@ for (const filename of components) {
 const tokens = requireText('src/ui/neir-ui.css', [
   '--neir-ui-primary:', '--neir-ui-focus:', '--neir-ui-control-height:',
   '--neir-ui-button-height:', '--neir-ui-dialog-radius:', '.neir-ui-table',
-  '.neir-ui-button--primary', '.neir-ui-button--danger',
+  '.neir-ui-button--primary', '.neir-ui-button--link',
   '.neir-ui-control[aria-invalid=true]', '@media(max-width:700px)',
   '@media(prefers-reduced-motion:reduce)',
 ]);
 assert(!tokens.includes('linear-gradient('), 'UI library must not introduce gradients');
+for (const obsolete of ['.neir-ui-button--secondary','.neir-ui-button--quiet','.neir-ui-button--danger'])
+  assert(!tokens.includes(obsolete),'Obsolete action appearance returned: '+obsolete);
 const library = requireText('src/ui/NeirUI.tsx', [
   'export const UiButton', 'export const UiInput', 'export const UiSelect',
   'export const UiTextarea', 'export function UiField',
@@ -75,7 +77,10 @@ const wizard = requireText('src/components/ProfileSpecialRegistrationModal.tsx',
   'Download sample', 'Select how you purchased or received the device',
 ]);
 assert(!wizard.includes('setStage('), 'Special Registration must not regain a Continue dependency');
-requireText('src/components/NeirModalFrame.tsx', ['aria-modal="true"', "event.key === 'Escape'", 'previousFocus?.focus()']);
+requireText('src/components/NeirModalFrame.tsx', ['aria-modal="true"', 'useNeirDialogFocus', 'neir-shared-dialog']);
+requireText('src/ui/useNeirDialogFocus.ts', ["event.key === 'Escape'", "event.key !== 'Tab'", 'previouslyFocused?.focus()', "document.body.style.overflow = 'hidden'"]);
+requireText('src/components/LoginModal.tsx', ['useNeirDialogFocus']);
+requireText('src/components/ProfileSpecialRegistrationModal.tsx', ['useNeirDialogFocus']);
 assert(sourceInventory.nativeTables >= 2, 'Historical printable sample tables must remain');
 console.log('PASS: NEIR unified UI tokens, canonical primitives, active adoption, focus and responsive gates');
 console.log(JSON.stringify({ ...sourceInventory, styleFiles: cssFiles.length + 1, sharedControls: library.match(/export (?:const|function) Ui/g)?.length || 0 }, null, 2));
