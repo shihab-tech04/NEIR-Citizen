@@ -13,6 +13,8 @@ const guide=load('src/components/UserGuidesView.tsx');
 const contact=load('src/components/ContactUsView.tsx');
 const header=load('src/components/Header.tsx');
 const home=load('src/components/HomeHero.tsx');
+const faq=load('src/components/FaqSection.tsx');
+const translation=load('src/components/faqTranslations.bn.ts');
 
 for(const path of ['src/components/NeirModalFrame.tsx',
   'src/components/LoginModal.tsx','src/components/ProfileSpecialRegistrationModal.tsx']){
@@ -64,6 +66,18 @@ for(const [source,tag] of [[guide,'bnRegistration'],[guide,'bnPasswordReset'],
   [contact,'সব আবশ্যিক ঘর'],[header,'আমার প্রোফাইল'],[home,'IMEI নম্বরের প্রথম ১৪টি সংখ্যা']]){
   assert(source.includes(tag),'Bengali UI parity missing '+tag);
 }
+const localeJson=translation.match(/faqTranslationsBn:[^=]+?= ([\\s\\S]*?);\\nexport const faqTitlesBn:/);
+assert(localeJson,'Bengali FAQ dictionary must be exported as a stable object');
+const translated=JSON.parse(localeJson[1]);
+const englishQuestions=[
+  ...[...faq.matchAll(/\\bq:\\s*'([^']+)'/g)].map(m=>m[1]),
+  ...[...faq.matchAll(/"q":\\s*"([^"]+)"/g)].map(m=>m[1]),
+];
+assert.equal(new Set(englishQuestions).size,28,'FAQ source question inventory changed; re-audit translations');
+assert.deepEqual(englishQuestions.filter(q=>!translated[q]),[],
+  'Every existing FAQ must retain EN and a complete BN question/answer pair');
+assert(faq.includes('faqTranslationsBn[item.q]') && faq.includes('faqTitlesBn[source]'),
+  'FAQ language selection must apply to questions, answers and category labels');
 for(const excluded of ['CitizenDashboardModal','FigmaSpecialRegistrationModal','ImeiChecker']){
   assert(!app.includes(excluded),'Orphan legacy component entered active route: '+excluded);
 }
