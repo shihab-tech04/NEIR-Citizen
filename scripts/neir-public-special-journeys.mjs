@@ -103,6 +103,21 @@ try{
   assert.equal(await desktop.locator('.neir-profile-search-outcome').count(),0,
     'Profile must not display an IMEI result or placeholder before search');
   await visible(desktop.getByRole('button',{name:'Apply for Special Registration'}),'profile application entry');
+  const profileOverview=desktop.locator('.neir-profile-overview');
+  const identityCard=profileOverview.locator('.neir-profile-identity');
+  const registrationCard=profileOverview.locator('.neir-profile-registration-card');
+  await visible(identityCard,'desktop profile card');
+  await visible(registrationCard,'desktop Special Registration card');
+  assert.equal(await identityCard.getByRole('button',{name:'Apply for Special Registration'}).count(),0,
+    'The Apply action belongs only in the registration card');
+  await visible(identityCard.getByRole('button',{name:'Edit Profile Informations'}),'profile Edit action');
+  await visible(registrationCard.getByRole('button',{name:'Apply for Special Registration'}),'registration Apply action');
+  await visible(registrationCard.getByText('19 of 20 application slots available'),'live card quota');
+  const leftCard=await identityCard.boundingBox(),rightCard=await registrationCard.boundingBox();
+  assert(leftCard&&rightCard&&Math.abs(leftCard.y-rightCard.y)<3&&rightCard.x>leftCard.x+leftCard.width,
+    'Desktop profile and registration cards must appear side-by-side');
+  assert(Math.abs(leftCard.height-rightCard.height)<3,
+    'Desktop profile and registration cards must share the same row height');
   assert.equal(await desktop.getByRole('button',{name:'Mark as Stolen'}).count(),0,
     'Removed Mark as Stolen action must not appear on the profile');
   await desktop.locator('#neir-profile-imei-search').fill('12345678901234');
@@ -146,6 +161,13 @@ try{
   await mobile.locator('.neir-source-mobile-login').filter({hasText:'Login'}).click();
   await login(mobile);
   await visible(mobile.getByRole('heading',{name:'Search your device info'}),'mobile profile');
+  const mobileOverview=mobile.locator('.neir-profile-overview');
+  const mobileLeft=await mobileOverview.locator('.neir-profile-identity').boundingBox();
+  const mobileRight=await mobileOverview.locator('.neir-profile-registration-card').boundingBox();
+  assert(mobileLeft&&mobileRight&&mobileRight.y>=mobileLeft.y+mobileLeft.height,
+    '320px mobile overview must stack profile above registration without overlap');
+  await visible(mobileOverview.getByRole('button',{name:'Apply for Special Registration'}),'mobile Apply action');
+  await visible(mobileOverview.getByRole('button',{name:'Edit Profile Informations'}),'mobile Edit action');
   const geometry=await mobile.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert(geometry.scroll<=geometry.w+4,'mobile overflow: '+JSON.stringify(geometry));
   await screenshot(mobile,'03-mobile-profile-and-quota');
