@@ -19,15 +19,15 @@ button,input,select,textarea{font:inherit}
 .neir-logo-wrap{display:flex;align-items:center;justify-content:center;gap:5px;height:54px;min-width:114px;padding:4px 5px;background:#fff;border-radius:16px;flex-shrink:0;cursor:pointer}
 .neir-logo-wrap img{width:48px;height:48px;object-fit:contain}
 .neir-main-navigation{position:absolute;left:40%;transform:translateX(-40%);display:flex;align-items:center;gap:12px}
-.neir-nav-btn{min-height:46px;border:1px solid var(--neir-primary-600);color:var(--neir-primary-600);padding:12px 20px;border-radius:15px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#ffffff4d;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background-color .15s,color .15s}
-.neir-nav-btn:hover,.neir-menu-button.neir-active{background:var(--neir-primary-600);color:white}
+.neir-nav-btn{min-height:46px;border:1px solid var(--neir-ui-action-hover,#006e7a);color:var(--neir-ui-action-hover,#006e7a);padding:12px 20px;border-radius:15px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#ffffff4d;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background-color .15s,color .15s}
+.neir-nav-btn:hover,.neir-menu-button.neir-active{background:var(--neir-ui-action-bg,#00838f);color:white}
 .neir-header-end{display:flex;align-items:center;gap:12px;margin-left:auto}
 .neir-language-select{height:42px;min-width:112px;display:flex;align-items:center;gap:5px;padding:0 12px;border:1px solid #c1dbe3;border-radius:6px}
 .neir-language-select select{width:100%;background:none;border:0;appearance:none;outline:none;font-size:14px;color:#334155}
 .neir-language-select svg{pointer-events:none;color:#64748b;flex-shrink:0}
 .neir-header-auth{display:flex;align-items:center;gap:10px}
 .neir-auth-register{background:#fff}
-.neir-auth-login{background:#fff;color:var(--neir-primary-600)}
+.neir-auth-login{background:#fff;color:var(--neir-ui-action-hover,#006e7a)}
 .neir-profile-container{position:relative}
 .neir-profile-icon{width:46px;height:46px;border-radius:50%;background:#eb6d4a;color:#1c2850;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .neir-profile-dropdown{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:#fff;box-shadow:0 12px 36px #0002;border-radius:12px;padding:10px;border:1px solid #ddd}
@@ -65,6 +65,7 @@ button,input,select,textarea{font:inherit}
 .neir-source-error{color:#b91c1c;font-size:13px}
 .neir-source-demo-result{border-radius:12px;background:#ecfeff;color:#155e75;padding:12px;font-size:13px}
 .neir-source-hero-media{width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
+.neir-source-hero-media picture{display:block;width:100%}
 .neir-source-hero-media img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}
 .neir-source-steps-wrap{display:flex;flex-direction:column;gap:24px}
 .neir-source-guide-section{border-radius:32px;padding:80px 24px 64px}
@@ -116,7 +117,7 @@ button,input,select,textarea{font:inherit}
  .neir-source-mobile-language{display:flex;align-items:center;gap:4px;height:36px;width:104px;padding:0 9px;border:1px solid var(--neir-primary-600);border-radius:6px;background:transparent;color:#1c4760}
  .neir-source-mobile-language select{min-width:0;width:100%;font-size:14px;background:transparent;appearance:none;color:inherit;outline-offset:2px}
  .neir-source-mobile-language svg{flex:0 0 auto;pointer-events:none}
- .neir-source-mobile-login{min-width:92px;height:46px;display:flex;gap:8px;align-items:center;justify-content:center;border:0;background:var(--neir-primary-600);color:#fff;border-radius:24px;font-size:14px;font-weight:500}
+ .neir-source-mobile-login{min-width:92px;height:46px;display:flex;gap:8px;align-items:center;justify-content:center;border:0;background:var(--neir-ui-action-bg,#00838f);color:#fff;border-radius:24px;font-size:14px;font-weight:500}
  .neir-home-sections{gap:21px}
  .neir-source-hero{left:-7px;position:relative;width:calc(100% + 14px);padding:28px 28px 20px;border-radius:0 0 16px 16px}
  .neir-source-hero-inner{grid-template-columns:1fr;gap:49px;transform:none}
