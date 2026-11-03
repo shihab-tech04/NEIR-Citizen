@@ -63,8 +63,8 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onLoginSuccess,initia
  };
  const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
  const inputStyle='neir-original-dialog-input';
- return <div className={"neir-dialog-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
-  <div ref={dialogRef} className={'neir-original-dialog'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
+ return <div className={"neir-dialog-backdrop neir-modal-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
+  <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
    <div className="neir-original-dialog-top">
     <h2 id="neir-dialog-heading">{modalTitle}</h2>
     <div className="neir-original-dialog-actions">
