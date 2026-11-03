@@ -251,26 +251,47 @@ export const CitizenImeiListView: React.FC<Props> = ({
   return <>
     {!registrationOnly && <section className="neir-profile-page" aria-label={isBn ? 'আমার প্রোফাইল' : 'My Profile'}>
       <div className="neir-profile-content">
-        <section className="neir-profile-identity" aria-labelledby="neir-profile-title">
-          <span className="neir-profile-avatar" role="img" aria-label={isBn ? 'প্রোফাইল ছবির স্থান' : 'Profile photo placeholder'}>
-            <UserRound size={40} strokeWidth={1.7} aria-hidden="true" />
-          </span>
-          <div className="neir-profile-identity-copy">
-            <p className="neir-profile-eyebrow">{isBn ? 'আমার প্রোফাইল' : 'My Profile'}</p>
-            <h1 id="neir-profile-title">{profileName}</h1>
-            <div className="neir-profile-contact">
-              {session.mobile && <span><Phone size={16} aria-hidden="true" /> {session.mobile}</span>}
-              {session.email && !session.email.endsWith('.invalid') && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
+        <div className="neir-profile-overview">
+          <section className="neir-profile-identity" aria-labelledby="neir-profile-title">
+            <div className="neir-profile-person">
+              <span className="neir-profile-avatar" role="img" aria-label={isBn ? 'প্রোফাইল ছবির স্থান' : 'Profile photo placeholder'}>
+                <UserRound size={36} strokeWidth={1.7} aria-hidden="true" />
+              </span>
+              <div className="neir-profile-identity-copy">
+                <p className="neir-profile-eyebrow">{isBn ? 'আমার প্রোফাইল' : 'My Profile'}</p>
+                <h1 id="neir-profile-title">{profileName}</h1>
+                <div className="neir-profile-contact">
+                  {session.mobile && <span><Phone size={16} aria-hidden="true" /> {session.mobile}</span>}
+                  {session.email && !session.email.endsWith('.invalid') && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="neir-profile-actions">
-            <UiButton variant="primary" type="button" className="neir-profile-apply" onClick={() => startProfileRegistration('')}
-              disabled={reachedLimit}>{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Apply for Special Registration'}</UiButton>
-            <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
-              {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
-            </UiButton>
-          </div>
-        </section>
+            <div className="neir-profile-actions">
+              <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
+                {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
+              </UiButton>
+            </div>
+          </section>
+          <section className="neir-profile-registration-card" aria-labelledby="neir-profile-registration-heading">
+            <div className="neir-profile-registration-heading">
+              <span className="neir-profile-registration-icon" aria-hidden="true"><FileSearch2 size={24} strokeWidth={1.8} /></span>
+              <div>
+                <h2 id="neir-profile-registration-heading">{isBn ? 'বিশেষ নিবন্ধন' : 'Special Registration'}</h2>
+                <p>{isBn ? 'যোগ্য ডিভাইসের নিবন্ধনের জন্য আবেদন করুন।' : 'Apply to register an eligible handset.'}</p>
+              </div>
+            </div>
+            <div className="neir-profile-registration-action">
+              <p className="neir-profile-registration-capacity" role="status">
+                <strong>{isBn ? availableSlots.toLocaleString('bn-BD') : availableSlots}</strong>
+                {isBn ? ' / ২০টি আবেদন স্লট খালি' : ' of 20 application slots available'}
+              </p>
+              <UiButton variant="primary" type="button" className="neir-profile-apply"
+                onClick={() => startProfileRegistration('')} disabled={reachedLimit}>
+                {isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Apply for Special Registration'}
+              </UiButton>
+            </div>
+          </section>
+        </div>
 
         <section className={'neir-profile-search-panel' + (searchedImei === null ? ' is-search-idle' : '')} aria-labelledby="neir-device-search-title">
           <div className="neir-profile-search-header">
