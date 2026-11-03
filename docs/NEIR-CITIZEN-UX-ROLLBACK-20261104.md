@@ -4,7 +4,10 @@
 - Source: `shihab-tech04/NEIR-Citizen`, pre-release `main` SHA `b56c8dc02ed4753aff1bac56fd73004c661f4a1a`.
 - Preserved rollback branch: `rollback/neir-citizen-pre-ux-service-20261104` — immutable reference to the old release.
 - Production: https://shihab-tech04.github.io/NEIR-Citizen/
-- Independently restorable full-history/source ZIP must be checksum + restore-tested and archived outside GitHub before merge. See attached release PR evidence.
+- **Verified independent Drive recovery ZIP:** https://drive.google.com/file/d/1hXRpwcvJRhoIsEjCqPcgjoH0NEOAKnhk/view?usp=drivesdk (92,010,131 bytes).
+- GitHub Actions backup evidence: https://github.com/shihab-tech04/NEIR-Citizen/actions/runs/41704997103
+- Uploaded ZIP digest SHA-256: `47c8dd7a77e1581bf0020698d0f4fb38c6e26a0a2fdeafa263437ea6b7c85927`.
+- Internal `SHA256SUMS` PASS for full-history bundle/source archive; `git bundle verify`, full clone restore and source extraction PASS. Restored HEAD exactly `b56c8dc02ed4753aff1bac56fd73004c661f4a1a`.
 
 ## Scope of this isolated release
 - Visibly separate citizen account signup from handset Special Registration using new home-only service cards and shared existing actions.
