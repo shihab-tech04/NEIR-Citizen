@@ -68,6 +68,8 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
     </div>
     {open && <nav id="neir-mobile-menu" className="neir-mobile-menu" aria-label={language==='bn'?'মোবাইল নেভিগেশন':'Mobile navigation'}>
       {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className="neir-mobile-menu-item"><Icon size={18}/>{language==='bn'?item.bn:item.en}</button>})}
+      {!session.isLoggedIn && <button type="button" className="neir-mobile-menu-item neir-mobile-register"
+        onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'নিবন্ধন':'Register'}</button>}
       <label className="neir-mobile-language">{language==='bn'?'ভাষা':'Language'} <UiSelect value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect></label>
       {controls}
     </nav>}
