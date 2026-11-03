@@ -21,7 +21,7 @@ assert(profile.includes('className="neir-profile-overview"') &&
 assert(profile.includes('neir-profile-registration-capacity') &&
   profile.includes("availableSlots.toLocaleString('bn-BD')"),
   'Registration capacity must use live slot count with EN/BN parity');
-assert(style.includes('grid-template-columns:minmax(0,1.27fr) minmax(0,.9fr)') &&
+assert(style.includes('grid-template-columns:repeat(2,minmax(0,1fr))') &&
   style.includes('@media(max-width:850px)'),
   'Two cards must share a desktop row and stack responsively on mobile');
 assert(profile.indexOf('className="neir-profile-registration-card"') <
@@ -52,4 +52,15 @@ assert(edge.includes("['passportInfo','arrivalSeal'].some(type=>!selected.includ
   'Edge function must accept the two-document Foreign Tour submission');
 assert(edge.includes("gift:['donorPassport','donorArrivalSeal','imeiBox','giftDeed']"),
   'Do not invalidate historic submissions with four legacy Gift document types');
+const sharedTable=read('src/ui/NeirUI.tsx');
+const sharedTableCss=read('src/ui/neir-ui.css');
+assert(profile.includes('renderMobileCard={row => <article className="neir-special-mobile-card"'),
+  'Citizen Special Registration uses Admin-parity record cards on small devices');
+assert(sharedTable.includes('renderMobileCard?:') && sharedTable.includes('visibleRows.map((row, index)'),
+  'Shared table mobile cards must preserve desktop search/sort filtering');
+assert(sharedTableCss.includes('max-width:1023px') && sharedTableCss.includes('.neir-ui-table-scroll--desktop{display:none}'),
+  'Small screens must show cards without the truncated desktop table');
+assert(style.includes('.neir-profile-identity .neir-profile-edit,') &&
+  style.includes('.neir-profile-registration-card .neir-profile-apply'),
+  'Edit and Apply must use identical width and minimum height');
 console.log('PASS: NEIR Citizen profile UI, dialogs, borders and acquisition-specific document rules');

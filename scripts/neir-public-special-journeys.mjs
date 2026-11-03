@@ -118,6 +118,13 @@ try{
     'Desktop profile and registration cards must appear side-by-side');
   assert(Math.abs(leftCard.height-rightCard.height)<3,
     'Desktop profile and registration cards must share the same row height');
+  assert(Math.abs(leftCard.width-rightCard.width)<3,
+    'Profile and registration cards must each occupy half the top row');
+  const editBox=await identityCard.getByRole('button',{name:'Edit Profile Informations'}).boundingBox();
+  const applyBox=await registrationCard.getByRole('button',{name:'Apply for Special Registration'}).boundingBox();
+  assert(editBox&&applyBox&&Math.abs(editBox.width-applyBox.width)<3 &&
+    Math.abs(editBox.height-applyBox.height)<3,
+    'Both overview buttons must match in height and width');
   assert.equal(await desktop.getByRole('button',{name:'Mark as Stolen'}).count(),0,
     'Removed Mark as Stolen action must not appear on the profile');
   await desktop.locator('#neir-profile-imei-search').fill('12345678901234');
@@ -168,6 +175,15 @@ try{
     '320px mobile overview must stack profile above registration without overlap');
   await visible(mobileOverview.getByRole('button',{name:'Apply for Special Registration'}),'mobile Apply action');
   await visible(mobileOverview.getByRole('button',{name:'Edit Profile Informations'}),'mobile Edit action');
+  const mobileCards=mobile.locator('.neir-special-applications .neir-special-mobile-card');
+  assert(await mobileCards.count()>0,'Small display must use Special Registration cards');
+  assert(await mobile.locator('.neir-special-applications .neir-ui-table-scroll--desktop').isHidden(),
+    'Desktop table must not clip or appear within the mobile viewport');
+  await visible(mobileCards.first().getByText('Device IMEI'),'mobile record heading');
+  await visible(mobileCards.first().getByText('Applied on'),'mobile record date');
+  await mobileCards.first().getByRole('button',{name:'Details'}).click();
+  await visible(mobile.getByRole('dialog',{name:'Special Registration details'}),'mobile card details');
+  await mobile.getByRole('dialog',{name:'Special Registration details'}).getByRole('button',{name:'Close dialog'}).click();
   const geometry=await mobile.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert(geometry.scroll<=geometry.w+4,'mobile overflow: '+JSON.stringify(geometry));
   await screenshot(mobile,'03-mobile-profile-and-quota');

@@ -75,12 +75,14 @@ export type UiDataTableProps<Row> = Omit<TableHTMLAttributes<HTMLTableElement>, 
   searchable?: (row: Row, query: string) => boolean;
   searchPlaceholder?: string;
   emptyText?: string;
+  /** Admin-parity mobile record-card view; desktop retains the existing table. */
+  renderMobileCard?: (row: Row, index: number) => ReactNode;
 };
 
 /** Shared table: inline search, optional quick sort, numeric alignment, row detail and keyboard support. */
 export function UiDataTable<Row>({
   rows, columns, rowKey, onRowClick, rowLabel, scrollClassName, searchable,
-  searchPlaceholder = 'Search table', emptyText = 'No records found',
+  searchPlaceholder = 'Search table', emptyText = 'No records found', renderMobileCard,
   className, ...tableProps
 }: UiDataTableProps<Row>) {
   const searchId = useId();
@@ -105,7 +107,25 @@ export function UiDataTable<Row>({
       </label>
       <span className="neir-ui-table-count" role="status">{visibleRows.length} {visibleRows.length === 1 ? 'record' : 'records'}</span>
     </div>}
-    <div className={classes('neir-ui-table-scroll', scrollClassName)}>
+    {renderMobileCard && <div className="neir-ui-mobile-record-stack" aria-label="Application records">
+      {visibleRows.length ? visibleRows.map((row, index) => <div key={rowKey(row)}
+        className={classes('neir-ui-mobile-record', onRowClick && 'neir-ui-mobile-record--interactive')}
+        role={onRowClick ? 'button' : undefined}
+        tabIndex={onRowClick ? 0 : undefined}
+        aria-label={onRowClick ? (rowLabel?.(row) ?? 'View record details') : undefined}
+        onClick={onRowClick ? event => {
+          const target=event.target as HTMLElement;
+          if (target.closest('button, a, input, select, textarea, [role="button"], [role="checkbox"], [role="link"]')) return;
+          onRowClick(row);
+        } : undefined}
+        onKeyDown={onRowClick ? event => {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onRowClick(row); }
+        } : undefined}>
+        {renderMobileCard(row, index)}
+      </div>) : <p className="neir-ui-mobile-record-empty" role="status">{emptyText}</p>}
+    </div>}
+    <div className={classes('neir-ui-table-scroll', renderMobileCard && 'neir-ui-table-scroll--desktop', scrollClassName)}>
       <table {...tableProps} className={classes('neir-ui-table', className)}>
         <thead><tr>{columns.map(col => <th key={col.key} scope="col" className={col.numeric ? 'neir-ui-numeric' : undefined}
           aria-sort={sorting?.key === col.key ? (sorting.ascending ? 'ascending' : 'descending') : col.sortValue ? 'none' : undefined}>

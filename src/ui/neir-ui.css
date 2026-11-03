@@ -96,6 +96,17 @@
 .neir-ui-row-action{cursor:pointer}
 .neir-ui-row-action:focus-visible td{outline:2px solid var(--neir-ui-focus);outline-offset:-2px}
 .neir-ui-table-empty{text-align:center!important;padding:24px!important;color:var(--neir-ui-muted)}
+/* Shared Admin-parity mobile cards: opt in per table, preserve desktop columns/sorting. */
+.neir-ui-mobile-record-stack{display:none}
+.neir-ui-mobile-record{min-width:0;background:var(--neir-ui-surface)}
+.neir-ui-mobile-record--interactive{cursor:pointer}
+.neir-ui-mobile-record--interactive:hover{background:#f7fbfc}
+.neir-ui-mobile-record--interactive:focus-visible{outline:2px solid var(--neir-ui-focus);outline-offset:-2px}
+.neir-ui-mobile-record-empty{margin:0;padding:22px 16px;color:var(--neir-ui-muted);background:var(--neir-ui-surface);text-align:center;font-size:14px}
+@media(max-width:1023px){
+  .neir-ui-mobile-record-stack{display:flex;flex-direction:column;gap:2px;background:var(--neir-ui-stroke)}
+  .neir-ui-table-scroll--desktop{display:none}
+}
 .neir-ui-table-tools{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 12px}
 .neir-ui-table-search-label{display:flex;flex-direction:column;gap:5px;min-width:220px;max-width:380px;flex:1;font-size:14px;font-weight:500;color:#31505d}
 .neir-ui-table-count{font-size:14px;color:var(--neir-ui-muted);padding-bottom:10px}
