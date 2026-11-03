@@ -242,7 +242,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
       sortValue: row => row.appliedAt || '',
       render: row => row.appliedAt ? new Date(row.appliedAt).toLocaleDateString(isBn ? 'bn-BD' : 'en-GB') : '—' },
     { key: 'action', heading: isBn ? 'বিস্তারিত' : 'Action',
-      render: row => <UiButton variant="secondary" size="compact" className="neir-special-details-button"
+      render: row => <UiButton variant="link" size="compact" className="neir-special-details-button"
         onClick={event => { event.stopPropagation(); setApplicationDetail(row); }}>
         {isBn ? 'বিস্তারিত' : 'Details'}
       </UiButton> },
@@ -267,7 +267,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
               </div>
             </div>
             <div className="neir-profile-actions">
-              <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
+              <UiButton variant="link" type="button" className="neir-profile-edit" onClick={editProfile}>
                 {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
               </UiButton>
             </div>
@@ -349,7 +349,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
                     onClick={() => startProfileRegistration(matchedDevice.imei)}>
                     {isBn ? 'বিশেষ নিবন্ধনের আবেদন করুন' : 'Apply for Special Registration'}
                   </UiButton>}
-                <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
+                <UiButton variant="link" type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
                   <Info size={17} aria-hidden="true" /> {isBn ? 'বিস্তারিত দেখুন' : 'View details'}
                 </UiButton>
               </div>
@@ -364,7 +364,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
           </div>}
           {note && <p className="neir-profile-data-note">{note}</p>}
           {applicationError && <p role="alert" className="neir-profile-search-error">{applicationError}
-            <UiButton variant="quiet" type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</UiButton></p>}
+            <UiButton variant="link" type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</UiButton></p>}
           {result && <p role="status" className="neir-profile-feedback">{result}</p>}
         </section>
         {<section className="neir-special-applications" aria-labelledby="neir-special-applications-title">
@@ -374,7 +374,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
               <p className="neir-special-quota" role="status">{isBn ? `${activeApplicationCount}/২০টি আবেদন ব্যবহৃত · ${availableSlots}টি খালি` : `${activeApplicationCount}/20 applications in use · ${availableSlots} available`}</p>
               {reachedLimit && <p className="neir-special-quota-warning">{isBn ? 'একটি আবেদন গ্রহণ হলে নতুন IMEI যোগ করতে পারবেন।' : 'You can apply for another IMEI after an application is accepted.'}</p>}
             </div>
-            <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</UiButton>
+            <UiButton variant="link" type="button" className="neir-profile-secondary-action" onClick={refreshApplications}>{isBn ? 'হালনাগাদ' : 'Refresh status'}</UiButton>
           </div>
           <UiDataTable
             rows={specialApplications}
@@ -405,7 +405,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
               </div>
               <footer className="neir-special-mobile-card-footer">
                 <p>{isBn ? 'বিস্তারিত দেখতে কার্ডে চাপুন' : 'Tap the card to view details'}</p>
-                <UiButton variant="secondary" size="compact" className="neir-special-details-button"
+                <UiButton variant="link" size="compact" className="neir-special-details-button"
                   onClick={event => { event.stopPropagation(); setApplicationDetail(row); }}>
                   {isBn ? 'বিস্তারিত' : 'Details'}
                 </UiButton>
@@ -459,7 +459,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
     </UiDialog>}
     {profileOpen && <UiDialog title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
       closeLabel="Close profile" onClose={() => setProfileOpen(false)}
-      footer={<UiButton variant="secondary" className="neir-shared-button" onClick={saveProfile}>Save changes</UiButton>}>
+      footer={<UiButton variant="link" className="neir-shared-button" onClick={saveProfile}>Save changes</UiButton>}>
       <label className="block text-sm" htmlFor="neir-profile-name-field">Full Name</label>
       <UiInput id="neir-profile-name-field" className="neir-shared-field" value={profileDraft}
         onChange={event => { setProfileDraft(event.target.value); setProfileError(''); }} />
