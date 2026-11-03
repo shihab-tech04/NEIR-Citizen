@@ -8,6 +8,7 @@ type Props = {
   language: Language;
   isLoggedIn: boolean;
   onCreateAccount: () => void;
+  onOpenDashboard: () => void;
   onSpecialRegistration: () => void;
   onOpenGuides: () => void;
 };
@@ -17,7 +18,7 @@ type Props = {
  * Reuses existing routes and modals; owns no registration or identity state.
  */
 export const HomeServiceEntry: React.FC<Props> = ({
-  language, isLoggedIn, onCreateAccount, onSpecialRegistration, onOpenGuides,
+  language, isLoggedIn, onCreateAccount, onOpenDashboard, onSpecialRegistration, onOpenGuides,
 }) => {
   const bn = language === 'bn';
   return (
@@ -54,12 +55,13 @@ export const HomeServiceEntry: React.FC<Props> = ({
                     : 'Sign up to manage your profile and registration applications.')}</p>
               </div>
             </div>
-            {!isLoggedIn && (
-              <UiButton variant="link" className="neir-service-card-action" onClick={onCreateAccount}>
-                {bn ? 'অ্যাকাউন্ট নিবন্ধন' : 'Create account'}
-                <ArrowRight size={18} aria-hidden="true" />
-              </UiButton>
-            )}
+            <UiButton variant="link" className="neir-service-card-action"
+              onClick={isLoggedIn ? onOpenDashboard : onCreateAccount}>
+              {isLoggedIn
+                ? (bn ? 'আমার প্রোফাইল খুলুন' : 'Open my profile')
+                : (bn ? 'অ্যাকাউন্ট নিবন্ধন' : 'Create account')}
+              <ArrowRight size={18} aria-hidden="true" />
+            </UiButton>
           </article>
           <article className="neir-service-card">
             <div className="neir-service-card-heading">
