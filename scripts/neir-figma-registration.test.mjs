@@ -11,7 +11,6 @@ for(const required of [
   'Re-send OTP','At least one lowercase letter','At least one uppercase letter',
   'At least one number','At least one special character','Minimum 8 characters',
   'getRandomValues','secondsRemaining','onStepChange(2)','onStepChange(3)',
-  'Demonstration only: no SMS is sent',
 ]) assert(body.includes(required),'Missing Figma registration contract: '+required);
 assert(body.includes('Array.from({length:6}') && body.includes('one-time-code'),
   'Registration OTP must have six accessible one-time-code boxes');
@@ -29,8 +28,13 @@ assert(login.includes('key={view}') && login.includes('onStepChange={setRegStep}
 assert(!body.includes('Prototype only. This does not verify identity or create a persistent citizen account.') &&
   !body.includes('শুধুমাত্র প্রোটোটাইপ। এটি সরকারি পরিচয় যাচাই বা প্রকৃত অ্যাকাউন্ট তৈরি করে না।'),
   'Registration footer must not show unapproved prototype disclaimer');
-assert(body.includes('Demonstration only: no SMS is sent and the document is not verified.'),
-  'OTP must still accurately disclose the absence of a real verification service');
+assert(!body.includes('Demonstration only: no SMS is sent and the document is not verified.') &&
+  !body.includes('এটি প্রদর্শনী: কোনো SMS পাঠানো হয়নি।') &&
+  !css.includes('.neir-reg-demo-warning'),
+  'Do not render unapproved OTP warning banner in either language');
+assert(body.includes("Demo code (not an SMS)") &&
+  body.includes("const testCode = ()"),
+  'Do not silently claim that test OTP is actually sent or break the working test-code flow');
 assert(!login.includes('Maximize2') && !login.includes('Minimize2') &&
   !login.includes('setExpanded') && !login.includes('neir-dialog-maximized') &&
   !login.includes("aria-label={expanded?'Restore dialog':'Maximize'}"),
