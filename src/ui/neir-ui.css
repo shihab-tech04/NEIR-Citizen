@@ -295,7 +295,7 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   .neir-menubar{padding:8px 12px;gap:6px}
   .neir-mobile-toggle{
     display:flex;align-items:center;justify-content:center;
-    margin-left:0;flex:0 0 40px;width:40px;height:44px;
+    margin-left:0;flex:0 0 44px;width:44px;height:44px;
     border:1px solid var(--neir-ui-primary-bright);border-radius:10px;
     color:var(--neir-ui-primary);background:transparent;cursor:pointer;
   }
@@ -313,8 +313,8 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   .neir-logo-wrap img{width:32px;height:32px}
   .neir-source-mobile-auth{gap:4px}
   .neir-source-mobile-language{width:80px;padding-inline:4px}
-  .neir-source-mobile-login{min-width:72px;padding-inline:6px;font-size:12px;gap:3px}
-  .neir-mobile-toggle{width:36px;flex-basis:36px}
+  .neir-source-mobile-login{min-width:72px;padding-inline:6px;font-size:14px;gap:3px}
+  .neir-mobile-toggle{width:44px;flex-basis:44px;min-width:44px}
 }
 
 /* MOBILE HIT AREA NORMALIZATION: preserve the approved side-by-side IMEI field
