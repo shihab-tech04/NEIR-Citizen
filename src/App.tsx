@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomeHero } from './components/HomeHero.tsx';
+import { HomeServiceEntry } from './components/HomeServiceEntry.tsx';
 import { SpecialRegistrationSection } from './components/SpecialRegistrationSection.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
@@ -34,6 +35,11 @@ export default function App() {
     return (Object.entries(routePaths).find(([, path]) => path === relativePath)?.[0] as AppRoute | undefined) ?? 'home';
   };
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(getRoute);
+  const mainRef = useRef<HTMLElement>(null);
+  const firstRouteRender = useRef(true);
+  const scrollToTop = () => window.scrollTo({
+    top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+  });
   useEffect(() => {
     const handlePopState = () => {
       setCurrentRoute(getRoute());
@@ -128,6 +134,18 @@ export default function App() {
     setGuestRegistrationIntroOpen(true);
   };
 
+  // After internal navigation, move keyboard/screen-reader focus into the new page.
+  // Avoid stealing focus from a currently opening registration or login dialog.
+  useEffect(() => {
+    if (firstRouteRender.current) {
+      firstRouteRender.current = false;
+      return;
+    }
+    if (isLoginOpen || guestRegistrationIntroOpen || registrationLoginSuccessOpen ||
+        specialRegistrationTrigger !== null) return;
+    mainRef.current?.focus({ preventScroll: true });
+  }, [currentRoute]);
+
   // Queries state
   const [queries, setQueries] = useState<QueryTicket[]>([]);
   const [prefilledContactImei, setPrefilledContactImei] = useState<string>('');
@@ -151,12 +169,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-800">
+      <a href="#neir-main-content" className="neir-skip-link">
+        {language === 'bn' ? 'মূল বিষয়বস্তুতে যান' : 'Skip to main content'}
+      </a>
       {/* Header */}
       <Header
         currentRoute={currentRoute}
         onRouteChange={(route) => {
           setCurrentRoute(route);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          scrollToTop();
         }}
         language={language}
         onLanguageChange={setLanguage}
@@ -179,7 +200,9 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className={(currentRoute === 'home' || currentRoute === 'guides' || currentRoute === 'contact') ? 'flex-1 w-full neir-home-main' : 'flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8'}>
+      <main id="neir-main-content" ref={mainRef} tabIndex={-1}
+        aria-label={language === 'bn' ? 'মূল বিষয়বস্তু' : 'Main content'}
+        className={(currentRoute === 'home' || currentRoute === 'guides' || currentRoute === 'contact') ? 'flex-1 w-full neir-home-main' : 'flex-1 w-full mx-auto px-4 sm:px-6 py-6 sm:py-8'}>
         {/* ROUTE 1: Home (Default 1:1 Baseline) */}
         {currentRoute === 'home' && (
           <div className="neir-home-sections">
@@ -189,7 +212,23 @@ export default function App() {
               onScrollToVerifier={handleScrollToVerifier}
               onOpenGuides={() => {
                 setCurrentRoute('guides');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
+              }}
+            />
+
+            {/* Clear service shortcuts, outside the frozen IMEI checker. */}
+            <HomeServiceEntry
+              language={language}
+              isLoggedIn={session.isLoggedIn}
+              onCreateAccount={() => {
+                setLoginForSpecialRegistration(false);
+                setLoginInitialView('register');
+                setIsLoginOpen(true);
+              }}
+              onSpecialRegistration={requestSpecialRegistration}
+              onOpenGuides={() => {
+                setCurrentRoute('guides');
+                scrollToTop();
               }}
             />
 
@@ -226,11 +265,11 @@ export default function App() {
               language={language}
               onOpenWebGuide={() => {
                 setCurrentRoute('guides');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
               }}
               onOpenMobileGuide={() => {
                 setCurrentRoute('guides');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
               }}
             />
 
@@ -267,7 +306,7 @@ export default function App() {
             language={language}
             onReturnToBaseline={() => {
               setCurrentRoute('home');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              scrollToTop();
             }}
           />
         )}
