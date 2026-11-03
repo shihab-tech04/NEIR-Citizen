@@ -34,7 +34,11 @@ export const HomeHero:React.FC<Props> = ({language}) => {
         </div>
       </div>
       <div className="neir-source-hero-media">
-        <img src={`${import.meta.env.BASE_URL}neir-source/gifs/neir-herobanner.gif`} alt={bn ? 'NEIR ডিভাইস যাচাইয়ের চিত্র' : 'NEIR handset verification illustration'} decoding="async"/>
+        <picture>
+          <source media="(prefers-reduced-motion: reduce)" srcSet={`${import.meta.env.BASE_URL}neir-source/images/step-1.svg`} type="image/svg+xml"/>
+          <img src={`${import.meta.env.BASE_URL}neir-source/gifs/neir-herobanner.gif`}
+            alt={bn ? 'NEIR ডিভাইস যাচাইয়ের চিত্র' : 'NEIR handset verification illustration'} decoding="async"/>
+        </picture>
       </div>
     </div>
   </section>;
