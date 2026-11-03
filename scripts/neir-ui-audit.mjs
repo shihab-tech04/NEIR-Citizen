@@ -20,11 +20,13 @@ for (const filename of components) {
 const tokens = requireText('src/ui/neir-ui.css', [
   '--neir-ui-primary:', '--neir-ui-focus:', '--neir-ui-control-height:',
   '--neir-ui-button-height:', '--neir-ui-dialog-radius:', '.neir-ui-table',
-  '.neir-ui-button--primary', '.neir-ui-button--danger',
+  '.neir-ui-button--primary', '.neir-ui-button--link',
   '.neir-ui-control[aria-invalid=true]', '@media(max-width:700px)',
   '@media(prefers-reduced-motion:reduce)',
 ]);
 assert(!tokens.includes('linear-gradient('), 'UI library must not introduce gradients');
+for (const obsolete of ['.neir-ui-button--secondary','.neir-ui-button--quiet','.neir-ui-button--danger'])
+  assert(!tokens.includes(obsolete),'Obsolete action appearance returned: '+obsolete);
 const library = requireText('src/ui/NeirUI.tsx', [
   'export const UiButton', 'export const UiInput', 'export const UiSelect',
   'export const UiTextarea', 'export function UiField',
