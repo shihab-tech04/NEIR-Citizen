@@ -2,10 +2,10 @@ name: NEIR desktop and mobile visual verification
 on:
   push:
     branches: [main, 'fix/neir-parity-*']
-    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**', 'vercel.json']
+    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**', 'vercel.json', 'scripts/neir-responsive-design-audit.mjs']
   pull_request:
     branches: [main]
-    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**', 'vercel.json']
+    paths: ['.github/workflows/visual-check.yml', 'src/**', 'public/**', 'vercel.json', 'scripts/neir-responsive-design-audit.mjs']
 permissions:
   contents: read
 jobs:
@@ -98,6 +98,8 @@ jobs:
             await desktop.screenshot({path:'screenshots/neir-profile-menu-1918.png',fullPage:false});
           } finally {await browser.close()}
           EOT
+      - name: Verify responsive foundation at seven device widths
+        run: node scripts/neir-responsive-design-audit.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: neir-source-restoration-screenshots
