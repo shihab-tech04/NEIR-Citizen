@@ -55,7 +55,7 @@ try {
   await register.getByRole('button',{name:'Create Account'}).click();
   const success = page.getByRole('dialog',{name:'Special Registration login successful'});
   await visible(success,'Successful authenticated handoff');
-  assert.equal(await page.getByRole('dialog',{name:'Login'}).count(),0,
+  assert.equal(await page.getByRole('dialog',{name:'Login',exact:true}).count(),0,
     'Authenticated success should not show a login form');
 
   await success.getByRole('button',{name:'Proceed to special registration'}).click();
