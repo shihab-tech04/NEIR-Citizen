@@ -38,9 +38,12 @@ assert(!profile.includes('variant="secondary"') && !wizard.includes('variant="qu
 assert((header.match(/<UiSelect /g)||[]).length===3,
   'Desktop, mobile-top, and expanded mobile language dropdowns share one input');
 assert(!header.includes('<select '),'Header uses native dropdown instead of shared UiSelect');
-assert((login.match(/<UiInput /g)||[]).length===8 &&
-  (login.match(/<UiButton /g)||[]).length===3,
-  'Login, sign-up and forgot forms use shared controls');
+const registration = src('src/components/CitizenRegistrationForm.tsx');
+assert((login.match(/<UiInput /g)||[]).length===3 &&
+  (login.match(/<UiButton /g)||[]).length===2 &&
+  (registration.match(/<UiInput /g)||[]).length===4 &&
+  (registration.match(/<UiButton /g)||[]).length===1,
+  'Login, Figma registration and forgot forms all use canonical controls');
 assert((css.match(/--neir-type-(caption|body|subtitle|heading):/g)||[]).length>=4,
   'Responsive typography tokens must be declared once');
 for (const key of ['--neir-ui-success-bg','--neir-ui-warning-bg',

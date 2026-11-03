@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useNeirDialogFocus } from '../ui/useNeirDialogFocus.ts';
 import { UiInput, UiButton } from '../ui/index.ts';
+import { CitizenRegistrationForm } from './CitizenRegistrationForm.tsx';
 import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight,ArrowLeft} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
 interface Props {isOpen:boolean; onClose:()=>void; onBack?:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
@@ -14,11 +15,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
  const [error,setError]=useState('');
  const [submitted,setSubmitted]=useState(false);
  const [isAuthenticating,setIsAuthenticating]=useState(false);
- const [otp,setOtp]=useState('');
  const [regStep,setRegStep]=useState(1);
- const [newPassword,setNewPassword]=useState('');
- const [documentDigits,setDocumentDigits]=useState('');
- const [confirmPassword,setConfirmPassword]=useState('');
  const dialogRef=useNeirDialogFocus<HTMLDivElement>({ isOpen, onClose, initialFocusSelector:'[aria-label="Close"]' });
  useEffect(()=>{if(isOpen){setView(initialView);setError('');setSubmitted(false);setRegStep(1);setMobile('');setPassword('');setIsAuthenticating(false);}},[initialView,isOpen]);
 
@@ -60,7 +57,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
      setIsAuthenticating(false);
    }
  };
- const modalTitle=view==='login'?'Login':view==='register'?'Register':'Forgot Password';
+ const modalTitle=view==='login'?'Login':view==='register'?'User Registration':'Forgot Password';
  const canGoBack=view!=='login'||regStep>1||Boolean(onBack);
  const goBack=()=>{
    setError('');
@@ -78,7 +75,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
  if(!isOpen)return null;
  const inputStyle='neir-original-dialog-input';
  return <div className={"neir-dialog-backdrop neir-modal-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
-  <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
+  <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(view==='register'?' neir-original-dialog--registration':'')+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
    <div className="neir-original-dialog-top">
     <div className="neir-modal-header-leading">
       {canGoBack && <button type="button" className="neir-modal-back"
@@ -93,7 +90,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
     </div>
    </div>
    {handoffPending && <p className="neir-login-transition-status" role="status">{language === 'bn' ? 'আবেদন ফর্ম খোলা হচ্ছে…' : 'Opening your Special Registration form…'}</p>}
-   <div className="neir-original-dialog-body neir-modal-animated-content" key={view+'-'+(view==='register'?regStep:0)}>
+   <div className="neir-original-dialog-body neir-modal-animated-content" key={view}>
     {view==='login' && <form onSubmit={submitLogin} noValidate>
       <hr/>
       <label htmlFor="login-mobile">Enter your mobile number <span>*</span></label>
@@ -109,15 +106,10 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
       <div className="neir-dialog-links"><p className="neir-dialog-switch">Did you forget your password? <button onClick={()=>{setView('forgot');setError('')}} type="button">Forgot Password</button></p>
       <p className="neir-dialog-switch">Don't have an account? <button onClick={()=>{setView('register');setError('')}} type="button">Sign Up</button></p></div>
     </form>}
-    {view==='register' && <form onSubmit={e=>{e.preventDefault();setError('');if(!/^01\d{9}$/.test(mobile)){setError('Enter an 11-digit demo mobile number.');return;}if(regStep===1){if(!/^\d{4}$/.test(documentDigits)){setError('Enter the last 4 digits of your document ID.');return;}setRegStep(2);return;}if(regStep===2){if(otp!=='1234'){setError('For this offline demo use 1234.');return;}setRegStep(3);return;}if(newPassword.length<4){setError('Enter a demo password of at least 4 characters.');return;}if(newPassword!==confirmPassword){setError('The confirmation password must match.');return;}demoSignIn();}}>
-      <p className="neir-dialog-demo-note">Frontend-only registration demonstration. No OTP is sent.</p>
-      {regStep===1&&<><label htmlFor="reg-mobile">Enter your mobile number <span>*</span></label><UiInput id="reg-mobile" className={inputStyle} placeholder="Mobile Number (01XXXXXXXXX)" value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g,'').slice(0,11))}/><label htmlFor="reg-document">Last 4 digits of document ID</label><UiInput id="reg-document" className={inputStyle} maxLength={4} inputMode="numeric" required value={documentDigits} onChange={e=>{setDocumentDigits(e.target.value.replace(/\D/g,'').slice(0,4));setError('');}} placeholder="Last 4 digits" /></>}
-      {regStep===2&&<><label htmlFor="reg-otp">Enter OTP</label><UiInput id="reg-otp" className={inputStyle} value={otp} onChange={e=>setOtp(e.target.value)} placeholder="Demo code 1234" maxLength={4}/></>}
-      {regStep===3&&<><label htmlFor="reg-pass">Set Account Password</label><UiInput id="reg-pass" className={inputStyle} type="password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} placeholder="Demo password"/><label htmlFor="reg-pass-confirm">Confirm Account Password <span>*</span></label><UiInput id="reg-pass-confirm" className={inputStyle} type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} placeholder="Re-enter your demo password" required/></>}
-      {error&&<p role="alert" className="neir-original-field-error">{error}</p>}
-      <UiButton variant="primary" className="neir-dialog-primary" type="submit">{regStep===1?'Request OTP':regStep===2?'Verify and Proceed':'Create Account'}</UiButton>
-      <p className="neir-dialog-switch">Already have an account? <button onClick={()=>setView('login')} type="button">Login</button></p>
-    </form>}
+    {view==='register' && <CitizenRegistrationForm
+      language={language} mobile={mobile} onMobileChange={setMobile}
+      step={regStep} onStepChange={setRegStep}
+      onComplete={demoSignIn} onLogin={() => {setView('login');setError('');}} />}
     {view==='forgot'&&<form onSubmit={e=>{e.preventDefault();setError('This prototype cannot reset official passwords. Use the official BTRC portal.');}}>
       <label htmlFor="forgot-mobile">Enter your registered mobile number</label>
       <UiInput id="forgot-mobile" className={inputStyle} inputMode="numeric" maxLength={11} value={mobile} onChange={e=>setMobile(e.target.value.replace(/\D/g,'').slice(0,11))} placeholder="Mobile Number (01XXXXXXXXX)"/>

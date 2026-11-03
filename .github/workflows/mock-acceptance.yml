@@ -10,6 +10,7 @@ on:
       - 'scripts/neir-unified-ui-foundation.test.mjs'
       - 'scripts/neir-full-ui-system.test.mjs'
       - 'scripts/neir-modal-back-animation.test.mjs'
+      - 'scripts/neir-figma-registration.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -23,6 +24,7 @@ on:
       - 'scripts/neir-unified-ui-foundation.test.mjs'
       - 'scripts/neir-full-ui-system.test.mjs'
       - 'scripts/neir-modal-back-animation.test.mjs'
+      - 'scripts/neir-figma-registration.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -48,6 +50,7 @@ jobs:
           node scripts/neir-profile-ui-contract.test.mjs
           node scripts/neir-unified-ui-foundation.test.mjs
           node scripts/neir-full-ui-system.test.mjs
+          node scripts/neir-figma-registration.test.mjs
       - name: Check actual Edge handler mobile and date validators
         run: node scripts/neir-special-validation.test.mjs
       - name: Install Chromium for screenshot and journey tests

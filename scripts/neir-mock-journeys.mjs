@@ -469,7 +469,7 @@ try{
     await desktop.getByRole('button',{name:'Citizen profile menu'}).click();
     await desktop.getByRole('button',{name:'Logout'}).click();
     await desktop.locator('.neir-auth-register').click();
-    await expectVisible(desktop.getByRole('dialog',{name:'Register'}),'registration mock');
+    await expectVisible(desktop.getByRole('dialog',{name:'User Registration'}),'registration mock');
     await snap(desktop,'15-register-step1');
     await desktop.getByRole('button',{name:'Close'}).click();
   });
