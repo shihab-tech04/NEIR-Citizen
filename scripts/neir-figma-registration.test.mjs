@@ -26,6 +26,9 @@ assert(login.includes("modalTitle=view==='login'?'Login':view==='register'?'User
   'Registration keeps Figma title without changing Login/Forgot titles');
 assert(login.includes('key={view}') && login.includes('onStepChange={setRegStep}'),
   'Back/Next between steps must not unmount draft inputs');
-assert(body.includes('Prototype only. This does not verify identity or create a persistent citizen account.'),
-  'No fake claim of verified identity, SMS or backend account creation');
+assert(!body.includes('Prototype only. This does not verify identity or create a persistent citizen account.') &&
+  !body.includes('শুধুমাত্র প্রোটোটাইপ। এটি সরকারি পরিচয় যাচাই বা প্রকৃত অ্যাকাউন্ট তৈরি করে না।'),
+  'Registration footer must not show unapproved prototype disclaimer');
+assert(body.includes('Demonstration only: no SMS is sent and the document is not verified.'),
+  'OTP must still accurately disclose the absence of a real verification service');
 console.log('PASS: Figma three-stage UI contract, password rules, safe demo OTP, responsive sizing and Back state.');

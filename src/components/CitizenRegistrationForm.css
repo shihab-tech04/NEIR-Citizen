@@ -83,7 +83,6 @@
   display:flex;align-items:center;justify-content:flex-end;gap:16px;
   border-top:1px solid #e3dbd8;margin:0 24px;padding:24px 0;
 }
-.neir-reg-demo-disclaimer{flex:1;min-width:0;color:#64748b;font:400 12px/1.5 Poppins,Arial,sans-serif;margin:0;}
 .neir-reg-submit.neir-ui-button{flex:none;min-height:60px;padding:11px 28px;gap:12px;font-size:16px;white-space:nowrap;}
 .neir-reg-existing{margin:0 24px 18px;color:#475467;font:400 14px/1.5 Poppins,Arial,sans-serif;}
 .neir-reg-existing button{padding:3px 7px;text-decoration:underline;}
