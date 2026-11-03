@@ -25,7 +25,7 @@ assert(style.includes('grid-template-columns:minmax(0,1.27fr) minmax(0,.9fr)') &
   style.includes('@media(max-width:850px)'),
   'Two cards must share a desktop row and stack responsively on mobile');
 assert(profile.indexOf('className="neir-profile-registration-card"') <
-  profile.indexOf('className={"neir-profile-search-panel"'),
+  profile.indexOf("className={'neir-profile-search-panel'"),
   'New cards must remain above the untouched device search and application history');
 assert((profile.match(/neir-profile-detail-grid/g)||[]).length === 2,
   'IMEI and Special Registration dialogs must use the same details layout');
