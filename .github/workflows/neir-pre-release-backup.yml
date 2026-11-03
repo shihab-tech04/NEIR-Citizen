@@ -1,0 +1,54 @@
+name: NEIR independent pre-release source and history backup
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'supabase/functions/neir-prototype-special/**'
+      - 'supabase/migrations/**'
+      - 'scripts/neir-profile-ui-contract.test.mjs'
+      - '.github/workflows/neir-pre-release-backup.yml'
+permissions:
+  contents: read
+jobs:
+  backup-main:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout full pre-release main history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Create bundle and source archive with checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neir-pre-release
+          sha="$(git rev-parse HEAD)"
+          git bundle create /tmp/neir-pre-release/main-full-history.bundle --all
+          git archive --format=tar HEAD | gzip -9 > /tmp/neir-pre-release/main-source.tar.gz
+          printf '%s\n' "$sha" > /tmp/neir-pre-release/MAIN_COMMIT_SHA.txt
+          cd /tmp/neir-pre-release
+          sha256sum main-full-history.bundle main-source.tar.gz MAIN_COMMIT_SHA.txt > SHA256SUMS
+          sha256sum --check SHA256SUMS
+      - name: Restore-test independent bundle and source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git bundle verify /tmp/neir-pre-release/main-full-history.bundle
+          git clone --quiet /tmp/neir-pre-release/main-full-history.bundle /tmp/neir-restored-main
+          test "$(git -C /tmp/neir-restored-main rev-parse HEAD)" = "$(cat /tmp/neir-pre-release/MAIN_COMMIT_SHA.txt)"
+          mkdir -p /tmp/neir-restored-source
+          tar -xzf /tmp/neir-pre-release/main-source.tar.gz -C /tmp/neir-restored-source
+          test -f /tmp/neir-restored-source/src/components/CitizenImeiListView.tsx
+          test -f /tmp/neir-restored-source/supabase/functions/neir-prototype-special/index.ts
+          echo "PASS: pre-release main full history and source restored, SHA verified"
+      - name: Preserve restorable bundle for external Google Drive transfer
+        uses: actions/upload-artifact@v4
+        with:
+          name: neir-pre-release-main-full-history
+          path: /tmp/neir-pre-release/
+          retention-days: 14
+          if-no-files-found: error

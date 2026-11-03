@@ -100,6 +100,29 @@ try{
   await visible(desktop.getByRole('heading',{name:/Special Registration applications/}),'profile list');
   await visible(desktop.locator('.neir-special-table').getByText('23456789012345'),'IMEI row');
   await visible(desktop.getByText('1/20 applications in use · 19 available'),'quota count');
+  assert.equal(await desktop.locator('.neir-profile-search-outcome').count(),0,
+    'Profile must not display an IMEI result or placeholder before search');
+  await visible(desktop.getByRole('button',{name:'Apply for Special Registration'}),'profile application entry');
+  assert.equal(await desktop.getByRole('button',{name:'Mark as Stolen'}).count(),0,
+    'Removed Mark as Stolen action must not appear on the profile');
+  await desktop.locator('#neir-profile-imei-search').fill('12345678901234');
+  assert.equal(await desktop.locator('.neir-profile-search-outcome').count(),0,
+    'Typing alone must not show a device result');
+  await desktop.getByRole('button',{name:'Search device'}).click();
+  await visible(desktop.locator('.neir-profile-device-result'),'searched device details');
+  await desktop.getByRole('button',{name:'View details'}).click();
+  const deviceDialog=desktop.getByRole('dialog',{name:'IMEI details'});
+  await visible(deviceDialog,'shared IMEI details dialog');
+  await visible(deviceDialog.getByText('Registration status'),'IMEI status detail');
+  assert.equal(await deviceDialog.locator('.neir-profile-detail-grid').count(),1,
+    'IMEI details use a structured information grid');
+  await deviceDialog.getByRole('button',{name:'Close dialog'}).click();
+  await desktop.locator('.neir-special-table').getByRole('button',{name:'Details'}).first().click();
+  const appDialog=desktop.getByRole('dialog',{name:'Special Registration details'});
+  await visible(appDialog,'Special Registration details');
+  await visible(appDialog.getByText('Application reference'),'registration reference');
+  assert.equal(await appDialog.locator('.neir-profile-detail-grid').count(),1);
+  await appDialog.getByRole('button',{name:'Close dialog'}).click();
   await screenshot(desktop,'02-profile-one-application');
 
   records[0].status='Accepted';
