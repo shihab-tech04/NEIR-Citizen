@@ -66,12 +66,12 @@ for(const [source,tag] of [[guide,'bnRegistration'],[guide,'bnPasswordReset'],
   [contact,'সব আবশ্যিক ঘর'],[header,'আমার প্রোফাইল'],[home,'IMEI নম্বরের প্রথম ১৪টি সংখ্যা']]){
   assert(source.includes(tag),'Bengali UI parity missing '+tag);
 }
-const localeJson=translation.match(/faqTranslationsBn:[^=]+?= ([\\s\\S]*?);\\nexport const faqTitlesBn:/);
+const localeJson=translation.match(/faqTranslationsBn:[^=]+?= ([\s\S]*?);\nexport const faqTitlesBn:/);
 assert(localeJson,'Bengali FAQ dictionary must be exported as a stable object');
 const translated=JSON.parse(localeJson[1]);
 const englishQuestions=[
-  ...[...faq.matchAll(/\\bq:\\s*'([^']+)'/g)].map(m=>m[1]),
-  ...[...faq.matchAll(/"q":\\s*"([^"]+)"/g)].map(m=>m[1]),
+  ...[...faq.matchAll(/\bq:\s*'([^']+)'/g)].map(m=>m[1]),
+  ...[...faq.matchAll(/"q":\s*"([^"]+)"/g)].map(m=>m[1]),
 ];
 assert.equal(new Set(englishQuestions).size,28,'FAQ source question inventory changed; re-audit translations');
 assert.deepEqual(englishQuestions.filter(q=>!translated[q]),[],
