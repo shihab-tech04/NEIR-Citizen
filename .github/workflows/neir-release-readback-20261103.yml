@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Verify public Pages version, compiled assets and requested UI
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_SHA: '37180a4d53937433b569f918bb59425b030746ab'
         shell: bash
         run: |
           set -euo pipefail
@@ -41,6 +41,9 @@ jobs:
           test -n "$js_asset"
           curl -fsSL --max-time 30 "$base/${js_asset#/NEIR-Citizen/}" -o /tmp/neir-live-bundle.js
           grep -Fq 'Apply for Special Registration' /tmp/neir-live-bundle.js
+          grep -Fq 'neir-profile-overview' /tmp/neir-live-bundle.js
+          grep -Fq 'neir-profile-registration-card' /tmp/neir-live-bundle.js
+          grep -Fq 'of 20 application slots available' /tmp/neir-live-bundle.js
           grep -Fq 'Application reference' /tmp/neir-live-bundle.js
           grep -Fq 'Registration status' /tmp/neir-live-bundle.js
           if grep -Fq 'Mark as Stolen' /tmp/neir-live-bundle.js; then
