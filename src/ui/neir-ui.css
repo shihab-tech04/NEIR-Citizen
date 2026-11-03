@@ -173,3 +173,41 @@
 .neir-profile-primary-action.neir-ui-button--primary:hover:not(:disabled){
   background:var(--neir-primary-900);border-color:var(--neir-primary-900);
 }
+
+/* Canonical cross-screen form and typography system.
+   Source-specific geometry is retained but shares actual controls, states and tokens. */
+body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height:1.5}
+:where(.neir-shared-dialog,.neir-original-dialog,.neir-v7-dialog,.neir-sr-dialog){
+  box-shadow:var(--neir-dialog-shadow,0 14px 54px rgba(20,35,52,.16));
+  border-radius:var(--neir-dialog-radius,16px);
+  color:var(--neir-ui-text);
+}
+:where(.neir-shared-backdrop,.neir-dialog-backdrop,.neir-v7-backdrop,.neir-sr-backdrop){
+  background:var(--neir-dialog-overlay,rgba(14,18,25,.55));
+}
+:where(.neir-shared-header h2,.neir-original-dialog-top h2,.neir-v7-header h2,.neir-sr-header h2){
+  font-family:var(--neir-ui-font);
+  font-size:clamp(20px,0.55vw + 18px,24px);
+  line-height:1.35;
+}
+:where(.neir-language-select,.neir-source-mobile-language) .neir-ui-control{
+  box-sizing:border-box;height:100%;min-height:0;padding:0 2px;border:0;
+  box-shadow:none;background:transparent;border-radius:0;outline-offset:1px;
+  font-size:var(--neir-type-caption);color:inherit;
+}
+.neir-mobile-language .neir-ui-control{
+  box-sizing:border-box;width:auto;min-height:40px;height:40px;
+  padding:8px 12px;border:1px solid var(--neir-ui-stroke);
+  border-radius:6px;font-size:var(--neir-type-caption);background:#fff;
+}
+:where(.neir-original-dialog,.neir-v7-dialog) .neir-ui-control{
+  font-family:var(--neir-ui-font);color:var(--neir-ui-text);
+}
+.neir-ui-status{font-size:var(--neir-type-caption)}
+.neir-profile-registration-capacity,.neir-profile-registration-heading p,
+.neir-special-mobile-label,.neir-special-mobile-card-footer p{
+  font-size:var(--neir-type-caption);
+}
+@media(max-width:700px){
+  :root{--neir-type-body:15px;--neir-type-heading:20px}
+}
