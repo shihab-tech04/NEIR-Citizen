@@ -47,6 +47,11 @@ export default function App() {
     if (window.location.pathname !== path) window.history.pushState({route: currentRoute}, '', path);
   }, [currentRoute]);
   const [language, setLanguage] = useState<Language>('en');
+  // Match the actual interface language so assistive technology selects the
+  // correct pronunciation rules. This does not modify any user/session data.
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   // Restore the existing citizen sign-in state without changing the approved UI.
   const defaultCitizenSession: UserSession = {
