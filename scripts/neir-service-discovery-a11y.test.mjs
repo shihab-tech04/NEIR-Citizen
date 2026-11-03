@@ -67,18 +67,21 @@ try{
     assert.equal(new URL(page.url()).pathname,'/user-guides','Service guides must navigate');
     assert(await page.evaluate(()=>document.activeElement?.id==='neir-main-content'),
       'Route change must move focus to main content');
-    await page.getByRole('navigation',{name:'NEIR portal navigation'}).getByRole('button',{name:'Home'}).click()
-      .catch(async()=>{
-        await page.getByRole('button',{name:'Navigation menu'}).click();
-        await page.getByRole('navigation',{name:'Mobile navigation'}).getByRole('button',{name:'Home'}).click();
-      });
+    if(width<=1000){
+      await page.getByRole('button',{name:'Navigation menu'}).click();
+      await page.getByRole('navigation',{name:'Mobile navigation'}).getByRole('button',{name:'Home'}).click();
+    }else{
+      await page.getByRole('navigation',{name:'NEIR portal navigation'})
+        .getByRole('button',{name:'Home'}).click();
+    }
     await service.waitFor({state:'visible'});
     await page.screenshot({path:`acceptance-shots/neir-service-choice-${width}.png`,fullPage:width===390,animations:'disabled'});
     if(width===390||width===1440){
       const language=width===390?'.neir-source-mobile-language select':'.neir-language-select select';
       await page.locator(language).selectOption('bn');
       await page.getByRole('heading',{name:'কোন সেবাটি প্রয়োজন?'}).waitFor();
-      assert(await service.getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন'}).isVisible(),
+      assert(await page.getByRole('region',{name:'কোন সেবাটি প্রয়োজন?'})
+        .getByRole('button',{name:'বিশেষ নিবন্ধনের আবেদন'}).isVisible(),
         'Bengali special-registration entry missing');
       assert(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=4,
         'Bengali labels cause overflow at '+width);
