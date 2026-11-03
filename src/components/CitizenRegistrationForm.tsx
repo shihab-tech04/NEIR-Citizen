@@ -58,6 +58,7 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
   const changeOtp = (value: string, index: number) => {
     const numbers = digitOnly(value, 6);
     const next = otp.padEnd(6, ' ').split('');
+    if (!numbers.length) next[index] = ' ';
     numbers.split('').forEach((digit, offset) => {
       if (index + offset < 6) next[index + offset] = digit;
     });
