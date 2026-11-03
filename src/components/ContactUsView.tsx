@@ -53,7 +53,7 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
       </UiButton>
     </div>
     <div className="rounded-3xl bg-white border border-slate-200 p-5 sm:p-9 shadow-sm">
-      {tab === 'submit' ? <form className="space-y-5" onSubmit={submit}>
+      {tab === 'submit' ? <form className="space-y-5" onSubmit={submit} noValidate>
         <h2 className="text-center text-2xl sm:text-3xl font-semibold text-slate-900">{isBn ? 'আপনার অনুসন্ধান জমা দিন' : 'Submit Your Query'}</h2><hr className="border-slate-200"/>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <label className="block text-sm font-medium sm:col-span-2">{isBn ? 'পুরো নাম' : 'Full Name'} <span className="text-red-600">*</span><UiInput required className={inputClass} placeholder="Enter your full name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>
@@ -63,7 +63,7 @@ export const ContactUsView: React.FC<Props> = ({ language, queryList, onAddQuery
         </div>
         <label className="block text-sm font-medium">{isBn ? 'সমস্যার বিবরণ' : 'Issues Summary'} <span className="text-red-600">*</span><UiTextarea required className={inputClass} rows={4} placeholder="Tell us more about the issue you are facing" value={summary} onChange={e => setSummary(e.target.value)} /></label>
         <UiButton type="submit" variant="primary" className="neir-ui-form-action">{isBn ? 'জমা দিন' : 'Submit'}</UiButton>
-      </form> : <form className="space-y-5" onSubmit={lookup}>
+      </form> : <form className="space-y-5" onSubmit={lookup} noValidate>
         <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">{isBn ? 'অনুসন্ধানের অবস্থা যাচাই করুন' : 'Check Your Query Ticket Status'}</h2>
         <label className="block text-sm font-medium">{isBn ? 'অনুসন্ধান নম্বর' : 'Query Ticket Number'} <span className="text-red-600">*</span><UiInput required className={inputClass} placeholder="Query Ticket Number" value={number} onChange={e => setNumber(e.target.value)} /></label>
         <UiButton type="submit" variant="primary" className="neir-ui-form-action">{isBn ? 'অবস্থা দেখুন' : 'Check Query Status'}</UiButton>
