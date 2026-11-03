@@ -54,7 +54,7 @@ try{
       await menu.click();
       const nav=page.getByRole('navigation',{name:'Mobile navigation'});
       await nav.waitFor({state:'visible'});
-      const register=nav.getByRole('button',{name:'Register',exact:true});
+      const register=nav.getByRole('button',{name:'Create Account',exact:true});
       await register.waitFor({state:'visible'});
       await register.click();
       const dialog=page.getByRole('dialog',{name:'User Registration'});
@@ -66,7 +66,7 @@ try{
       await page.getByRole('heading',{name:'User Guide of NEIR'}).waitFor();
       await page.goto(root,{waitUntil:'networkidle'});
     }else{
-      await page.getByRole('button',{name:'Register',exact:true}).click();
+      await page.getByRole('button',{name:'Create Account',exact:true}).click();
       await page.getByRole('dialog',{name:'User Registration'}).waitFor({state:'visible'});
       await page.getByRole('dialog',{name:'User Registration'}).getByRole('button',{name:'Close'}).click();
       const nav=await page.locator('.neir-nav-btn:visible').evaluateAll(els=>

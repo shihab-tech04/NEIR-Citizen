@@ -13,6 +13,7 @@ on:
       - 'scripts/neir-figma-registration.test.mjs'
       - 'scripts/neir-registration-layout.test.mjs'
       - 'scripts/neir-segment1-header-a11y.test.mjs'
+      - 'scripts/neir-service-discovery-a11y.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -29,6 +30,7 @@ on:
       - 'scripts/neir-figma-registration.test.mjs'
       - 'scripts/neir-registration-layout.test.mjs'
       - 'scripts/neir-segment1-header-a11y.test.mjs'
+      - 'scripts/neir-service-discovery-a11y.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -75,6 +77,8 @@ jobs:
         run: node scripts/neir-registration-layout.test.mjs
       - name: Verify header accessibility and locked IMEI checker
         run: node scripts/neir-segment1-header-a11y.test.mjs
+      - name: Verify clear service navigation, skip link and preserved IMEI checker
+        run: node scripts/neir-service-discovery-a11y.test.mjs
       - name: Verify deployed Citizen/Admin Special Registration service
         run: |
           node --input-type=module <<'JS'

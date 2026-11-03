@@ -33,7 +33,7 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
         <button onClick={()=>{setProfileOpen(false);onLogout();}}><LogOut size={16}/> {language==='bn'?'লগআউট':'Logout'}</button>
       </div>}
     </div> : <>
-      <button type="button" className="neir-nav-btn neir-auth-register" onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'নিবন্ধন':'Register'}</button>
+      <button type="button" className="neir-nav-btn neir-auth-register" onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'অ্যাকাউন্ট তৈরি':'Create Account'}</button>
       <button type="button" className="neir-nav-btn neir-auth-login" onClick={()=>{setOpen(false);onOpenLogin();}}>{language==='bn'?'লগইন':'Login'}</button>
     </>}
   </div>;
@@ -69,7 +69,7 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
     {open && <nav id="neir-mobile-menu" className="neir-mobile-menu" aria-label={language==='bn'?'মোবাইল নেভিগেশন':'Mobile navigation'}>
       {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className="neir-mobile-menu-item"><Icon size={18}/>{language==='bn'?item.bn:item.en}</button>})}
       {!session.isLoggedIn && <button type="button" className="neir-mobile-menu-item neir-mobile-register"
-        onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'নিবন্ধন':'Register'}</button>}
+        onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'অ্যাকাউন্ট তৈরি':'Create Account'}</button>}
       <label className="neir-mobile-language">{language==='bn'?'ভাষা':'Language'} <UiSelect value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect></label>
       {controls}
     </nav>}
