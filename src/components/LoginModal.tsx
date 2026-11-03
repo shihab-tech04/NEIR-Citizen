@@ -2,13 +2,12 @@ import React, {useEffect, useState} from 'react';
 import { useNeirDialogFocus } from '../ui/useNeirDialogFocus.ts';
 import { UiInput, UiButton } from '../ui/index.ts';
 import { CitizenRegistrationForm } from './CitizenRegistrationForm.tsx';
-import {X,Maximize2,Minimize2,Phone,Lock,Eye,ArrowRight,ArrowLeft} from 'lucide-react';
+import {X,Phone,Lock,Eye,ArrowRight,ArrowLeft} from 'lucide-react';
 import type {Language,UserSession} from '../types.ts';
 interface Props {isOpen:boolean; onClose:()=>void; onBack?:()=>void; language:Language; onLoginSuccess:(session:Partial<UserSession>)=>void; initialView?:'login'|'register'; registrationIntent?:boolean; handoffPending?:boolean}
 type View='login'|'register'|'forgot';
 export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess,initialView='login',language,registrationIntent=false,handoffPending=false}) => {
  const [view,setView]=useState<View>(initialView);
- const [expanded,setExpanded]=useState(false);
  const [mobile,setMobile]=useState('');
  const [password,setPassword]=useState('');
  const [showPassword,setShowPassword]=useState(false);
@@ -75,7 +74,7 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
  if(!isOpen)return null;
  const inputStyle='neir-original-dialog-input';
  return <div className={"neir-dialog-backdrop neir-modal-backdrop"+(registrationIntent?" neir-auth-for-registration":"")+(handoffPending?" neir-auth-handoff-exit":"")} onMouseDown={e=>{if(e.target===e.currentTarget&&!handoffPending)onClose();}}>
-  <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(view==='register'?' neir-original-dialog--registration':'')+(expanded?' neir-dialog-maximized':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
+  <div ref={dialogRef} className={'neir-original-dialog neir-modal-surface'+(view==='register'?' neir-original-dialog--registration':'')} role="dialog" aria-modal="true" aria-labelledby="neir-dialog-heading" tabIndex={-1}>
    <div className="neir-original-dialog-top">
     <div className="neir-modal-header-leading">
       {canGoBack && <button type="button" className="neir-modal-back"
@@ -85,7 +84,6 @@ export const LoginModal:React.FC<Props> = ({isOpen,onClose,onBack,onLoginSuccess
       <h2 id="neir-dialog-heading">{modalTitle}</h2>
     </div>
     <div className="neir-original-dialog-actions">
-      <button aria-label={expanded?'Restore dialog':'Maximize'} onClick={()=>setExpanded(!expanded)} type="button">{expanded?<Minimize2 size={15}/>:<Maximize2 size={15}/>}</button>
       <button aria-label="Close" onClick={onClose} type="button"><X size={16}/></button>
     </div>
    </div>
