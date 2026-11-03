@@ -285,8 +285,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
         </div>
         <footer className="neir-v7-footer">
           <p role="status" aria-live="polite">{feedback}</p>
-          <UiButton variant="quiet" className="neir-v7-cancel" onClick={onClose}>Cancel</UiButton>
-           <UiButton variant="secondary" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
+          <UiButton variant="link" className="neir-v7-cancel" onClick={onClose}>Cancel</UiButton>
+           <UiButton variant="link" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
         </footer>
       </form>
       {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">
@@ -294,7 +294,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
           <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
         </div>
         <footer className="neir-v7-footer neir-v7-sample-footer">
-          <UiButton variant="secondary" className="neir-v7-next" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
+          <UiButton variant="link" className="neir-v7-next" onClick={() => downloadNeirDocumentSample(demoDoc.id)}>
             Download sample
           </UiButton>
         </footer>
