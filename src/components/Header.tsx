@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import type {AppRoute, Language, UserSession} from '../types.ts';
 import {Home, CircleHelp, ChevronDown, Menu, X, UserRound, LogOut, ArrowRight} from 'lucide-react';
 import { UiSelect } from '../ui/index.ts';
@@ -17,6 +17,12 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
   const [open,setOpen]=useState(false);
   const [profileOpen,setProfileOpen]=useState(false);
   const [mobileProfileOpen,setMobileProfileOpen]=useState(false);
+  useEffect(()=>{
+    if(!open)return;
+    const dismiss=(event:KeyboardEvent)=>{if(event.key==='Escape')setOpen(false);};
+    window.addEventListener('keydown',dismiss);
+    return ()=>window.removeEventListener('keydown',dismiss);
+  },[open]);
   const navigate=(route:AppRoute)=>{onRouteChange(route);setOpen(false);setProfileOpen(false);};
   const controls = <div className="neir-header-auth">
     {session.isLoggedIn ? <div className="neir-profile-container">
@@ -58,12 +64,12 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
           </div>
           : <button type="button" className="neir-source-mobile-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'} <ArrowRight size={18}/></button>}
       </div>
-      <button type="button" className="neir-mobile-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={23}/>:<Menu size={23}/>}</button>
+      <button type="button" className="neir-mobile-toggle" aria-label={language==='bn'?'নেভিগেশন মেনু':'Navigation menu'} aria-controls="neir-mobile-menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={23}/>:<Menu size={23}/>}</button>
     </div>
-    {open && <div className="neir-mobile-menu">
+    {open && <nav id="neir-mobile-menu" className="neir-mobile-menu" aria-label={language==='bn'?'মোবাইল নেভিগেশন':'Mobile navigation'}>
       {menu.map(item=>{const Icon=item.icon;return <button key={item.route} type="button" onClick={()=>navigate(item.route)} className="neir-mobile-menu-item"><Icon size={18}/>{language==='bn'?item.bn:item.en}</button>})}
       <label className="neir-mobile-language">{language==='bn'?'ভাষা':'Language'} <UiSelect value={language} onChange={e=>onLanguageChange(e.target.value as Language)}><option value="en">English</option><option value="bn">বাংলা</option></UiSelect></label>
       {controls}
-    </div>}
+    </nav>}
   </header>;
 };
