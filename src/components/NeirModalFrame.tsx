@@ -1,11 +1,13 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { useNeirDialogFocus } from '../ui/useNeirDialogFocus.ts';
 
 type NeirModalFrameProps = {
   title: string;
   ariaLabel: string;
   onClose: () => void;
+  onBack?: () => void;
+  backLabel?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'compact' | 'medium' | 'regular';
@@ -16,11 +18,11 @@ type NeirModalFrameProps = {
 /** Canonical NEIR modal shell: approved geometry, consistent header and footer,
  * single reusable focus/keyboard/scroll hook; content remains screen-owned. */
 export const NeirModalFrame: React.FC<NeirModalFrameProps> = ({
-  title, ariaLabel, onClose, children, footer, size = 'medium',
+  title, ariaLabel, onClose, onBack, backLabel = 'Back', children, footer, size = 'medium',
   role = 'dialog', closeLabel = 'Close dialog',
 }) => {
   const dialogRef = useNeirDialogFocus<HTMLDivElement>({
-    onClose, initialFocusSelector: '.neir-shared-close',
+    onClose, initialFocusSelector: onBack ? '.neir-modal-back' : '.neir-shared-close',
   });
   const sizeClass = size === 'compact' ? ' neir-shared-dialog--compact' :
     size === 'medium' ? ' neir-shared-dialog--medium' : '';
@@ -31,7 +33,13 @@ export const NeirModalFrame: React.FC<NeirModalFrameProps> = ({
       <div className={'neir-shared-dialog neir-modal-surface' + sizeClass} role={role}
         aria-modal="true" aria-label={ariaLabel} ref={dialogRef} tabIndex={-1}>
         <header className="neir-shared-header">
-          <h2>{title}</h2>
+          <div className="neir-modal-header-leading">
+            {onBack && <button type="button" className="neir-modal-back"
+              aria-label={backLabel} onClick={onBack}>
+              <ArrowLeft size={22} strokeWidth={1.8} aria-hidden="true" />
+            </button>}
+            <h2>{title}</h2>
+          </div>
           <button type="button" className="neir-shared-close"
             aria-label={closeLabel} onClick={onClose}>
             <X size={24} strokeWidth={1.7} aria-hidden="true" />
