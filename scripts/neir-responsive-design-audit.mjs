@@ -74,6 +74,11 @@ try {
         : page.locator('.neir-language-select select');
       await language.selectOption('bn');
       assert.equal(await language.inputValue(),'bn','EN/BN selection lost at '+width);
+      const faq=page.locator('#faq-section');
+      await faq.getByText('সাধারণ জিজ্ঞাসা').waitFor();
+      await faq.getByRole('tab',{name:'নিবন্ধন'}).click();
+      await faq.getByRole('button',{name:'বিশেষ নিবন্ধন কী?'}).click();
+      await faq.getByText('সাধারণ নিবন্ধন প্রক্রিয়ার বাইরে', {exact:false}).waitFor();
       if(width===390) {
         await page.locator('.neir-mobile-toggle').click();
         await page.locator('.neir-mobile-menu-item').nth(1).click();
