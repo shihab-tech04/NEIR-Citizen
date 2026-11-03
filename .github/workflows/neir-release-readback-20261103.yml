@@ -1,0 +1,54 @@
+name: Verify NEIR Citizen actual production deployment
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/neir-release-readback-20261103.yml'
+permissions:
+  contents: read
+jobs:
+  verify-public-pages:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Verify public Pages version, compiled assets and requested UI
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://shihab-tech04.github.io/NEIR-Citizen"
+          actual=""
+          for attempt in $(seq 1 30); do
+            curl --retry 2 -fsSL --max-time 20 "$base/RELEASE_COMMIT.txt?readback=$attempt" -o /tmp/neir-live-version.txt || true
+            if [[ -f /tmp/neir-live-version.txt ]]; then
+              actual="$(tr -d '[:space:]' </tmp/neir-live-version.txt)"
+            fi
+            if [[ "$actual" == "$EXPECTED_SHA" ]]; then
+              echo "PASS: Pages RELEASE_COMMIT.txt equals merged main $EXPECTED_SHA"
+              break
+            fi
+            echo "Current live SHA: $actual, expected: $EXPECTED_SHA (probe $attempt/30)"
+            if [[ "$attempt" -eq 30 ]]; then
+              echo "FAIL: new merged main still not published; do not claim LIVE"
+              exit 1
+            fi
+            sleep 10
+          done
+          curl -fsSL --max-time 20 "$base/" -o /tmp/neir-live-index.html
+          grep -Fq '/NEIR-Citizen/assets/' /tmp/neir-live-index.html
+          js_asset="$(grep -oE 'src="/NEIR-Citizen/assets/[^"]+[.]js"' /tmp/neir-live-index.html | head -1 | cut -d'"' -f2)"
+          test -n "$js_asset"
+          curl -fsSL --max-time 30 "$base/${js_asset#/NEIR-Citizen/}" -o /tmp/neir-live-bundle.js
+          grep -Fq 'Apply for Special Registration' /tmp/neir-live-bundle.js
+          grep -Fq 'Application reference' /tmp/neir-live-bundle.js
+          grep -Fq 'Registration status' /tmp/neir-live-bundle.js
+          if grep -Fq 'Mark as Stolen' /tmp/neir-live-bundle.js; then
+            echo "FAIL: removed feature still appears in published JS"
+            exit 1
+          fi
+          if grep -Fq 'Your device information will appear here' /tmp/neir-live-bundle.js; then
+            echo "FAIL: removed empty-state text still in published JS"
+            exit 1
+          fi
+          echo "PASS: public compiled Pages is serving requested profile UI at $EXPECTED_SHA"
