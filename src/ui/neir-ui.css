@@ -236,3 +236,15 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
  .neir-source-guide-tile.neir-ui-choice-tab{min-height:112px;padding:12px;gap:8px}
  .neir-guide-platform-tab{flex:1;min-width:0;padding:9px 12px}
 }
+
+/* FAQ category tabs share the same neutral/active selection palette as guides. */
+.neir-faq-tab{
+ flex:1 0 auto;min-width:max-content;min-height:44px;
+ padding:10px 18px;border:1px solid var(--neir-ui-stroke);border-radius:10px;
+ background:var(--neir-ui-surface);color:var(--neir-ui-muted);
+ font:500 var(--neir-type-caption)/1.5 var(--neir-ui-font);cursor:pointer;
+}
+.neir-faq-tab[aria-selected="true"]{
+ background:var(--neir-ui-primary-bright);border-color:var(--neir-ui-primary-bright);color:#fff;
+}
+.neir-faq-tab:hover:not([aria-selected="true"]){background:var(--neir-ui-surface-soft);border-color:var(--neir-ui-primary-bright)}
