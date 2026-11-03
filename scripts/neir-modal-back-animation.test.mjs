@@ -33,26 +33,28 @@ try {
   await visible(login,'Login restored from Forgot Password');
 
   await login.getByRole('button',{name:'Sign Up'}).click();
-  const register = page.getByRole('dialog',{name:'Register'});
+  const register = page.getByRole('dialog',{name:'User Registration'});
   await visible(register,'Registration view');
   await register.locator('#reg-mobile').fill('01711223344');
   await register.locator('#reg-document').fill('1234');
-  await register.getByRole('button',{name:'Request OTP'}).click();
+  await register.getByRole('button',{name:'Request for OTP'}).click();
   await visible(register.locator('#reg-otp'),'Registration step 2');
   await register.getByRole('button',{name:'Back',exact:true}).click();
   await visible(register.locator('#reg-document'),'Registration step 1 after Back');
   assert.equal(await register.locator('#reg-mobile').inputValue(),'01711223344',
     'Back must preserve registration data');
-  await register.getByRole('button',{name:'Request OTP'}).click();
-  await register.locator('#reg-otp').fill('1234');
+  await register.getByRole('button',{name:'Request for OTP'}).click();
+  const demoCode = (await register.locator('.neir-reg-demo-code strong').textContent())?.trim() || '';
+  assert(/^\d{6}$/.test(demoCode),'Demo OTP must have exactly six digits');
+  for(let i=0;i<6;i++) await register.locator(i===0?'#reg-otp':`#reg-otp-${i}`).fill(demoCode[i]);
   await register.getByRole('button',{name:'Verify and Proceed'}).click();
   await visible(register.locator('#reg-pass'),'Registration step 3');
   await register.getByRole('button',{name:'Back',exact:true}).click();
   await visible(register.locator('#reg-otp'),'Registration step 2 restored from step 3');
   await register.getByRole('button',{name:'Verify and Proceed'}).click();
-  await register.locator('#reg-pass').fill('1234');
-  await register.locator('#reg-pass-confirm').fill('1234');
-  await register.getByRole('button',{name:'Create Account'}).click();
+  await register.locator('#reg-pass').fill('StrongPass1!');
+  await register.locator('#reg-pass-confirm').fill('StrongPass1!');
+  await register.getByRole('button',{name:'Create account'}).click();
   const success = page.getByRole('dialog',{name:'Special Registration login successful'});
   await visible(success,'Successful authenticated handoff');
   assert.equal(await page.getByRole('dialog',{name:'Login',exact:true}).count(),0,
