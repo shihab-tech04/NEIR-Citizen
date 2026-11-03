@@ -75,8 +75,8 @@ try {
   await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
   await visible(wizard.getByRole('button',{name:'View sample of Courier Bill'}),'Document sample entry');
   await wizard.getByRole('button',{name:'View sample of Courier Bill'}).click();
-  await visible(wizard.getByRole('button',{name:'Back to registration'}),'Sample header Back');
-  await wizard.getByRole('button',{name:'Back to registration'}).click();
+  await visible(page.getByRole('dialog',{name:'Sample · Courier Bill'}).getByRole('button',{name:'Back to registration'}),'Sample header Back');
+  await page.getByRole('dialog',{name:'Sample · Courier Bill'}).getByRole('button',{name:'Back to registration'}).click();
   assert.equal(await wizard.locator('#neir-v7-imei').inputValue(),'12345678901234',
     'Document sample Back must keep IMEI and draft form');
   await wizard.getByRole('button',{name:'Back',exact:true}).click();
