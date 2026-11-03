@@ -45,13 +45,13 @@
 }
 /* Legacy native actions use the same two canonical appearances as UiButton. */
 .neir-shared-button{
-  border:1px solid var(--neir-dialog-action);background:var(--neir-dialog-action);
+  border:1px solid var(--neir-ui-action-bg,#00838f);background:var(--neir-ui-action-bg,#00838f);
   color:#fff;border-radius:var(--neir-ui-button-radius,999px);
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
   min-height:54px;padding:10px 24px;font-size:16px;font-weight:500;
   line-height:1.5;text-align:center;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;
 }
-.neir-shared-button:hover:not(:disabled){background:var(--neir-dialog-action-dark);border-color:var(--neir-dialog-action-dark)}
+.neir-shared-button:hover:not(:disabled){background:var(--neir-ui-action-hover,#006e7a);border-color:var(--neir-ui-action-hover,#006e7a)}
 .neir-shared-button--text,.neir-shared-button--danger{
   background:transparent;color:var(--neir-dialog-action-dark);
 }

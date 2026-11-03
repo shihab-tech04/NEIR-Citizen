@@ -25,10 +25,10 @@ export const NeirModalFrame: React.FC<NeirModalFrameProps> = ({
   const sizeClass = size === 'compact' ? ' neir-shared-dialog--compact' :
     size === 'medium' ? ' neir-shared-dialog--medium' : '';
   return (
-    <div className="neir-shared-backdrop" onMouseDown={event => {
+    <div className="neir-shared-backdrop neir-modal-backdrop" onMouseDown={event => {
       if (event.target === event.currentTarget) onClose();
     }}>
-      <div className={'neir-shared-dialog' + sizeClass} role={role}
+      <div className={'neir-shared-dialog neir-modal-surface' + sizeClass} role={role}
         aria-modal="true" aria-label={ariaLabel} ref={dialogRef} tabIndex={-1}>
         <header className="neir-shared-header">
           <h2>{title}</h2>

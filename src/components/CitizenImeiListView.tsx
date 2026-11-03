@@ -222,21 +222,27 @@ export const CitizenImeiListView: React.FC<Props> = ({
       : 'Profile name updated.');
   };
   const statusLabel = (status: DeviceStatus) => isBn ? (bnStatus[status] ?? status) : status;
+  const applicationStatusLabel = (status: string) => isBn ? ({
+    Pending:'অপেক্ষমাণ', Accepted:'গৃহীত', Rejected:'প্রত্যাখ্যাত', 'In Progress':'প্রক্রিয়াধীন',
+  } as Record<string,string>)[status] || status : status;
+  const applicationReasonLabel = (reason: string) => reason === 'airmail'
+    ? (isBn ? 'এয়ার মেইল' : 'Air Mail')
+    : reason === 'gift' ? (isBn ? 'উপহার' : 'Gift') : (isBn ? 'বিদেশ ভ্রমণ' : 'Foreign Tour');
   const note = isBn
     ? ''
     : '';
   const applicationColumns: UiColumn<SpecialApplication>[] = [
     { key: 'number', heading: '#', numeric: true, render: (_, index) => index + 1 },
-    { key: 'imei', heading: 'IMEI Number', sortValue: row => row.imei,
+    { key: 'imei', heading: isBn ? 'IMEI নম্বর' : 'IMEI Number', sortValue: row => row.imei,
       render: row => <span className="neir-special-imei">{row.imei}</span> },
     { key: 'device', heading: isBn ? 'ডিভাইস' : 'Device',
-      render: row => row.reason === 'airmail' ? 'Air Mail' : row.reason === 'gift' ? 'Gift' : 'Foreign Tour' },
+      render: row => applicationReasonLabel(row.reason) },
     { key: 'status', heading: isBn ? 'আবেদনের অবস্থা' : 'Status', sortValue: row => row.status,
       render: row => <UiStatusBadge
         tone={row.status === 'Accepted' ? 'success' : row.status === 'Rejected' ? 'danger'
           : row.status === 'In Progress' ? 'info' : 'warning'}
         className={'neir-special-table-status is-' + row.status.toLowerCase().replace(/\s+/g, '-')}>
-        {row.status}
+        {applicationStatusLabel(row.status)}
       </UiStatusBadge> },
     { key: 'date', heading: isBn ? 'আবেদনের তারিখ' : 'Applied on',
       sortValue: row => row.appliedAt || '',
@@ -385,6 +391,11 @@ export const CitizenImeiListView: React.FC<Props> = ({
             className="neir-special-table"
             scrollClassName="neir-special-table-scroll"
             searchPlaceholder={isBn ? 'IMEI বা অবস্থা অনুসন্ধান করুন' : 'Search by IMEI, device or status'}
+            searchLabel={isBn ? 'অনুসন্ধান' : 'Search'}
+            countLabel={count => isBn ? count.toLocaleString('bn-BD') + 'টি রেকর্ড' :
+              count + ' ' + (count === 1 ? 'record' : 'records')}
+            sortLabel={heading => isBn ? heading + ' অনুযায়ী সাজান' : 'Sort by ' + heading}
+            mobileAriaLabel={isBn ? 'বিশেষ নিবন্ধনের আবেদনসমূহ' : 'Special Registration applications'}
             searchable={(row, query) => [row.imei, row.status, row.reason].some(value => value.toLowerCase().includes(query))}
             renderMobileCard={row => <article className="neir-special-mobile-card" aria-label={(isBn ? 'আবেদন' : 'Application') + ' ' + row.imei}>
               <header className="neir-special-mobile-card-heading">
@@ -392,12 +403,11 @@ export const CitizenImeiListView: React.FC<Props> = ({
                   <p className="neir-special-mobile-label">{isBn ? 'ডিভাইস IMEI' : 'Device IMEI'}</p>
                   <h3>{row.imei}</h3>
                   <p className="neir-special-mobile-category">
-                    {row.reason === 'airmail' ? (isBn ? 'এয়ার মেইল' : 'Air Mail') :
-                      row.reason === 'gift' ? (isBn ? 'উপহার' : 'Gift') : (isBn ? 'বিদেশ ভ্রমণ' : 'Foreign Tour')}
+                    {applicationReasonLabel(row.reason)}
                   </p>
                 </div>
                 <UiStatusBadge tone={row.status === 'Accepted' ? 'success' : row.status === 'Rejected' ? 'danger'
-                  : row.status === 'In Progress' ? 'info' : 'warning'}>{row.status}</UiStatusBadge>
+                  : row.status === 'In Progress' ? 'info' : 'warning'}>{applicationStatusLabel(row.status)}</UiStatusBadge>
               </header>
               <div className="neir-special-mobile-card-fields">
                 <p>{isBn ? 'আবেদন করা হয়েছে' : 'Applied on'}</p>
@@ -474,12 +484,11 @@ export const CitizenImeiListView: React.FC<Props> = ({
           <div className="neir-profile-detail-heading">
             <p className="neir-profile-detail-eyebrow">{isBn ? 'আবেদনের সারসংক্ষেপ' : 'Application summary'}</p>
             <h3>{applicationDetail.imei}</h3>
-            <p>{applicationDetail.reason === 'airmail' ? (isBn ? 'এয়ার মেইল' : 'Air Mail') :
-              applicationDetail.reason === 'gift' ? (isBn ? 'উপহার' : 'Gift') : (isBn ? 'বিদেশ ভ্রমণ' : 'Foreign Tour')}</p>
+            <p>{applicationReasonLabel(applicationDetail.reason)}</p>
           </div>
           <UiStatusBadge tone={applicationDetail.status === 'Accepted' ? 'success' :
             applicationDetail.status === 'Rejected' ? 'danger' : applicationDetail.status === 'In Progress' ? 'info' : 'warning'}>
-            {applicationDetail.status}
+            {applicationStatusLabel(applicationDetail.status)}
           </UiStatusBadge>
         </div>
         <div className="neir-profile-detail-grid">
@@ -493,7 +502,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
           </div>
           <div className="neir-profile-detail-field">
             <p className="neir-profile-detail-label">{isBn ? 'আবেদনের অবস্থা' : 'Application status'}</p>
-            <p className="neir-profile-detail-value">{applicationDetail.status}</p>
+            <p className="neir-profile-detail-value">{applicationStatusLabel(applicationDetail.status)}</p>
           </div>
           <div className="neir-profile-detail-field">
             <p className="neir-profile-detail-label">{isBn ? 'আবেদনের তারিখ' : 'Applied on'}</p>

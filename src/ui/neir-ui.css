@@ -7,7 +7,9 @@
   --neir-type-body:clamp(15px,0.18vw + 14px,16px);
   --neir-type-subtitle:clamp(17px,0.4vw + 16px,20px);
   --neir-type-heading:clamp(20px,0.7vw + 18px,26px);
-  --neir-ui-hover:var(--neir-primary-900,#00838f);
+  --neir-ui-action-bg:var(--neir-primary-900,#00838f);
+  --neir-ui-action-hover:#006e7a;
+  --neir-ui-hover:var(--neir-ui-action-hover);
   --neir-ui-success:#24753e;
   --neir-ui-success-bg:#def4e6;
   --neir-ui-warning:#925400;
@@ -45,11 +47,11 @@
   transition:background-color .15s,border-color .15s,color .15s;
 }
 /* Exactly two action appearances across NEIR: Primary and Link. */
-.neir-ui-button--primary{background:var(--neir-ui-primary-bright);color:#fff;border-color:var(--neir-ui-primary-bright)}
+.neir-ui-button--primary{background:var(--neir-ui-action-bg);color:#fff;border-color:var(--neir-ui-action-bg)}
 .neir-ui-button--primary:hover:not(:disabled){background:var(--neir-ui-hover);border-color:var(--neir-ui-hover)}
 .neir-ui-button--link{background:transparent;color:var(--neir-ui-primary);border-color:var(--neir-ui-primary-bright)}
-.neir-ui-button--link:hover:not(:disabled){background:var(--neir-ui-primary-bright);color:#fff;border-color:var(--neir-ui-primary-bright)}
-.neir-ui-button--compact{min-height:40px;padding:7px 14px;font-size:14px}
+.neir-ui-button--link:hover:not(:disabled){background:var(--neir-ui-action-bg);color:#fff;border-color:var(--neir-ui-action-bg)}
+.neir-ui-button--compact{min-height:44px;padding:8px 14px;font-size:14px}
 .neir-ui-button--full{width:100%;flex:1 1 100%;min-width:0}
 .neir-ui-control{
   display:block;box-sizing:border-box;width:100%;min-width:0;
@@ -140,38 +142,38 @@
   background:#fff;color:var(--neir-ui-text);font-weight:500;
 }
 .neir-ui-choice-tab[aria-pressed=true]{border:2px solid var(--neir-ui-primary-bright);
-  background:#edf9fb;color:var(--neir-ui-primary);
-  box-shadow:inset 0 0 0 1px #b6e2e8}
+  background:var(--neir-ui-surface-soft);color:var(--neir-ui-primary);
+  box-shadow:none}
 .neir-ui-choice-tab:hover:not(:disabled){border-color:var(--neir-ui-primary-bright);background:#f5fcfd}
 .neir-ui-form-action{min-width:148px}
 .neir-ui-form-control{margin-top:6px}
 @media(max-width:700px){.neir-ui-choice-tab{min-height:84px;padding:12px}.neir-ui-form-action{width:100%}}
 
-/* Approved public hero/button pair must keep its original bright NEIR teal.
-   The common Button API must never silently change locked landing-page artwork. */
+/* Approved layouts remain fixed; semantic action colors are shared everywhere
+   and use contrast-safe dark teal for white button text. */
 .neir-source-verify-button.neir-ui-button--primary{
-  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+  background:var(--neir-ui-action-bg);border-color:var(--neir-ui-action-bg);color:#fff;
 }
 .neir-source-verify-button.neir-ui-button--primary:hover:not(:disabled){
-  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+  background:var(--neir-ui-action-hover);border-color:var(--neir-ui-action-hover);
 }
 
-/* Keep the approved Special Registration landing CTA identical to hero verify. */
+/* Special Registration uses the same Primary action appearance. */
 .neir-special-registration-button.neir-ui-button--primary{
-  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+  background:var(--neir-ui-action-bg);border-color:var(--neir-ui-action-bg);color:#fff;
 }
 .neir-special-registration-button.neir-ui-button--primary:hover:not(:disabled){
-  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+  background:var(--neir-ui-action-hover);border-color:var(--neir-ui-action-hover);
 }
 
-/* My Profile uses the same bright primary CTA from the approved NEIR account view. */
+/* Profile actions share the same Primary appearance. */
 .neir-profile-search-button.neir-ui-button--primary,
 .neir-profile-primary-action.neir-ui-button--primary{
-  background:var(--neir-primary-600);border-color:var(--neir-primary-600);color:#fff;
+  background:var(--neir-ui-action-bg);border-color:var(--neir-ui-action-bg);color:#fff;
 }
 .neir-profile-search-button.neir-ui-button--primary:hover:not(:disabled),
 .neir-profile-primary-action.neir-ui-button--primary:hover:not(:disabled){
-  background:var(--neir-primary-900);border-color:var(--neir-primary-900);
+  background:var(--neir-ui-action-hover);border-color:var(--neir-ui-action-hover);
 }
 
 /* Canonical cross-screen form and typography system.
@@ -229,7 +231,7 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
  font-weight:600;cursor:pointer;transition:background-color .15s,color .15s;
 }
 .neir-guide-platform-tab[aria-selected="true"]{
- background:var(--neir-ui-primary-bright);color:#fff;
+ background:var(--neir-ui-action-bg);color:#fff;
 }
 .neir-guide-platform-tab:hover:not([aria-selected="true"]){background:var(--neir-ui-surface-soft);border-color:var(--neir-ui-primary-bright)}
 @media(max-width:420px){
@@ -245,6 +247,83 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
  font:500 var(--neir-type-caption)/1.5 var(--neir-ui-font);cursor:pointer;
 }
 .neir-faq-tab[aria-selected="true"]{
- background:var(--neir-ui-primary-bright);border-color:var(--neir-ui-primary-bright);color:#fff;
+ background:var(--neir-ui-action-bg);border-color:var(--neir-ui-action-bg);color:#fff;
 }
 .neir-faq-tab:hover:not([aria-selected="true"]){background:var(--neir-ui-surface-soft);border-color:var(--neir-ui-primary-bright)}
+
+/* UNIFIED MODAL CONTRACT: one surface and backdrop for every active dialog.
+   Distinct approved widths and internal content layouts remain screen-owned. */
+.neir-modal-backdrop{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:16px;box-sizing:border-box;background:var(--neir-dialog-overlay);
+  overscroll-behavior:contain;
+}
+.neir-modal-surface{
+  display:flex;flex-direction:column;min-width:0;max-height:min(92dvh,960px);
+  box-sizing:border-box;overflow:hidden;
+  color:var(--neir-ui-text);background:var(--neir-ui-surface);
+  border-radius:var(--neir-ui-dialog-radius);
+  box-shadow:var(--neir-dialog-shadow);
+  font-family:var(--neir-ui-font);
+}
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button){
+  width:44px;height:44px;min-width:44px;min-height:44px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:0;background:transparent;color:var(--neir-ui-text);
+  cursor:pointer;flex-shrink:0;
+}
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):hover{
+  color:var(--neir-ui-primary);
+}
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):focus-visible{
+  outline:2px solid var(--neir-ui-focus);outline-offset:0;border-radius:8px;
+}
+:where(.neir-shared-body,.neir-original-dialog-body,.neir-v7-body){
+  min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+}
+@media(max-width:767px){
+  .neir-modal-backdrop{padding:0;align-items:flex-end}
+  .neir-modal-surface{width:100%;max-height:90dvh;border-radius:16px 16px 0 0}
+}
+@media(prefers-reduced-motion:reduce){
+  .neir-modal-backdrop,.neir-modal-surface{animation:none!important;scroll-behavior:auto}
+}
+
+/* MOBILE NAVIGATION RESTORATION: keep the approved compact auth/language header,
+   but expose the existing Home/Guides menu and its keyboard-accessible controls. */
+@media(max-width:767px){
+  .neir-menubar{padding:8px 12px;gap:6px}
+  .neir-mobile-toggle{
+    display:flex;align-items:center;justify-content:center;
+    margin-left:0;flex:0 0 40px;width:40px;height:44px;
+    border:1px solid var(--neir-ui-primary-bright);border-radius:10px;
+    color:var(--neir-ui-primary);background:transparent;cursor:pointer;
+  }
+  .neir-source-mobile-auth{gap:8px;margin-left:auto;min-width:0}
+  .neir-source-mobile-language{width:94px}
+  .neir-source-mobile-login{min-width:82px}
+  .neir-mobile-menu{display:flex;gap:8px;padding:12px 16px}
+  .neir-mobile-menu .neir-header-auth,
+  .neir-mobile-menu .neir-mobile-language{display:none}
+  .neir-mobile-menu-item{min-height:44px;cursor:pointer}
+}
+@media(max-width:360px){
+  .neir-menubar{padding:8px;gap:4px}
+  .neir-logo-wrap{min-width:74px;width:74px}
+  .neir-logo-wrap img{width:32px;height:32px}
+  .neir-source-mobile-auth{gap:4px}
+  .neir-source-mobile-language{width:80px;padding-inline:4px}
+  .neir-source-mobile-login{min-width:72px;padding-inline:6px;font-size:12px;gap:3px}
+  .neir-mobile-toggle{width:36px;flex-basis:36px}
+}
+
+/* MOBILE HIT AREA NORMALIZATION: preserve the approved side-by-side IMEI field
+   and action, while bringing their actual touch targets to 44px minimum. */
+@media(max-width:767px){
+  .neir-source-input-wrap .neir-ui-control,
+  .neir-source-verify-button.neir-ui-button--primary{
+    height:44px;min-height:44px;
+  }
+  .neir-source-mobile-language{height:44px;min-height:44px}
+  .neir-original-footer button{min-height:44px;display:inline-flex;align-items:center}
+}

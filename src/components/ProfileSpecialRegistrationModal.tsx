@@ -194,8 +194,8 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     { value: 'gift' as const, label: 'Gift Deed from his relative/ Friends', Icon: Gift },
     { value: 'foreign-tour' as const, label: 'Purchased handset during his foreign tour', Icon: Plane },
   ];
-  return <div className="neir-v7-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) onClose(); }}>
-    <section className="neir-v7-dialog" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef} tabIndex={-1}>
+  return <div className="neir-v7-backdrop neir-modal-backdrop" onMouseDown={event => { if (event.currentTarget === event.target) onClose(); }}>
+    <section className="neir-v7-dialog neir-modal-surface" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef} tabIndex={-1}>
       <header className="neir-v7-header">
         <div className="neir-v7-title-group">
           {demoDoc && <button type="button" className="neir-v7-back"

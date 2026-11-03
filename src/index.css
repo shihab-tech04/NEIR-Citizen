@@ -453,42 +453,8 @@ button,input,select,textarea{font:inherit}
 
 /* Approved Special Registration guest intro and login-success handoff.
    Match the existing Poppins registration dialog; keep unrelated UI untouched. */
-.neir-shared-backdrop{
-  position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;
-  padding:16px;background:rgba(14,18,25,.55);font-family:Poppins,Arial,sans-serif;
-  animation:neir-v7-overlay-in .22s ease-out both;
-}
-.neir-shared-dialog{
-  box-sizing:border-box;width:min(600px,100%);max-height:min(92dvh,960px);
-  min-width:0;display:flex;flex-direction:column;overflow:hidden;
-  background:#fff;color:#202020;border-radius:16px;
-  box-shadow:0 14px 54px rgba(20,35,52,.16);font-size:16px;
-  animation:neir-auth-enter .22s cubic-bezier(.2,.7,.3,1) both;
-}
-.neir-shared-dialog *{box-sizing:border-box}
-.neir-shared-dialog--compact{width:min(440px,100%)}
-.neir-shared-header{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  flex:none;padding:24px;border-bottom:1px solid #e3dbd8;
-}
-.neir-shared-header h2{font-size:24px;line-height:30px;font-weight:400;color:#000;margin:0}
-.neir-shared-close{
-  width:28px;height:28px;flex:none;display:grid;place-items:center;
-  border:0;background:transparent;color:#202020;cursor:pointer;padding:0;
-}
-.neir-shared-close:hover{color:#00838f}
-.neir-shared-close:focus-visible,.neir-shared-button:focus-visible{
-  outline:3px solid #00838f;outline-offset:3px;
-}
-.neir-shared-body{padding:24px;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-.neir-shared-footer{display:flex;flex:none;padding:16px 24px 24px;border-top:1px solid #e3dbd8}
-.neir-shared-button{
-  display:inline-flex;justify-content:center;align-items:center;gap:12px;
-  min-height:52px;padding:12px 24px;border:1px solid var(--neir-primary-600);
-  border-radius:999px;background:var(--neir-primary-600);color:#fff;
-  font:inherit;font-size:16px;font-weight:600;text-align:center;cursor:pointer;
-}
-.neir-shared-button:hover{background:var(--neir-primary-900)}
+/* Shared dialog shell lives in NeirSharedModal.css and neir-ui.css.
+   Keep only feature-specific introduction/handoff appearance here. */
 .neir-registration-full-width{width:100%}
 .neir-registration-intro{display:flex;flex-direction:column;gap:12px}
 .neir-registration-intro h3{font-size:18px;font-weight:600;line-height:1.45;color:#202c3c;margin:0}

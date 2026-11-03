@@ -76,6 +76,10 @@ export type UiDataTableProps<Row> = Omit<TableHTMLAttributes<HTMLTableElement>, 
   searchable?: (row: Row, query: string) => boolean;
   searchPlaceholder?: string;
   emptyText?: string;
+  searchLabel?: string;
+  countLabel?: (count: number) => string;
+  sortLabel?: (heading: string) => string;
+  mobileAriaLabel?: string;
   /** Admin-parity mobile record-card view; desktop retains the existing table. */
   renderMobileCard?: (row: Row, index: number) => ReactNode;
 };
@@ -84,6 +88,7 @@ export type UiDataTableProps<Row> = Omit<TableHTMLAttributes<HTMLTableElement>, 
 export function UiDataTable<Row>({
   rows, columns, rowKey, onRowClick, rowLabel, scrollClassName, searchable,
   searchPlaceholder = 'Search table', emptyText = 'No records found', renderMobileCard,
+  searchLabel = 'Search', countLabel, sortLabel, mobileAriaLabel = 'Application records',
   className, ...tableProps
 }: UiDataTableProps<Row>) {
   const searchId = useId();
@@ -102,13 +107,14 @@ export function UiDataTable<Row>({
   }, [rows, columns, searchable, query, sorting]);
   return <div className="neir-ui-table-container">
     {searchable && <div className="neir-ui-table-tools">
-      <label htmlFor={searchId} className="neir-ui-table-search-label">Search
+      <label htmlFor={searchId} className="neir-ui-table-search-label">{searchLabel}
         <UiInput id={searchId} uiSize="compact" type="search" value={query} placeholder={searchPlaceholder}
           onChange={event => setQuery(event.target.value)} />
       </label>
-      <span className="neir-ui-table-count" role="status">{visibleRows.length} {visibleRows.length === 1 ? 'record' : 'records'}</span>
+      <span className="neir-ui-table-count" role="status">{countLabel ? countLabel(visibleRows.length) :
+        visibleRows.length + ' ' + (visibleRows.length === 1 ? 'record' : 'records')}</span>
     </div>}
-    {renderMobileCard && <div className="neir-ui-mobile-record-stack" aria-label="Application records">
+    {renderMobileCard && <div className="neir-ui-mobile-record-stack" aria-label={mobileAriaLabel}>
       {visibleRows.length ? visibleRows.map((row, index) => <div key={rowKey(row)}
         className={classes('neir-ui-mobile-record', onRowClick && 'neir-ui-mobile-record--interactive')}
         role={onRowClick ? 'button' : undefined}
@@ -132,7 +138,8 @@ export function UiDataTable<Row>({
           aria-sort={sorting?.key === col.key ? (sorting.ascending ? 'ascending' : 'descending') : col.sortValue ? 'none' : undefined}>
           {col.sortValue ? <button type="button" className="neir-ui-table-sort" onClick={() => setSorting(current => ({
             key: col.key, ascending: current?.key === col.key ? !current.ascending : true,
-          }))} aria-label={'Sort by ' + (typeof col.heading === 'string' ? col.heading : col.key)}>
+          }))} aria-label={sortLabel ? sortLabel(typeof col.heading === 'string' ? col.heading : col.key)
+            : 'Sort by ' + (typeof col.heading === 'string' ? col.heading : col.key)}>
             {col.heading}<span aria-hidden="true">{sorting?.key === col.key ? (sorting.ascending ? ' ↑' : ' ↓') : ' ↕'}</span>
           </button> : col.heading}
         </th>)}</tr></thead>
