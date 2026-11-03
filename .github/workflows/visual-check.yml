@@ -78,11 +78,11 @@ jobs:
             });
             console.log('Original desktop source parity:',JSON.stringify(sourceParity));
             if(sourceParity.headings.length!==2 ||
-     sourceParity.headings[0][0]!=='Check Phone Registration Status by IMEI' ||
-     sourceParity.headings[1][0]!=='Check Mobile Numbers Registered Under Your NID' ||
-     sourceParity.headings.some(x=>x[1]!=='3 simple steps')) {
-    throw Error('Guide headings must be meaningful and preserve both original service topics');
-  }
+              sourceParity.headings[0][0]!=='Check Phone Registration Status by IMEI' ||
+              sourceParity.headings[1][0]!=='Check Mobile Numbers Registered Under Your NID' ||
+              sourceParity.headings.some(x=>x[1]!=='3 simple steps')) {
+              throw Error('Guide headings must be meaningful and preserve both original service topics');
+            }
             if(sourceParity.nav.length!==2) throw Error('Source top navigation must have Home and User Guides only');
             if(!sourceParity.firstStep?.startsWith('Go to your mobile phone’s messaging option')) throw Error('IMEI guide step 1 changed from captured original');
             if(!sourceParity.signedOutLoginVisible) throw Error('Signed-out Login control missing');
