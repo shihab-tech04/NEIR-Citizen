@@ -37,9 +37,9 @@ export default function App() {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(getRoute);
   const mainRef = useRef<HTMLElement>(null);
   const firstRouteRender = useRef(true);
-  const scrollToTop = () => window.scrollTo({
-    top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-  });
+  const preferredScrollBehavior = (): ScrollBehavior =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: preferredScrollBehavior() });
   useEffect(() => {
     const handlePopState = () => {
       setCurrentRoute(getRoute());
@@ -155,11 +155,11 @@ export default function App() {
       setCurrentRoute('home');
       setTimeout(() => {
         const el = document.getElementById('imei-verifier');
-        el?.scrollIntoView({ behavior: 'smooth' });
+        el?.scrollIntoView({ behavior: preferredScrollBehavior() });
       }, 100);
     } else {
       const el = document.getElementById('imei-verifier');
-      el?.scrollIntoView({ behavior: 'smooth' });
+      el?.scrollIntoView({ behavior: preferredScrollBehavior() });
     }
   };
 
