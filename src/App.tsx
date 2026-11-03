@@ -225,6 +225,7 @@ export default function App() {
                 setLoginInitialView('register');
                 setIsLoginOpen(true);
               }}
+              onOpenDashboard={() => setCurrentRoute('dashboard')}
               onSpecialRegistration={requestSpecialRegistration}
               onOpenGuides={() => {
                 setCurrentRoute('guides');
