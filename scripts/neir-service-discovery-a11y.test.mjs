@@ -14,6 +14,10 @@ assert(app.includes('href="#neir-main-content"') && app.includes('mainRef.curren
   'Skip link and focus-managed SPA routes are both required');
 assert(app.includes("prefers-reduced-motion: reduce") && app.includes('scrollToTop()'),
   'Routing must respect reduced-motion preferences');
+assert(app.includes('const preferredScrollBehavior =') &&
+  (app.match(/scrollIntoView\(\{ behavior: preferredScrollBehavior\(\) \}\)/g)||[]).length===2 &&
+  !app.includes("scrollIntoView({ behavior: 'smooth' })"),
+  'All service-return shortcuts must respect reduced-motion preferences');
 assert(!section.includes('neir-imei-input') && !section.includes('setImei') &&
   !section.includes('neir-source-verify-button'),
   'Service entry may not implement or modify the IMEI checker');
