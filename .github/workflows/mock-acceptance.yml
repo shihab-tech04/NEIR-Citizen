@@ -9,6 +9,7 @@ on:
       - 'scripts/neir-profile-ui-contract.test.mjs'
       - 'scripts/neir-unified-ui-foundation.test.mjs'
       - 'scripts/neir-full-ui-system.test.mjs'
+      - 'scripts/neir-modal-back-animation.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -21,6 +22,7 @@ on:
       - 'scripts/neir-profile-ui-contract.test.mjs'
       - 'scripts/neir-unified-ui-foundation.test.mjs'
       - 'scripts/neir-full-ui-system.test.mjs'
+      - 'scripts/neir-modal-back-animation.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -60,6 +62,8 @@ jobs:
           done
       - name: Verify no-login Special Registration journeys and capture screens
         run: node scripts/neir-public-special-journeys.mjs
+      - name: Verify animated modal Back and draft recovery journeys
+        run: node scripts/neir-modal-back-animation.test.mjs
       - name: Verify deployed Citizen/Admin Special Registration service
         run: |
           node --input-type=module <<'JS'
