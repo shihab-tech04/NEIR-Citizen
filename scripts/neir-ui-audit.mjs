@@ -75,7 +75,10 @@ const wizard = requireText('src/components/ProfileSpecialRegistrationModal.tsx',
   'Download sample', 'Select how you purchased or received the device',
 ]);
 assert(!wizard.includes('setStage('), 'Special Registration must not regain a Continue dependency');
-requireText('src/components/NeirModalFrame.tsx', ['aria-modal="true"', "event.key === 'Escape'", 'previousFocus?.focus()']);
+requireText('src/components/NeirModalFrame.tsx', ['aria-modal="true"', 'useNeirDialogFocus', 'neir-shared-dialog']);
+requireText('src/ui/useNeirDialogFocus.ts', ["event.key === 'Escape'", "event.key !== 'Tab'", 'previouslyFocused?.focus()', "document.body.style.overflow = 'hidden'"]);
+requireText('src/components/LoginModal.tsx', ['useNeirDialogFocus']);
+requireText('src/components/ProfileSpecialRegistrationModal.tsx', ['useNeirDialogFocus']);
 assert(sourceInventory.nativeTables >= 2, 'Historical printable sample tables must remain');
 console.log('PASS: NEIR unified UI tokens, canonical primitives, active adoption, focus and responsive gates');
 console.log(JSON.stringify({ ...sourceInventory, styleFiles: cssFiles.length + 1, sharedControls: library.match(/export (?:const|function) Ui/g)?.length || 0 }, null, 2));
