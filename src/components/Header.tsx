@@ -33,8 +33,8 @@ export const Header:React.FC<Props> = ({currentRoute,onRouteChange,language,onLa
         <button onClick={()=>{setProfileOpen(false);onLogout();}}><LogOut size={16}/> {language==='bn'?'লগআউট':'Logout'}</button>
       </div>}
     </div> : <>
-      <button type="button" className="neir-nav-btn neir-auth-register" onClick={onOpenRegister}>{language==='bn'?'নিবন্ধন':'Register'}</button>
-      <button type="button" className="neir-nav-btn neir-auth-login" onClick={onOpenLogin}>{language==='bn'?'লগইন':'Login'}</button>
+      <button type="button" className="neir-nav-btn neir-auth-register" onClick={()=>{setOpen(false);onOpenRegister();}}>{language==='bn'?'নিবন্ধন':'Register'}</button>
+      <button type="button" className="neir-nav-btn neir-auth-login" onClick={()=>{setOpen(false);onOpenLogin();}}>{language==='bn'?'লগইন':'Login'}</button>
     </>}
   </div>;
   return <header className="neir-original-header">
