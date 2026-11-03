@@ -65,7 +65,10 @@ export const UserGuidesView: React.FC<Props> = ({language}) => {
     </div>
     <div className="neir-source-guide-content bg-white rounded-[32px] p-5 sm:p-8 lg:p-12 space-y-7">
       <div className="neir-source-guide-intro space-y-4"><h2 className="text-2xl sm:text-3xl font-semibold">{isBn ? (isReg ? 'অ্যাকাউন্ট নিবন্ধন' : 'পাসওয়ার্ড পুনর্নির্ধারণ') : (isReg ? 'Account Registration' : 'Password Reset')}</h2>
-        <p className="leading-relaxed text-slate-700">{isReg
+        <p className="leading-relaxed text-slate-700">{isBn
+          ? (isReg ? 'নিবন্ধনের মাধ্যমে পরিচয় যাচাই, নিজের ডিভাইসের তথ্য ও অবস্থা দেখা এবং প্রাসঙ্গিক সেবা ব্যবহার করা যায়।'
+            : 'পাসওয়ার্ড ভুলে গেলে অ্যাকাউন্টের সঙ্গে যুক্ত মোবাইল নম্বর দিয়ে পরিচয় যাচাই করে নতুন পাসওয়ার্ড নির্ধারণ করুন।')
+          : isReg
           ? 'Account registration feature allows you to verify your identity, securely manage your registered devices and SIMs, check their status, and access services like device whitelisting, ensuring only legally registered devices are connected to you.'
           : 'Use this feature if you forget your password or cannot sign in. Enter any registered mobile number linked to your account. An OTP will be sent to that number to verify your identity and help you create a new password.'}</p>
         <p className="font-medium text-slate-900">{isBn ? (isReg ? 'অ্যাকাউন্ট তৈরির সহজ ধাপগুলো অনুসরণ করুন।' : 'পাসওয়ার্ড পরিবর্তনের ধাপগুলো অনুসরণ করুন।') : (isReg ? 'Quick steps to help you create your account easily.' : 'Quick steps to help you reset your password easily.')}</p></div>
@@ -75,10 +78,10 @@ export const UserGuidesView: React.FC<Props> = ({language}) => {
       </div>
         <div className="space-y-10">{steps.map((step,index) => <article key={step.title} className="neir-guide-step-card grid grid-cols-1 md:grid-cols-2 items-center gap-5 md:gap-8">
           <div className="neir-guide-step-text"><h3 className="text-lg sm:text-xl font-semibold mb-3">{isBn ? bnSteps[index]?.[0] : step.title}</h3><p className="text-sm sm:text-base text-slate-700 leading-7">{isBn ? bnSteps[index]?.[1] : step.description}</p></div>
-          <div className="neir-guide-step-visual">{image(step.image, step.title)}</div>
+          <div className="neir-guide-step-visual">{image(step.image, isBn ? bnSteps[index]?.[0] : step.title)}</div>
         </article>)}
           <div className="neir-guide-overview pt-5 border-t space-y-4"><h3 className="text-xl font-semibold">{isBn ? (isReg ? 'নিবন্ধন প্রক্রিয়া এক নজরে' : 'পাসওয়ার্ড পুনর্নির্ধারণ এক নজরে') : (isReg ? 'User Registration Process at a glance' : 'Reset Password Process at a glance')}</h3>
-          {image(fullImage, 'Complete ' + (isReg ? 'registration' : 'password reset') + ' process')}</div>
+          {image(fullImage, isBn ? (isReg ? 'সম্পূর্ণ নিবন্ধন প্রক্রিয়া' : 'পাসওয়ার্ড পুনর্নির্ধারণ প্রক্রিয়া') : 'Complete ' + (isReg ? 'registration' : 'password reset') + ' process')}</div>
         </div>
     </div>
   </section>;
