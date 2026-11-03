@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'scripts/neir-public-special-journeys.mjs'
       - 'scripts/neir-special-validation.test.mjs'
+      - 'scripts/neir-profile-ui-contract.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -15,6 +16,7 @@ on:
       - 'src/**'
       - 'scripts/neir-public-special-journeys.mjs'
       - 'scripts/neir-special-validation.test.mjs'
+      - 'scripts/neir-profile-ui-contract.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -34,6 +36,10 @@ jobs:
           npm install --no-audit --no-fund
           npm run lint
           npm run build
+      - name: Check NEIR unified UI and profile/document contract
+        run: |
+          npm run ui:audit
+          node scripts/neir-profile-ui-contract.test.mjs
       - name: Check actual Edge handler mobile and date validators
         run: node scripts/neir-special-validation.test.mjs
       - name: Install Chromium for screenshot and journey tests
