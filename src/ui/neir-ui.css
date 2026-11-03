@@ -266,16 +266,16 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   box-shadow:var(--neir-dialog-shadow);
   font-family:var(--neir-ui-font);
 }
-:where(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button){
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button){
   width:44px;height:44px;min-width:44px;min-height:44px;
   display:inline-flex;align-items:center;justify-content:center;
   border:0;background:transparent;color:var(--neir-ui-text);
   cursor:pointer;flex-shrink:0;
 }
-:where(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):hover{
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):hover{
   color:var(--neir-ui-primary);
 }
-:where(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):focus-visible{
+.neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button):focus-visible{
   outline:2px solid var(--neir-ui-focus);outline-offset:0;border-radius:8px;
 }
 :where(.neir-shared-body,.neir-original-dialog-body,.neir-v7-body){
