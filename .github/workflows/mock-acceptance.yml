@@ -11,6 +11,7 @@ on:
       - 'scripts/neir-full-ui-system.test.mjs'
       - 'scripts/neir-modal-back-animation.test.mjs'
       - 'scripts/neir-figma-registration.test.mjs'
+      - 'scripts/neir-registration-layout.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -25,6 +26,7 @@ on:
       - 'scripts/neir-full-ui-system.test.mjs'
       - 'scripts/neir-modal-back-animation.test.mjs'
       - 'scripts/neir-figma-registration.test.mjs'
+      - 'scripts/neir-registration-layout.test.mjs'
       - 'supabase/functions/neir-prototype-special/**'
       - '.github/workflows/mock-acceptance.yml'
       - 'public/**'
@@ -67,6 +69,8 @@ jobs:
         run: node scripts/neir-public-special-journeys.mjs
       - name: Verify animated modal Back and draft recovery journeys
         run: node scripts/neir-modal-back-animation.test.mjs
+      - name: Verify registration footer, bullets and compact desktop/mobile geometry
+        run: node scripts/neir-registration-layout.test.mjs
       - name: Verify deployed Citizen/Admin Special Registration service
         run: |
           node --input-type=module <<'JS'

@@ -12,7 +12,9 @@
 .neir-original-dialog--registration .neir-original-dialog-top h2{
   font-size:24px;line-height:30px;font-weight:400;
 }
-.neir-reg-form{display:flex;flex-direction:column;gap:0;margin:0;}
+.neir-original-dialog--registration .neir-reg-form{
+  display:flex;flex-direction:column;gap:0;margin:0;
+}
 .neir-reg-content{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;
   padding:24px;min-width:0;animation:neir-modal-content-appear .2s ease-out both;
@@ -25,7 +27,13 @@
 .neir-reg-explanation p,.neir-reg-explanation li{
   color:#343d4c;font:400 14px/1.65 Poppins,Arial,sans-serif;margin:0;
 }
-.neir-reg-explanation ul{padding-left:20px;margin:0;}
+/* Restore list markers suppressed by the global reset, without affecting password checks. */
+.neir-reg-explanation > ul:not(.neir-reg-password-rules){
+  list-style:disc outside;margin:0;padding-inline-start:24px;
+}
+.neir-reg-explanation > ul:not(.neir-reg-password-rules) > li{
+  display:list-item;list-style:disc outside;
+}
 .neir-reg-phone{overflow-wrap:anywhere;display:inline;}
 .neir-reg-fields{gap:16px;}
 .neir-reg-field{min-width:0;display:flex;flex-direction:column;gap:2px;}
@@ -80,11 +88,11 @@
 .neir-reg-password-wrap button:hover{background:var(--neir-ui-surface-soft,#eaf9fa);}
 .neir-reg-error{grid-column:1/-1;margin:0;font-size:14px;}
 .neir-reg-footer{
-  display:flex;align-items:center;justify-content:flex-end;gap:16px;
-  border-top:1px solid #e3dbd8;margin:0 24px;padding:24px 0;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-top:1px solid #e3dbd8;margin:0 24px;padding:20px 0;
 }
 .neir-reg-submit.neir-ui-button{flex:none;min-height:60px;padding:11px 28px;gap:12px;font-size:16px;white-space:nowrap;}
-.neir-reg-existing{margin:0 24px 18px;color:#475467;font:400 14px/1.5 Poppins,Arial,sans-serif;}
+.neir-reg-existing{min-width:0;margin:0;color:#475467;font:400 14px/1.5 Poppins,Arial,sans-serif;}
 .neir-reg-existing button{padding:3px 7px;text-decoration:underline;}
 @media(max-width:767px){
   .neir-original-dialog.neir-original-dialog--registration{
@@ -102,7 +110,7 @@
   .neir-reg-otp-group input{height:52px;border-radius:9px;font-size:20px;}
   .neir-reg-footer{margin:0 16px;padding:12px 0 max(12px,env(safe-area-inset-bottom));flex-direction:column;align-items:stretch;}
   .neir-reg-submit.neir-ui-button{width:100%;min-height:50px;}
-  .neir-reg-existing{margin:0 16px 12px;text-align:center;}
+  .neir-reg-existing{text-align:center;}
 }
 @media(max-width:359px){
   .neir-reg-otp-group{gap:5px;}

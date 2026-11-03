@@ -38,4 +38,13 @@ assert(!login.includes('Maximize2') && !login.includes('Minimize2') &&
 assert(login.includes('className="neir-modal-back"') &&
   login.includes('aria-label="Close"'),
   'Preserve modal Back and Close controls after removing expand');
-console.log('PASS: Figma three-stage UI contract, password rules, safe demo OTP, responsive sizing and Back state.');
+assert(body.indexOf('<footer className="neir-reg-footer">') < body.indexOf('className="neir-reg-existing"') &&
+  body.indexOf('className="neir-reg-existing"') < body.indexOf('className="neir-reg-submit"') &&
+  body.indexOf('className="neir-reg-submit"') < body.indexOf('</footer>'),
+  'Login and action button must share the same registration footer');
+assert(css.includes('.neir-original-dialog--registration .neir-reg-form') &&
+  css.includes('justify-content:space-between'),
+  'Registration footer uses compact, consistent layout without inherited form gaps');
+assert(css.includes('list-style:disc outside'),
+  'Figma registration instruction bullets must not be suppressed by global reset');
+console.log('PASS: Figma registration footer alignment, bullet markers, compact spacing and functional controls.');
