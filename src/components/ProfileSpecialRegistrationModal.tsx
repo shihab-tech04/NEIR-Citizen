@@ -34,8 +34,8 @@ const localDate = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-type Props = { initialImei?: string; citizenMobile: string; onClose: () => void; onComplete?: (message: string) => void };
-export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', citizenMobile, onClose, onComplete }) => {
+type Props = { initialImei?: string; citizenMobile: string; onClose: () => void; onBack?: () => void; onComplete?: (message: string) => void };
+export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', citizenMobile, onClose, onBack, onComplete }) => {
   const [imei, setImei] = useState(initialImei);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
@@ -58,7 +58,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
   demoDocRef.current = demoDoc;
   const rootRef = useNeirDialogFocus<HTMLElement>({
     onClose,
-    initialFocusSelector:'#neir-v7-imei',
+    initialFocusSelector:onBack ? '.neir-modal-back' : '#neir-v7-imei',
     onEscape: () => {
       if (demoDocRef.current) {
         setReturningFromSample(true);
@@ -198,9 +198,11 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
     <section className="neir-v7-dialog neir-modal-surface" role="dialog" aria-modal="true" aria-labelledby="neir-v7-title" ref={rootRef} tabIndex={-1}>
       <header className="neir-v7-header">
         <div className="neir-v7-title-group">
-          {demoDoc && <button type="button" className="neir-v7-back"
-            ref={demoCloseRef} aria-label="Back to registration" onClick={returnFromSample}>
-            <ArrowLeft size={24} aria-hidden="true" />
+          {(demoDoc || onBack) && <button type="button" className="neir-v7-back neir-modal-back"
+            ref={demoDoc ? demoCloseRef : undefined}
+            aria-label={demoDoc ? 'Back to registration' : 'Back'}
+            onClick={demoDoc ? returnFromSample : onBack}>
+            <ArrowLeft size={22} aria-hidden="true" />
           </button>}
           <h2 id="neir-v7-title">{demoDoc ? 'Sample · ' + demoDoc.label : 'Special Registration'}</h2>
         </div>
@@ -289,7 +291,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
            <UiButton variant="primary" className="neir-v7-next" disabled={submitting || !enabled || submitted} type="submit" loading={submitting}>{submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}</UiButton>
         </footer>
       </form>
-      {demoDoc && <div className="neir-v7-sample-view" id="neir-v7-sample-view">
+      {demoDoc && <div className="neir-v7-sample-view neir-modal-animated-content" id="neir-v7-sample-view">
         <div className="neir-v7-demo-content">
           <NeirDocumentDemo documentId={demoDoc.id} documentName={demoDoc.label} />
         </div>

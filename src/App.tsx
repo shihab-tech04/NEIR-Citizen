@@ -79,6 +79,7 @@ export default function App() {
   const [loginForSpecialRegistration, setLoginForSpecialRegistration] = useState(false);
   const [guestRegistrationIntroOpen, setGuestRegistrationIntroOpen] = useState(false);
   const [registrationLoginSuccessOpen, setRegistrationLoginSuccessOpen] = useState(false);
+  const [registrationReturnModal, setRegistrationReturnModal] = useState<'intro' | 'success' | null>(null);
 
   useEffect(() => {
     const syncSession = (event: StorageEvent) => {
@@ -91,6 +92,7 @@ export default function App() {
         setLoginForSpecialRegistration(false);
         setGuestRegistrationIntroOpen(false);
         setRegistrationLoginSuccessOpen(false);
+        setRegistrationReturnModal(null);
         setSpecialRegistrationMessage('');
         setSpecialRegistrationTrigger(null);
       }
@@ -111,6 +113,7 @@ export default function App() {
 
   const requestSpecialRegistration = () => {
     setSpecialRegistrationMessage('');
+    setRegistrationReturnModal(null);
     setCurrentRoute('home');
     if (session.isLoggedIn) {
       setSpecialRegistrationTrigger(Date.now());
@@ -164,6 +167,7 @@ export default function App() {
           setLoginForSpecialRegistration(false);
           setGuestRegistrationIntroOpen(false);
           setRegistrationLoginSuccessOpen(false);
+          setRegistrationReturnModal(null);
           setIsLoginOpen(false);
           setCurrentRoute('home');
         }}
@@ -196,8 +200,19 @@ export default function App() {
                 session={session}
                 registrationOnly
                 registrationTrigger={specialRegistrationTrigger}
+                registrationBackEnabled={registrationReturnModal !== null}
+                onRegistrationBack={() => {
+                  const previous = registrationReturnModal;
+                  setRegistrationReturnModal(null);
+                  if (previous === 'intro') setGuestRegistrationIntroOpen(true);
+                  else if (previous === 'success') setRegistrationLoginSuccessOpen(true);
+                }}
+                onRegistrationExited={() => setRegistrationReturnModal(null)}
                 onRegistrationHandled={() => setSpecialRegistrationTrigger(null)}
-                onRegistrationComplete={setSpecialRegistrationMessage}
+                onRegistrationComplete={message => {
+                  setSpecialRegistrationMessage(message);
+                  setRegistrationReturnModal(null);
+                }}
               />
             )}
 
@@ -260,16 +275,24 @@ export default function App() {
       {/* Footer */}
       <Footer language={language} onContactUs={() => {setCurrentRoute('contact'); window.scrollTo({top:0});}} />
       {/* Guest explanation and explicit successful-login handoff precede the existing wizard. */}
-      {guestRegistrationIntroOpen && !session.isLoggedIn && (
+      {guestRegistrationIntroOpen && (
         <NeirModalFrame title={language === 'bn' ? 'বিশেষ নিবন্ধন' : 'Special Registration'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের তথ্য' : 'About Special Registration'}
           onClose={() => setGuestRegistrationIntroOpen(false)}
           footer={<button type="button" className="neir-shared-button neir-registration-full-width" onClick={() => {
             setGuestRegistrationIntroOpen(false);
-            setLoginForSpecialRegistration(true);
-            setLoginInitialView('login');
-            setIsLoginOpen(true);
-          }}>{language === 'bn' ? 'লগইনে এগিয়ে যান' : 'Proceed to login'}</button>}>
+            if (session.isLoggedIn) {
+              setRegistrationReturnModal('intro');
+              setCurrentRoute('home');
+              setSpecialRegistrationTrigger(Date.now());
+            } else {
+              setLoginForSpecialRegistration(true);
+              setLoginInitialView('login');
+              setIsLoginOpen(true);
+            }
+          }}>{session.isLoggedIn
+            ? (language === 'bn' ? 'বিশেষ নিবন্ধন শুরু করুন' : 'Proceed to special registration')
+            : (language === 'bn' ? 'লগইনে এগিয়ে যান' : 'Proceed to login')}</button>}>
           <div className="neir-registration-intro">
             <h3>{language === 'bn' ? 'বিশেষ নিবন্ধন কী?' : 'What is Special Registration?'}</h3>
             <p>{language === 'bn'
@@ -279,18 +302,28 @@ export default function App() {
             <p>{language === 'bn'
               ? 'বিদেশ ভ্রমণ থেকে আনা, উপহার পাওয়া বা এয়ার মেইল/কুরিয়ারে প্রাপ্ত ডিভাইস যদি গ্রেলিস্টেড হয় বা অতিরিক্ত যাচাই প্রয়োজন হয়, তাহলে প্রয়োজনীয় তথ্য-প্রমাণসহ আবেদন করতে হতে পারে। ইতিমধ্যে নিবন্ধিত ডিভাইসের জন্য আবেদন প্রয়োজন নেই; ব্ল্যাকলিস্টেড ডিভাইসের জন্য সংশ্লিষ্ট কর্তৃপক্ষের সহায়তা নিন।'
               : 'You may need this process if a handset brought from overseas, received as a gift, or delivered by air mail/courier is greylisted or requires additional verification. Already registered handsets do not need another application; for blacklisted devices, contact the responsible authority.'}</p>
-            <p className="neir-registration-intro-note">{language === 'bn'
-              ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আবেদন করতে আপনার অ্যাকাউন্টে লগইন করতে হবে।'
-              : 'Eligibility and approval depend on verification. You must log in to your account before applying for Special Registration.'}</p>
+            <p className="neir-registration-intro-note">{session.isLoggedIn
+              ? (language === 'bn'
+                ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আপনি লগইন করেছেন এবং আবেদন চালিয়ে যেতে পারেন।'
+                : 'Eligibility and approval depend on verification. You are signed in and can continue your application.')
+              : (language === 'bn'
+                ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আবেদন করতে আপনার অ্যাকাউন্টে লগইন করতে হবে।'
+                : 'Eligibility and approval depend on verification. You must log in to your account before applying for Special Registration.')}</p>
           </div>
         </NeirModalFrame>
       )}
       {registrationLoginSuccessOpen && session.isLoggedIn && (
         <NeirModalFrame title={language === 'bn' ? 'লগইন সফল' : 'Login successful'}
           ariaLabel={language === 'bn' ? 'বিশেষ নিবন্ধনের জন্য লগইন সফল' : 'Special Registration login successful'}
+          onBack={() => {
+            setRegistrationLoginSuccessOpen(false);
+            setGuestRegistrationIntroOpen(true);
+          }}
+          backLabel={language === 'bn' ? 'পেছনে যান' : 'Back'}
           onClose={() => setRegistrationLoginSuccessOpen(false)}
           footer={<button type="button" className="neir-shared-button neir-registration-full-width neir-registration-success-cta" onClick={() => {
             setRegistrationLoginSuccessOpen(false);
+            setRegistrationReturnModal('success');
             setCurrentRoute('home');
             setSpecialRegistrationTrigger(Date.now());
           }}>{language === 'bn' ? 'বিশেষ নিবন্ধন শুরু করুন' : 'Proceed to special registration'}</button>}>
@@ -308,6 +341,11 @@ export default function App() {
         isOpen={isLoginOpen}
         registrationIntent={loginForSpecialRegistration}
         language={language}
+        onBack={loginForSpecialRegistration ? () => {
+          setIsLoginOpen(false);
+          setGuestRegistrationIntroOpen(true);
+          setLoginForSpecialRegistration(false);
+        } : undefined}
         onClose={() => {
           setIsLoginOpen(false);
           setLoginForSpecialRegistration(false);

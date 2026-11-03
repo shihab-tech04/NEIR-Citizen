@@ -24,7 +24,7 @@ for(const path of ['src/components/NeirModalFrame.tsx',
 assert(shell.includes('neir-modal-backdrop')&&login.includes('neir-modal-backdrop')&&
   wizard.includes('neir-modal-backdrop'),'All active dialog backdrops must share one class');
 assert(css.includes('.neir-modal-surface :is(.neir-shared-close')&&
-  css.includes('width:44px;height:44px'),'Dialog close targets must be at least 44px');
+  css.includes('width:48px;height:48px'),'Dialog close targets must be at least 44px');
 assert(!index.includes('.neir-shared-dialog{\\n  box-sizing:border-box;width:min(600px,100%)'),
   'Legacy CSS must not repeat the canonical shared dialog shell');
 assert(ui.includes("export type UiButtonVariant = 'primary' | 'link'"),
@@ -86,5 +86,18 @@ assert(app.includes('ProposedDesignView'),
 for(const name of ['dashboard','guides','contact','faq','proposed','home']){
   assert(app.includes(name+':'), 'Previously solved route missing: '+name);
 }
+const modalMotion=load('src/ui/neir-ui.css');
+assert(modalMotion.includes('.neir-modal-surface{animation:neir-modal-surface-appear') &&
+       modalMotion.includes('prefers-reduced-motion:reduce'),
+  'Modals must animate accessibly and honor reduced motion');
+assert(shell.includes('onBack?: () => void') && shell.includes('className="neir-modal-back"'),
+  'Shared dialog must expose a top-left Back action when the journey has history');
+assert(login.includes('const goBack=') && login.includes("setRegStep(step=>step-1)"),
+  'Login/Register/Forgot must support header Back and progressive step reversal');
+assert(wizard.includes('onBack?: () => void') &&
+       wizard.includes('demoDoc ? returnFromSample : onBack'),
+  'Registration wizard must preserve sample Back and prior modal return');
+assert(app.includes('registrationReturnModal') && app.includes('onRegistrationBack='),
+  'Authenticated modal handoff must restore prior modal without logging out');
 console.log('PASS: canonical modal shells, two action styles, accessible teal contrast,');
 console.log('      localized active table and EN/BN journeys, preserved routes and legacy isolation.');

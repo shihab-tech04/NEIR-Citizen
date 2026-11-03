@@ -267,7 +267,7 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   font-family:var(--neir-ui-font);
 }
 .neir-modal-surface :is(.neir-shared-close,.neir-v7-close,.neir-original-dialog-actions button){
-  width:44px;height:44px;min-width:44px;min-height:44px;
+  width:48px;height:48px;min-width:48px;min-height:48px;
   display:inline-flex;align-items:center;justify-content:center;
   border:0;background:transparent;color:var(--neir-ui-text);
   cursor:pointer;flex-shrink:0;
@@ -326,4 +326,53 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   }
   .neir-source-mobile-language{height:44px;min-height:44px}
   .neir-original-footer button{min-height:44px;display:inline-flex;align-items:center}
+}
+
+/* MODAL MOTION & HEADER NAVIGATION — applies to all active modal shells.
+   The transition only affects presentation; the dialog's state and form data
+   are not recreated when opening a nested document sample. */
+.neir-modal-header-leading,.neir-v7-title-group{
+  display:flex;align-items:center;gap:10px;min-width:0;flex:1;
+}
+.neir-modal-header-leading h2,.neir-v7-title-group h2{
+  min-width:0;overflow-wrap:anywhere;flex:1;margin:0;
+}
+.neir-modal-back{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 48px;width:48px;height:48px;min-width:48px;min-height:48px;
+  border:0;border-radius:10px;background:transparent;
+  color:var(--neir-ui-primary);cursor:pointer;
+  transition:background-color .16s ease,color .16s ease;
+}
+.neir-modal-back:hover{background:var(--neir-ui-surface-soft);color:var(--neir-ui-action-hover)}
+.neir-modal-back:focus-visible{
+  outline:2px solid var(--neir-ui-focus);outline-offset:0;
+}
+.neir-modal-backdrop{animation:neir-modal-backdrop-appear .2s ease-out both}
+.neir-modal-surface{animation:neir-modal-surface-appear .24s cubic-bezier(.2,.75,.3,1) both}
+.neir-modal-animated-content{animation:neir-modal-content-appear .2s ease-out both}
+@keyframes neir-modal-backdrop-appear{
+  from{opacity:0}to{opacity:1}
+}
+@keyframes neir-modal-surface-appear{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes neir-modal-content-appear{
+  from{opacity:0;transform:translateX(8px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@media(max-width:767px){
+  .neir-modal-header-leading,.neir-v7-title-group{gap:6px}
+  .neir-modal-surface{animation-name:neir-modal-sheet-appear}
+  @keyframes neir-modal-sheet-appear{
+    from{opacity:.5;transform:translateY(28px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .neir-modal-backdrop,.neir-modal-surface,.neir-modal-animated-content{
+    animation:none!important;transition:none!important;
+  }
+  .neir-modal-back{transition:none!important}
 }

@@ -91,11 +91,15 @@ type Props = {
   session: UserSession;
   registrationOnly?: boolean;
   registrationTrigger?: number | null;
+  registrationBackEnabled?: boolean;
+  onRegistrationBack?: () => void;
+  onRegistrationExited?: () => void;
   onRegistrationHandled?: () => void;
   onRegistrationComplete?: (message: string) => void;
 };
 export const CitizenImeiListView: React.FC<Props> = ({
   language, session, registrationOnly = false, registrationTrigger = null,
+  registrationBackEnabled = false, onRegistrationBack, onRegistrationExited,
   onRegistrationHandled, onRegistrationComplete,
 }) => {
   const isBn = language === 'bn';
@@ -107,7 +111,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [profileName, setProfileName] = useState(session.name);
   const [profileDraft, setProfileDraft] = useState(session.name);
   const [profileError, setProfileError] = useState('');
-  const [wizard, setWizard] = useState<{ source: 'home' | 'profile'; imei: string } | null>(null);
+  const [wizard, setWizard] = useState<{ source: 'home' | 'profile' | 'handoff'; imei: string; previousDevice?: Device } | null>(null);
   const [result, setResult] = useState('');
   const [specialApplications, setSpecialApplications] = useState<SpecialApplication[]>([]);
   const [applicationError, setApplicationError] = useState('');
@@ -155,11 +159,11 @@ export const CitizenImeiListView: React.FC<Props> = ({
         setResult(isBn ? '২০টি আবেদন পূর্ণ হয়েছে। নতুন আবেদন করতে একটি আবেদন গ্রহণ হওয়া পর্যন্ত অপেক্ষা করুন।' : '20 applications are in use. A new slot opens after an application is accepted.');
       } else {
         setResult('');
-        setWizard({ source: 'home', imei: '' });
+        setWizard({ source: registrationBackEnabled ? 'handoff' : 'home', imei: '' });
       }
       onRegistrationHandled?.();
     }
-  }, [registrationOnly, registrationTrigger, onRegistrationHandled]);
+  }, [registrationOnly, registrationTrigger, registrationBackEnabled, onRegistrationHandled]);
 
   const exactReference = searchedImei
     ? referenceDevices.find(device => device.imei === searchedImei)
@@ -193,13 +197,14 @@ export const CitizenImeiListView: React.FC<Props> = ({
     setSearchedImei(clean);
   };
   const startProfileRegistration = (imei: string) => {
+    const previousDevice = detail;
     setDetail(null);
     if (reachedLimit) {
       setResult(isBn ? '২০টি আবেদন পূর্ণ হয়েছে। নতুন আবেদন করতে একটি আবেদন গ্রহণ হওয়া পর্যন্ত অপেক্ষা করুন।' : '20 applications are in use. A new slot opens after an application is accepted.');
       return;
     }
     setResult('');
-    setWizard({ source: 'profile', imei });
+    setWizard({ source: 'profile', imei, previousDevice: previousDevice ?? undefined });
   };
   const completeRegistration = (message: string) => {
     setResult(message);
@@ -521,6 +526,16 @@ export const CitizenImeiListView: React.FC<Props> = ({
       </div>
     </UiDialog>}
     {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei} citizenMobile={session.mobile}
-      onClose={() => setWizard(null)} onComplete={completeRegistration} />}
+      onBack={wizard.source === 'handoff' ? () => {
+        setWizard(null);
+        onRegistrationBack?.();
+      } : wizard.previousDevice ? () => {
+        setWizard(null);
+        setDetail(wizard.previousDevice ?? null);
+      } : undefined}
+      onClose={() => {
+        setWizard(null);
+        if (wizard.source === 'handoff') onRegistrationExited?.();
+      }} onComplete={completeRegistration} />}
   </>;
 };
