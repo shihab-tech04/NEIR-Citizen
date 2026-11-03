@@ -30,7 +30,8 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
 }) => {
   const isBn = language === 'bn';
   const [documentDigits, setDocumentDigits] = useState('');
-  const [otp, setOtp] = useState('');
+  const [otpDigits, setOtpDigits] = useState<string[]>(() => Array(6).fill(''));
+  const otp = otpDigits.join('');
   const [demoCode, setDemoCode] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(0);
   const [newPassword, setNewPassword] = useState('');
@@ -49,7 +50,7 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
 
   const generateDemoCode = () => {
     setDemoCode(testCode());
-    setOtp('');
+    setOtpDigits(Array(6).fill(''));
     setAttempts(0);
     setSecondsRemaining(300);
     setError('');
@@ -57,13 +58,14 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
 
   const changeOtp = (value: string, index: number) => {
     const numbers = digitOnly(value, 6);
-    const next = otp.padEnd(6, ' ').split('');
-    if (!numbers.length) next[index] = ' ';
-    numbers.split('').forEach((digit, offset) => {
-      if (index + offset < 6) next[index + offset] = digit;
+    setOtpDigits(previous => {
+      const next = previous.slice();
+      if (!numbers) next[index] = '';
+      numbers.split('').forEach((digit, offset) => {
+        if (index + offset < 6) next[index + offset] = digit;
+      });
+      return next;
     });
-    const updated = next.join('').trimEnd().replace(/ /g, '');
-    setOtp(updated);
     setError('');
     inputRefs.current[Math.min(5, index + Math.max(numbers.length, 1))]?.focus();
   };
@@ -173,10 +175,10 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
                   <input key={i} id={i === 0 ? 'reg-otp' : `reg-otp-${i}`}
                     ref={el => { inputRefs.current[i] = el; }}
                     aria-label={isBn ? `কোড সংখ্যা ${i+1}` : `OTP digit ${i+1}`}
-                    value={otp[i] || ''} maxLength={6} inputMode="numeric" autoComplete={i===0?'one-time-code':'off'}
+                    value={otpDigits[i]} maxLength={6} inputMode="numeric" autoComplete={i===0?'one-time-code':'off'}
                     onChange={e=>changeOtp(e.target.value,i)}
                     onPaste={e=>{e.preventDefault();changeOtp(e.clipboardData.getData('text'),0);}}
-                    onKeyDown={e=>{if(e.key==='Backspace'&&!otp[i]&&i>0)inputRefs.current[i-1]?.focus();}}
+                    onKeyDown={e=>{if(e.key==='Backspace'&&!otpDigits[i]&&i>0)inputRefs.current[i-1]?.focus();}}
                   />
                 ))}
               </div>
