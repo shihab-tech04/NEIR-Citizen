@@ -102,9 +102,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [imeiQuery, setImeiQuery] = useState('');
   const [searchedImei, setSearchedImei] = useState<string | null>(null);
   const [searchError, setSearchError] = useState('');
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, DeviceStatus>>({});
   const [detail, setDetail] = useState<Device | null>(null);
-  const [stolenTarget, setStolenTarget] = useState<Device | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileName, setProfileName] = useState(session.name);
   const [profileDraft, setProfileDraft] = useState(session.name);
@@ -177,7 +175,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
     ...originalDevice,
     status: applicationForSearch?.status === 'Accepted' ? 'Registered'
       : applicationForSearch?.status === 'Pending' || applicationForSearch?.status === 'In Progress' ? 'Applied for registration'
-      : statusOverrides[originalDevice.imei] ?? originalDevice.status,
+      : originalDevice.status,
   };
 
   const searchDevice = (event: React.FormEvent<HTMLFormElement>) => {
@@ -265,12 +263,16 @@ export const CitizenImeiListView: React.FC<Props> = ({
               {session.email && !session.email.endsWith('.invalid') && <span><Mail size={16} aria-hidden="true" /> {session.email}</span>}
             </div>
           </div>
-          <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
-            {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
-          </UiButton>
+          <div className="neir-profile-actions">
+            <UiButton variant="primary" type="button" className="neir-profile-apply" onClick={() => startProfileRegistration('')}
+              disabled={reachedLimit}>{isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Apply for Special Registration'}</UiButton>
+            <UiButton variant="secondary" type="button" className="neir-profile-edit" onClick={editProfile}>
+              {isBn ? 'প্রোফাইল সম্পাদনা' : 'Edit Profile Informations'}
+            </UiButton>
+          </div>
         </section>
 
-        <section className="neir-profile-search-panel" aria-labelledby="neir-device-search-title">
+        <section className={'neir-profile-search-panel' + (searchedImei === null ? ' is-search-idle' : '')} aria-labelledby="neir-device-search-title">
           <div className="neir-profile-search-header">
             <div>
               <h2 id="neir-device-search-title">{isBn ? 'আপনার ডিভাইসের তথ্য খুঁজুন' : 'Search your device info'}</h2>
@@ -300,12 +302,8 @@ export const CitizenImeiListView: React.FC<Props> = ({
             {searchError && <p id="neir-profile-search-error" className="neir-profile-search-error" role="alert">{searchError}</p>}
           </form>
 
-          <div className="neir-profile-search-outcome" aria-live="polite">
-            {searchedImei === null ? <div className="neir-profile-empty-state">
-              <span className="neir-profile-empty-icon"><FileSearch2 size={32} aria-hidden="true" /></span>
-              <h3>{isBn ? 'এখানে আপনার ডিভাইসের তথ্য দেখা যাবে' : 'Your device information will appear here'}</h3>
-              <p>{isBn ? 'উপরের অনুসন্ধান বক্সে IMEI নম্বর লিখে খুঁজুন।' : 'Enter an IMEI number above to view its details and status.'}</p>
-            </div> : matchedDevice ? <article className="neir-profile-device-result" aria-label={isBn ? 'ডিভাইসের অনুসন্ধান ফলাফল' : 'Device search result'}>
+          {searchedImei !== null && <div className="neir-profile-search-outcome" aria-live="polite">
+            {matchedDevice ? <article className="neir-profile-device-result" aria-label={isBn ? 'ডিভাইসের অনুসন্ধান ফলাফল' : 'Device search result'}>
               <div className="neir-profile-result-top">
                 <span className="neir-profile-device-icon"><Smartphone size={26} aria-hidden="true" /></span>
                 <div className="neir-profile-result-title">
@@ -333,9 +331,6 @@ export const CitizenImeiListView: React.FC<Props> = ({
                 <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={() => setDetail(matchedDevice)}>
                   <Info size={17} aria-hidden="true" /> {isBn ? 'বিস্তারিত দেখুন' : 'View details'}
                 </UiButton>
-                <UiButton variant="secondary" type="button" className="neir-profile-secondary-action" onClick={() => setStolenTarget(matchedDevice)}>
-                  {isBn ? 'হারানো / চুরি রিপোর্ট' : 'Mark as Stolen'}
-                </UiButton>
               </div>
             </article> : <div className="neir-profile-empty-state neir-profile-no-match">
               <span className="neir-profile-empty-icon"><FileSearch2 size={32} aria-hidden="true" /></span>
@@ -345,8 +340,8 @@ export const CitizenImeiListView: React.FC<Props> = ({
                 : 'The entered IMEI does not match available device information.'}</p>
               <p className="neir-profile-unmatched-imei">IMEI: {searchedImei}</p>
             </div>}
-          </div>
-          <p className="neir-profile-data-note">{note}</p>
+          </div>}
+          {note && <p className="neir-profile-data-note">{note}</p>}
           {applicationError && <p role="alert" className="neir-profile-search-error">{applicationError}
             <UiButton variant="quiet" type="button" className="neir-profile-retry" onClick={refreshApplications}>Retry</UiButton></p>}
           {result && <p role="status" className="neir-profile-feedback">{result}</p>}
@@ -376,25 +371,45 @@ export const CitizenImeiListView: React.FC<Props> = ({
       </div>
     </section>}
 
-    {detail && <UiDialog title={isBn ? 'IMEI বিস্তারিত' : 'IMEI Details'} ariaLabel="IMEI details" size="medium" closeLabel="Close details"
-      onClose={() => setDetail(null)} footer={requiresSpecialRegistration(detail.status) ?
-      <UiButton variant="secondary" className="neir-shared-button" onClick={() => startProfileRegistration(detail.imei)}>Special Registration</UiButton> : undefined}>
-      <dl className="neir-shared-kv"><dt>IMEI Number</dt><dd>{detail.imei}</dd>
-        {detail.brand && <><dt>Brand</dt><dd>{detail.brand}</dd></>}
-        {detail.model && <><dt>Model</dt><dd>{detail.model}</dd></>}
-        <dt>Device Status</dt><dd>{statusLabel(detail.status)}</dd></dl>
-      <p className="neir-shared-note" style={{ marginTop: 16 }}>{note}</p>
-    </UiDialog>}
-    {stolenTarget && <UiDialog title="Mark as Stolen" ariaLabel="Mark IMEI as stolen" role="alertdialog" size="compact"
-      closeLabel="Close stolen status confirmation" onClose={() => setStolenTarget(null)} footer={<>
-      <UiButton variant="quiet" className="neir-shared-button neir-shared-button--text" onClick={() => setStolenTarget(null)}>Cancel</UiButton>
-      <UiButton variant="danger" className="neir-shared-button neir-shared-button--danger" onClick={() => {
-        setStatusOverrides(previous => ({ ...previous, [stolenTarget.imei]: 'Restricted' }));
-        setStolenTarget(null);
-        setResult('Device status updated.');
-      }}>Confirm</UiButton>
-    </>}>
-      <p>Update the status for IMEI <strong>{stolenTarget.imei}</strong>.</p>
+    {detail && <UiDialog title={isBn ? 'IMEI বিস্তারিত' : 'IMEI Details'} ariaLabel="IMEI details"
+      size="medium" onClose={() => setDetail(null)}
+      footer={requiresSpecialRegistration(detail.status) ? <UiButton variant="primary"
+        onClick={() => startProfileRegistration(detail.imei)}>
+        {isBn ? 'বিশেষ নিবন্ধনের আবেদন' : 'Apply for Special Registration'}
+      </UiButton> : undefined}>
+      <div className="neir-profile-detail">
+        <div className="neir-profile-detail-hero">
+          <span className="neir-profile-detail-icon" aria-hidden="true"><Smartphone size={26} /></span>
+          <div className="neir-profile-detail-heading">
+            <p className="neir-profile-detail-eyebrow">{isBn ? 'ডিভাইস যাচাই' : 'Device verification'}</p>
+            <h3>{detail.brand && detail.model ? detail.brand + ' · ' + detail.model : (isBn ? 'ডিভাইসের তথ্য' : 'Device information')}</h3>
+            <p>IMEI {detail.imei}</p>
+          </div>
+          <span className={'neir-profile-status ' + statusClass(detail.status)}>{statusLabel(detail.status)}</span>
+        </div>
+        <div className="neir-profile-detail-grid">
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'IMEI নম্বর' : 'IMEI Number'}</p>
+            <p className="neir-profile-detail-value">{detail.imei}</p>
+          </div>
+          {detail.brand && <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'ব্র্যান্ড' : 'Brand'}</p>
+            <p className="neir-profile-detail-value">{detail.brand}</p>
+          </div>}
+          {detail.model && <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'মডেল' : 'Model'}</p>
+            <p className="neir-profile-detail-value">{detail.model}</p>
+          </div>}
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'অবস্থা' : 'Registration status'}</p>
+            <p className="neir-profile-detail-value">{statusLabel(detail.status)}</p>
+          </div>
+        </div>
+        <div className={'neir-profile-detail-message ' + statusClass(detail.status)}>
+          <Info size={20} aria-hidden="true" />
+          <p>{detail.explanation || explanations[detail.status][isBn ? 'bn' : 'en']}</p>
+        </div>
+      </div>
     </UiDialog>}
     {profileOpen && <UiDialog title="Edit Profile Informations" ariaLabel="Edit profile information" size="compact"
       closeLabel="Close profile" onClose={() => setProfileOpen(false)}
@@ -405,8 +420,50 @@ export const CitizenImeiListView: React.FC<Props> = ({
       {profileError && <p role="alert" className="neir-profile-search-error">{profileError}</p>}
       <p className="neir-shared-note" style={{ marginTop: 14 }}>Review your profile information before saving.</p>
     </UiDialog>}
-    {applicationDetail && <UiDialog title="Special Registration details" ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
-      <dl className="neir-shared-kv"><dt>Reference</dt><dd>{applicationDetail.id}</dd><dt>IMEI</dt><dd>{applicationDetail.imei}</dd><dt>Status</dt><dd>{applicationDetail.status}</dd><dt>Applied on</dt><dd>{applicationDetail.appliedAt ? new Date(applicationDetail.appliedAt).toLocaleString() : '—'}</dd><dt>Arrival date</dt><dd>{applicationDetail.arrivalDate}</dd><dt>Remarks</dt><dd>{applicationDetail.remarks || '—'}</dd></dl>
+    {applicationDetail && <UiDialog title={isBn ? 'বিশেষ নিবন্ধনের বিস্তারিত' : 'Special Registration details'}
+      ariaLabel="Special Registration details" size="medium" onClose={() => setApplicationDetail(null)}>
+      <div className="neir-profile-detail">
+        <div className="neir-profile-detail-hero">
+          <span className="neir-profile-detail-icon" aria-hidden="true"><FileSearch2 size={26} /></span>
+          <div className="neir-profile-detail-heading">
+            <p className="neir-profile-detail-eyebrow">{isBn ? 'আবেদনের সারসংক্ষেপ' : 'Application summary'}</p>
+            <h3>{applicationDetail.imei}</h3>
+            <p>{applicationDetail.reason === 'airmail' ? (isBn ? 'এয়ার মেইল' : 'Air Mail') :
+              applicationDetail.reason === 'gift' ? (isBn ? 'উপহার' : 'Gift') : (isBn ? 'বিদেশ ভ্রমণ' : 'Foreign Tour')}</p>
+          </div>
+          <UiStatusBadge tone={applicationDetail.status === 'Accepted' ? 'success' :
+            applicationDetail.status === 'Rejected' ? 'danger' : applicationDetail.status === 'In Progress' ? 'info' : 'warning'}>
+            {applicationDetail.status}
+          </UiStatusBadge>
+        </div>
+        <div className="neir-profile-detail-grid">
+          <div className="neir-profile-detail-field neir-profile-detail-field--wide">
+            <p className="neir-profile-detail-label">{isBn ? 'আবেদনের রেফারেন্স' : 'Application reference'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.id}</p>
+          </div>
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'IMEI নম্বর' : 'IMEI Number'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.imei}</p>
+          </div>
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'আবেদনের অবস্থা' : 'Application status'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.status}</p>
+          </div>
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'আবেদনের তারিখ' : 'Applied on'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.appliedAt ?
+              new Date(applicationDetail.appliedAt).toLocaleString(isBn ? 'bn-BD' : 'en-GB') : '—'}</p>
+          </div>
+          <div className="neir-profile-detail-field">
+            <p className="neir-profile-detail-label">{isBn ? 'আগমনের তারিখ' : 'Arrival date'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.arrivalDate || '—'}</p>
+          </div>
+          <div className="neir-profile-detail-field neir-profile-detail-field--wide">
+            <p className="neir-profile-detail-label">{isBn ? 'মন্তব্য' : 'Remarks'}</p>
+            <p className="neir-profile-detail-value">{applicationDetail.remarks || '—'}</p>
+          </div>
+        </div>
+      </div>
     </UiDialog>}
     {wizard && <ProfileSpecialRegistrationModal initialImei={wizard.imei} citizenMobile={session.mobile}
       onClose={() => setWizard(null)} onComplete={completeRegistration} />}
