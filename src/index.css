@@ -494,3 +494,11 @@ button,input,select,textarea{font:inherit}
 @media(prefers-reduced-motion:reduce){
   .neir-shared-backdrop,.neir-shared-dialog{animation:none}
 }
+
+@media(min-width:1920px){
+ .neir-source-hero-inner{max-width:min(88vw,1520px);grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(48px,4.5vw,80px);transform:none}
+ .neir-source-guide-inner{max-width:min(88vw,1520px);transform:none}
+ .neir-service-entry{width:min(90vw,1560px)}
+ .neir-source-steps-row{width:100%;max-width:100%;transform:none}
+ #faq-section .neir-faq-content{max-width:1520px}
+}

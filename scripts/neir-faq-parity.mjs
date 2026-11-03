@@ -20,7 +20,7 @@ for(const width of [1918,390]){
     heading:page.getByText('FAQ',{exact:true}).first(),
     subtitle:page.getByText('Need help?',{exact:true}).first(),
     firstTab:page.getByText('IMEI Check',{exact:true}).last(),
-    secondTab:page.getByText('Registration',{exact:true}).last(),
+    secondTab:page.getByText(kind==='clone'?'Special Registration':'Registration',{exact:true}).last(),
     firstGroup:page.getByText('IMEI Basics',{exact:true}).first(),
     firstQuestion:kind==='clone'?page.locator('.neir-faq-question').first():page.getByText('What is an IMEI number?',{exact:true}).first(),
     secondQuestion:kind==='clone'?page.locator('.neir-faq-question').nth(1):page.getByText('How can I find my IMEI?',{exact:true}).first()
