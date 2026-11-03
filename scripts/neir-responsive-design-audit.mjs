@@ -56,6 +56,13 @@ try {
     await dialog.waitFor({state:'visible'});
     const rect=await dialog.boundingBox();
     assert(rect&&rect.width<=width+2,'Guest dialog overflows at '+width);
+    assert(await dialog.evaluate(el=>el.classList.contains('neir-modal-surface')),
+      'Guest dialog must use the shared modal surface at '+width);
+    const closeRect=await dialog.getByRole('button',{name:'Close dialog'}).boundingBox();
+    assert(closeRect&&closeRect.width>=44&&closeRect.height>=44,
+      'Modal close target must be at least 44px at '+width);
+    const overlay=await dialog.evaluate(el=>getComputedStyle(el.parentElement).backgroundColor);
+    assert(overlay.startsWith('rgba('),'Shared modal backdrop missing at '+width);
     await page.keyboard.press('Escape');
     await dialog.waitFor({state:'hidden'});
     const modalCloseRestores=await page.evaluate(()=>document.body.style.overflow!=='hidden');
@@ -67,6 +74,21 @@ try {
         : page.locator('.neir-language-select select');
       await language.selectOption('bn');
       assert.equal(await language.inputValue(),'bn','EN/BN selection lost at '+width);
+      if(width===390) {
+        await page.locator('.neir-mobile-toggle').click();
+        await page.locator('.neir-mobile-menu-item').nth(1).click();
+      } else {
+        await page.locator('.neir-main-navigation button').nth(1).click();
+      }
+      await page.getByRole('heading',{name:'NEIR ব্যবহার নির্দেশিকা'}).waitFor();
+      await page.getByRole('button',{name:'পাসওয়ার্ড পুনর্নির্ধারণ'}).click();
+      await page.locator('.neir-original-footer button').first().click();
+      await page.getByRole('heading',{name:'আমরা আপনাকে সহায়তা করতে এখানে আছি!'}).waitFor();
+      await page.getByRole('button',{name:'জমা দিন'}).click();
+      assert(await page.getByRole('alert').filter({hasText:'সব আবশ্যিক ঘর'}).isVisible(),
+        'Localized form validation missing at '+width);
+      const bnLayout=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+      assert(bnLayout<=4,'Bengali text expansion overflow at '+width);
     }
     console.log('PASS responsive source/guide/forms/modal/EN-BN at '+width+'px');
     await page.close();
