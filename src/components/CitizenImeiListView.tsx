@@ -386,6 +386,31 @@ export const CitizenImeiListView: React.FC<Props> = ({
             scrollClassName="neir-special-table-scroll"
             searchPlaceholder={isBn ? 'IMEI বা অবস্থা অনুসন্ধান করুন' : 'Search by IMEI, device or status'}
             searchable={(row, query) => [row.imei, row.status, row.reason].some(value => value.toLowerCase().includes(query))}
+            renderMobileCard={row => <article className="neir-special-mobile-card" aria-label={(isBn ? 'আবেদন' : 'Application') + ' ' + row.imei}>
+              <header className="neir-special-mobile-card-heading">
+                <div className="neir-special-mobile-card-title">
+                  <p className="neir-special-mobile-label">{isBn ? 'ডিভাইস IMEI' : 'Device IMEI'}</p>
+                  <h3>{row.imei}</h3>
+                  <p className="neir-special-mobile-category">
+                    {row.reason === 'airmail' ? (isBn ? 'এয়ার মেইল' : 'Air Mail') :
+                      row.reason === 'gift' ? (isBn ? 'উপহার' : 'Gift') : (isBn ? 'বিদেশ ভ্রমণ' : 'Foreign Tour')}
+                  </p>
+                </div>
+                <UiStatusBadge tone={row.status === 'Accepted' ? 'success' : row.status === 'Rejected' ? 'danger'
+                  : row.status === 'In Progress' ? 'info' : 'warning'}>{row.status}</UiStatusBadge>
+              </header>
+              <div className="neir-special-mobile-card-fields">
+                <p>{isBn ? 'আবেদন করা হয়েছে' : 'Applied on'}</p>
+                <p>{row.appliedAt ? new Date(row.appliedAt).toLocaleDateString(isBn ? 'bn-BD' : 'en-GB') : '—'}</p>
+              </div>
+              <footer className="neir-special-mobile-card-footer">
+                <p>{isBn ? 'বিস্তারিত দেখতে কার্ডে চাপুন' : 'Tap the card to view details'}</p>
+                <UiButton variant="secondary" size="compact" className="neir-special-details-button"
+                  onClick={event => { event.stopPropagation(); setApplicationDetail(row); }}>
+                  {isBn ? 'বিস্তারিত' : 'Details'}
+                </UiButton>
+              </footer>
+            </article>}
             emptyText={isBn ? 'কোনো আবেদন পাওয়া যায়নি' : 'No matching applications'}
           />
         </section>}
