@@ -316,3 +316,14 @@ body{font-family:var(--neir-ui-font);font-size:var(--neir-type-body);line-height
   .neir-source-mobile-login{min-width:72px;padding-inline:6px;font-size:12px;gap:3px}
   .neir-mobile-toggle{width:36px;flex-basis:36px}
 }
+
+/* MOBILE HIT AREA NORMALIZATION: preserve the approved side-by-side IMEI field
+   and action, while bringing their actual touch targets to 44px minimum. */
+@media(max-width:767px){
+  .neir-source-input-wrap .neir-ui-control,
+  .neir-source-verify-button.neir-ui-button--primary{
+    height:44px;min-height:44px;
+  }
+  .neir-source-mobile-language{height:44px;min-height:44px}
+  .neir-original-footer button{min-height:44px;display:inline-flex;align-items:center}
+}
