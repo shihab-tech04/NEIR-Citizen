@@ -19,6 +19,12 @@ try {
     assert(home.headingVisible,'Homepage heading missing at '+width);
     assert(home.overflow<=4,'Home horizontal overflow at '+width+': '+home.overflow);
     assert(home.bodyFont.toLowerCase().includes('poppins'),'Poppins missing at '+width);
+    if(width<=390){
+      for(const selector of ['#neir-imei-input','.neir-source-verify-button','.neir-source-mobile-language']){
+        const geometry=await page.locator(selector).boundingBox();
+        assert(geometry&&geometry.height>=44,'Mobile touch target under 44px at '+width+' '+selector);
+      }
+    }
     if(width===320) {
       const menu=page.getByRole('button',{name:'Navigation menu'});
       await menu.waitFor({state:'visible'});
