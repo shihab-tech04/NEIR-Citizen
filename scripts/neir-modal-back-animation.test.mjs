@@ -81,6 +81,25 @@ try {
     'Document sample Back must keep IMEI and draft form');
   await wizard.getByRole('button',{name:'Back',exact:true}).click();
   await visible(intro,'Wizard Back restored prior eligibility modal');
+  await intro.getByRole('button',{name:'Close dialog'}).click();
+
+  // A device-details → application transition must return to that specific
+  // details dialog, not to the general Profile route or login dialog.
+  await page.getByRole('button',{name:'Citizen profile menu'}).click();
+  await page.getByRole('button',{name:'My Profile'}).click();
+  await visible(page.getByRole('heading',{name:'Search your device info'}),'Profile device search');
+  await page.locator('#neir-profile-imei-search').fill('359203112345678');
+  await page.getByRole('button',{name:'Search device'}).click();
+  await page.getByRole('button',{name:'View details'}).click();
+  const detail=page.getByRole('dialog',{name:'IMEI details'});
+  await visible(detail,'Greylisted handset detail');
+  await detail.getByRole('button',{name:'Apply for Special Registration'}).click();
+  await visible(wizard,'Wizard entered from device details');
+  await wizard.getByRole('button',{name:'Back',exact:true}).click();
+  await visible(detail,'Original device detail restored from wizard');
+  assert(await detail.getByText('359203112345678').count()>0,
+    'Back must restore the same device context');
+  await detail.getByRole('button',{name:'Close dialog'}).click();
 
   const reduced = await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   await reduced.goto(base+'/',{waitUntil:'networkidle'});
