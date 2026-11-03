@@ -302,9 +302,13 @@ export default function App() {
             <p>{language === 'bn'
               ? 'বিদেশ ভ্রমণ থেকে আনা, উপহার পাওয়া বা এয়ার মেইল/কুরিয়ারে প্রাপ্ত ডিভাইস যদি গ্রেলিস্টেড হয় বা অতিরিক্ত যাচাই প্রয়োজন হয়, তাহলে প্রয়োজনীয় তথ্য-প্রমাণসহ আবেদন করতে হতে পারে। ইতিমধ্যে নিবন্ধিত ডিভাইসের জন্য আবেদন প্রয়োজন নেই; ব্ল্যাকলিস্টেড ডিভাইসের জন্য সংশ্লিষ্ট কর্তৃপক্ষের সহায়তা নিন।'
               : 'You may need this process if a handset brought from overseas, received as a gift, or delivered by air mail/courier is greylisted or requires additional verification. Already registered handsets do not need another application; for blacklisted devices, contact the responsible authority.'}</p>
-            <p className="neir-registration-intro-note">{language === 'bn'
-              ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আবেদন করতে আপনার অ্যাকাউন্টে লগইন করতে হবে।'
-              : 'Eligibility and approval depend on verification. You must log in to your account before applying for Special Registration.'}</p>
+            <p className="neir-registration-intro-note">{session.isLoggedIn
+              ? (language === 'bn'
+                ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আপনি লগইন করেছেন এবং আবেদন চালিয়ে যেতে পারেন।'
+                : 'Eligibility and approval depend on verification. You are signed in and can continue your application.')
+              : (language === 'bn'
+                ? 'যোগ্যতা এবং আবেদন অনুমোদন সংশ্লিষ্ট কর্তৃপক্ষের যাচাই সাপেক্ষে। আবেদন করতে আপনার অ্যাকাউন্টে লগইন করতে হবে।'
+                : 'Eligibility and approval depend on verification. You must log in to your account before applying for Special Registration.')}</p>
           </div>
         </NeirModalFrame>
       )}
