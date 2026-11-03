@@ -222,15 +222,15 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
         </section>
       </div>
       <footer className="neir-reg-footer">
+        <p className="neir-reg-existing">{isBn ? 'আগেই অ্যাকাউন্ট আছে?' : 'Already have an account?'}{' '}
+          <button type="button" onClick={onLogin}>{isBn?'লগইন':'Login'}</button>
+        </p>
         <UiButton type="submit" variant="primary" className="neir-reg-submit">
           {step===1 ? (isBn?'ওটিপি অনুরোধ':'Request for OTP')
             :step===2 ? (isBn?'যাচাই করে এগিয়ে যান':'Verify and Proceed'):(isBn?'অ্যাকাউন্ট তৈরি করুন':'Create account')}
           <ArrowRight size={18} aria-hidden="true" />
         </UiButton>
       </footer>
-      <p className="neir-reg-existing">{isBn ? 'আগেই অ্যাকাউন্ট আছে?' : 'Already have an account?'}{' '}
-        <button type="button" onClick={onLogin}>{isBn?'লগইন':'Login'}</button>
-      </p>
     </form>
   );
 };
