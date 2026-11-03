@@ -222,9 +222,6 @@ export const CitizenRegistrationForm: React.FC<Props> = ({
         </section>
       </div>
       <footer className="neir-reg-footer">
-        <p className="neir-reg-demo-disclaimer">{isBn
-          ? 'শুধুমাত্র প্রোটোটাইপ। এটি সরকারি পরিচয় যাচাই বা প্রকৃত অ্যাকাউন্ট তৈরি করে না।'
-          : 'Prototype only. This does not verify identity or create a persistent citizen account.'}</p>
         <UiButton type="submit" variant="primary" className="neir-reg-submit">
           {step===1 ? (isBn?'ওটিপি অনুরোধ':'Request for OTP')
             :step===2 ? (isBn?'যাচাই করে এগিয়ে যান':'Verify and Proceed'):(isBn?'অ্যাকাউন্ট তৈরি করুন':'Create account')}
