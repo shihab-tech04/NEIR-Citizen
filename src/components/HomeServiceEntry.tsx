@@ -58,7 +58,7 @@ export const HomeServiceEntry: React.FC<Props> = ({
             <UiButton variant="link" className="neir-service-card-action"
               onClick={isLoggedIn ? onOpenDashboard : onCreateAccount}>
               {isLoggedIn
-                ? (bn ? 'আমার প্রোফাইল খুলুন' : 'Open my profile')
+                ? (bn ? 'ড্যাশবোর্ড দেখুন' : 'View dashboard')
                 : (bn ? 'অ্যাকাউন্ট নিবন্ধন' : 'Create account')}
               <ArrowRight size={18} aria-hidden="true" />
             </UiButton>
