@@ -385,6 +385,11 @@ export const CitizenImeiListView: React.FC<Props> = ({
             className="neir-special-table"
             scrollClassName="neir-special-table-scroll"
             searchPlaceholder={isBn ? 'IMEI বা অবস্থা অনুসন্ধান করুন' : 'Search by IMEI, device or status'}
+            searchLabel={isBn ? 'অনুসন্ধান' : 'Search'}
+            countLabel={count => isBn ? count.toLocaleString('bn-BD') + 'টি রেকর্ড' :
+              count + ' ' + (count === 1 ? 'record' : 'records')}
+            sortLabel={heading => isBn ? heading + ' অনুযায়ী সাজান' : 'Sort by ' + heading}
+            mobileAriaLabel={isBn ? 'বিশেষ নিবন্ধনের আবেদনসমূহ' : 'Special Registration applications'}
             searchable={(row, query) => [row.imei, row.status, row.reason].some(value => value.toLowerCase().includes(query))}
             renderMobileCard={row => <article className="neir-special-mobile-card" aria-label={(isBn ? 'আবেদন' : 'Application') + ' ' + row.imei}>
               <header className="neir-special-mobile-card-heading">
@@ -397,7 +402,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
                   </p>
                 </div>
                 <UiStatusBadge tone={row.status === 'Accepted' ? 'success' : row.status === 'Rejected' ? 'danger'
-                  : row.status === 'In Progress' ? 'info' : 'warning'}>{row.status}</UiStatusBadge>
+                  : row.status === 'In Progress' ? 'info' : 'warning'}>{isBn ? (bnStatus[row.status] || row.status) : row.status}</UiStatusBadge>
               </header>
               <div className="neir-special-mobile-card-fields">
                 <p>{isBn ? 'আবেদন করা হয়েছে' : 'Applied on'}</p>
