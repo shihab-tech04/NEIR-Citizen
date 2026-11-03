@@ -5,7 +5,7 @@
 - Exact verified pre-change `main` commit: `2f7c1dec98364eea6af1bec56d6fac3c42dba2e7`
 - Dedicated unchanged rollback branch: `rollback/neir-citizen-pre-segment1-a11y-20261104`
 - Production Pages entry: https://shihab-tech04.github.io/NEIR-Citizen/
-- Independent restorable pre-release full Git-history/source backup is a required release gate; retain the verified Drive archive and checksum/restore evidence separately from the repository.
+- **Verified, restorable Drive backup:** https://drive.google.com/file/d/1Vx9RM1uELqK6OiLf__2tW5yoTWPUth9H/view (92 MB)\n- SHA-256 of workflow artifact ZIP: `85713a6fc29f3591363268ea0f639a8214290c9908a3f5eb578e2bc01487f06d`\n- Restore-tested Git bundle and source archive: PASS; restored HEAD `2f7c1dec98364eea6af1bec56d6fac3c42dba2e7` (Actions run `41700276585`).
 
 ## Scope of this isolated release
 **Only:** navigation/header contrast, direct small-screen Register access, mobile header touch targets, EN/BN document language, reduced-motion hero *illustration* fallback and browser metadata.
