@@ -88,7 +88,7 @@ export const ThreeStepGuide: React.FC<Props> = ({ language }) => (
                   </div>
                   <div className="neir-source-step-content">
                     <h3>
-                      {language === 'bn' ? 'ধাপ' : 'Step'} {stepIndex + 1}: {' '}
+                      {language === 'bn' ? `ধাপ ${['১', '২', '৩'][stepIndex]}` : `Step ${stepIndex + 1}`}: {' '}
                       {language === 'bn' ? section.actionsBn[stepIndex] : section.actions[stepIndex]}
                     </h3>
                     <p>{language === 'bn' ? section.stepsBn[stepIndex] : step}</p>
