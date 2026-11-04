@@ -111,7 +111,7 @@ button,input,select,textarea{font:inherit}
  .neir-source-hero-copy h1{font-size:35px}
  .neir-source-description{font-size:17px}
  .neir-source-hero-media{min-height:290px}
- .neir-source-guide-section{padding:40px 20px}
+ .neir-source-guide-section{padding:40px 24px}
 }
 @media(max-width:767px){
  /* Original mobile header: logo, language and Login. No desktop nav or registration card. */
