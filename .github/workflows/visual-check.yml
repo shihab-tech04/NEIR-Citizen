@@ -84,7 +84,7 @@ jobs:
               throw Error('Guide headings must be meaningful and preserve both original service topics');
             }
             if(sourceParity.nav.length!==2) throw Error('Source top navigation must have Home and User Guides only');
-            if(!sourceParity.firstStep?.startsWith('Go to your mobile phone’s messaging option')) throw Error('IMEI guide step 1 changed from captured original');
+            if(!sourceParity.firstStep?.startsWith('Dial *#06# on your phone')) throw Error('IMEI guide Step 1 must describe the illustrated dial-code action');
             if(!sourceParity.signedOutLoginVisible) throw Error('Signed-out Login control missing');
             await desktop.screenshot({path:'screenshots/neir-1918-source-match.png',fullPage:false});
             await desktop.locator('.neir-main-navigation button').nth(1).click();
