@@ -40,11 +40,23 @@ assert.equal(hash.toString(16),'ac03b7be','IMEI checker must remain byte-for-byt
 // Validate the editable SVG assets rather than accepting rasterized look-alikes.
 for(let i=1;i<=6;i++){
   const svg=readFileSync(`public/neir-guide/step-${i}.svg`,'utf8');
+  const original=readFileSync(`public/neir-source/images/step-${i}.svg`,'utf8');
+  const svgViewBox=svg.match(/viewBox="([^"]+)"/)?.[1];
+  const originalViewBox=original.match(/viewBox="([^"]+)"/)?.[1];
+  const originalPaths=original.match(/<path\b[^>]*\/>/g)||[];
+  const preserved=originalPaths.filter(element=>svg.includes(element));
   assert(svg.includes('<svg') && svg.includes('<title') && svg.includes('<desc') &&
-    svg.includes('#00838F') && svg.includes('viewBox="0 0 800 800"'),
-    'Guide illustration '+i+' lost the approved vector/teal line-art language');
+    svg.includes('#00838F') && svgViewBox===originalViewBox &&
+    originalPaths.length>=8 && preserved.length/originalPaths.length>=0.60,
+    'Guide illustration '+i+' must retain original phone/hand paths and teal vector composition');
   assert(!/IMEI Verified|\+1\(600\)|<image\b|<foreignObject\b/i.test(svg),
     'Guide illustration '+i+' contains misleading legacy text or embedded raster assets');
+  if(i===3)assert(svg.includes('IMEI RESULT') && svg.includes('Check SMS reply'),
+    'IMEI result illustration must not guarantee verification');
+  if(i===5)assert(svg.includes('LAST 4 DIGITS') && svg.includes('SUBMIT'),
+    'Original NID phone must display a readable four-digit prompt');
+  if(i===6)assert(svg.includes('01XX XXX XXXX') && svg.includes('SAMPLE'),
+    'Original NID SMS bubble must contain safe masked Bangladesh-format numbers');
   for(const tag of svg.match(/<text\b[^>]*>/g) || []){
     for(const attr of ['font-family','font-weight']){
       assert((tag.match(new RegExp(attr+'=', 'g')) || []).length<=1,
