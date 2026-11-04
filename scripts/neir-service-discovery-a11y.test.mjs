@@ -10,7 +10,7 @@ const section=readFileSync('src/components/HomeServiceEntry.tsx','utf8');
 const guide=readFileSync('src/components/ThreeStepGuide.tsx','utf8');
 const faq=readFileSync('src/components/FaqSection.tsx','utf8');
 const serviceStyle=readFileSync('src/components/HomeServiceEntry.css','utf8');
-assert(!guide.includes('3 Steps &amp;') && guide.includes('stepsBn') && !guide.includes('style={{backgroundColor'),
+assert(!guide.includes('3 Steps &amp;') && guide.includes('stepsBn') && guide.includes('neir-guide/step-') && !guide.includes('style={{backgroundColor'),
   'Both three-step guides need meaningful headings, bilingual instructions and CSS backgrounds');
 assert(!serviceStyle.includes('margin:-28px') && !serviceStyle.includes('margin:-18px'),
   'Service card must not overlap the approved hero');
@@ -37,6 +37,18 @@ assert(start>=0 && end>start,'IMEI checker source segment missing');
 let hash=2166136261;
 for(const ch of hero.slice(start,end)) hash=Math.imul(hash ^ ch.charCodeAt(0),16777619)>>>0;
 assert.equal(hash.toString(16),'ac03b7be','IMEI checker must remain byte-for-byte unchanged');
+// Validate the editable SVG assets rather than accepting rasterized look-alikes.
+for(let i=1;i<=6;i++){
+  const svg=readFileSync(`public/neir-guide/step-${i}.svg`,'utf8');
+  assert(svg.includes('<svg') && svg.includes('<title') && svg.includes('<desc') &&
+    svg.includes('#00838F') && svg.includes('viewBox="0 0 800 800"'),
+    'Guide illustration '+i+' lost the approved vector/teal line-art language');
+  assert(!/IMEI Verified|\+1\(600\)|<image\b|<foreignObject\b/i.test(svg),
+    'Guide illustration '+i+' contains misleading legacy text or embedded raster assets');
+}
+assert(guide.includes('dial *16161#') && guide.includes('dial *16001#') &&
+  guide.includes('Dial *#06#') && guide.includes('16002'),
+  'Guides must distinguish SMS handset legality, registration status and NID lookup');
 mkdirSync('acceptance-shots',{recursive:true});
 const browser=await chromium.launch({headless:true});
 
@@ -142,6 +154,27 @@ try{
       'Guide heading-to-cards gap should remain 24px at '+width+'px');
     assert(alignment.guideWidth<=alignment.viewport+2 && alignment.faqWidth<=alignment.viewport+2,
       'Guide and FAQ sections must not horizontally overflow at '+width+'px');
+    const cardsCopy=await page.locator('.neir-source-step-card').evaluateAll(cards=>
+      cards.map(el=>({
+        title:el.querySelector('h3')?.textContent?.trim(),
+        body:el.querySelector('.neir-source-step-content p')?.textContent?.trim(),
+        art:el.querySelector('img')?.getAttribute('src'),
+        alt:el.querySelector('img')?.alt,
+      }))
+    );
+    assert.equal(cardsCopy.length,6,'Both guides require exactly six illustrated steps');
+    assert(cardsCopy.every((x,index)=>x.title.startsWith('Step '+(index%3+1)+': ') &&
+      x.art.endsWith('neir-guide/step-'+(index+1)+'.svg') && x.alt.length>=25),
+      'Steps must provide action headings and meaningful editable SVG illustrations at '+width);
+    if(width===390||width===1440){
+      const art=page.locator('.neir-source-step-card img');
+      for(const img of await art.all()){
+        await img.scrollIntoViewIfNeeded();
+        await img.evaluate(async el=>await el.decode());
+        assert(await img.evaluate(el=>el.naturalWidth>0 && el.naturalHeight>0),
+          'SVG illustration failed to decode at '+width);
+      }
+    }
     const faqTab=page.getByRole('tablist',{name:'FAQ categories'});
     assert(await faqTab.getByRole('tab',{name:'Special Registration'}).isVisible(),
       'Special Registration FAQ tab must be unambiguous');
@@ -185,6 +218,8 @@ try{
         'IMEI SMS guide must be localized');
       assert(await page.getByRole('heading',{name:'আপনার NID-এ নিবন্ধিত মোবাইল নম্বর জানুন'}).isVisible(),
         'NID guide must be localized');
+      assert(await page.getByRole('heading',{name:/ধাপ ১: IMEI নম্বর দেখুন/}).isVisible(),
+        'Bengali action heading and illustration instructions must be localized');
       assert(await page.getByRole('tab',{name:'বিশেষ নিবন্ধন'}).isVisible(),
         'Special Registration FAQ must be localized');
       assert(await page.getByRole('region',{name:'কোন সেবাটি প্রয়োজন?'})

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Read registered SIM reply</title><desc id="desc">A sample masked Bangladesh mobile-number list in an SMS, without disclosing actual phone numbers.</desc>
+<g stroke="#00838F" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<rect x="226" y="60" width="348" height="680" rx="55" fill="#fff" stroke-width="12"/>
+<rect x="245" y="110" width="310" height="555" rx="20" stroke-width="8"/>
+<path d="M349 88 H453 M358 699 H444" stroke-width="10"/>
+<path d="M218 235 H207 M218 273 H207 M582 254 H593" stroke-width="10"/>
+</g>
+<rect x="254" y="158" width="292" height="70" rx="9" fill="#DDF5F7" stroke="#00838F" stroke-width="7"/>
+<text x="400" y="202" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="36" font-weight="600" fill="#00838F" >SMS</text>
+<g stroke="#00838F" stroke-width="8" stroke-linejoin="round">
+<path d="M275 306 H522 Q540 306 540 328 V507 Q540 528 521 528 H340 L298 565 V528 H275 Q257 528 257 506 V329 Q257 306 275 306 Z" fill="#fff"/>
+</g>
+<text x="398" y="361" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="33" font-weight="600" fill="#00838F" >NID SIMS</text>
+<text x="398" y="400" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="20" font-weight="600" fill="#00838F" >SAMPLE</text>
+<text x="398" y="442" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F" font-family="monospace" font-weight="500">01XXXXXXXXX</text>
+<text x="398" y="484" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F" font-family="monospace" font-weight="500">01XXXXXXXXX</text>
+<g stroke="#00838F" stroke-width="9" stroke-linecap="round" fill="none"><path d="M178 303 Q145 340 178 378"/><path d="M157 284 Q114 339 157 399"/><path d="M622 303 Q655 340 622 378"/><path d="M643 284 Q686 339 643 399"/></g>
+
+</svg>

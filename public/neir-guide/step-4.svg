@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Dial the NID SIM lookup code</title><desc id="desc">A teal line-art phone shows the correct USSD dial code star 16001 hash.</desc>
+<g stroke="#00838F" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<rect x="226" y="60" width="348" height="680" rx="55" fill="#fff" stroke-width="12"/>
+<rect x="245" y="110" width="310" height="555" rx="20" stroke-width="8"/>
+<path d="M349 88 H453 M358 699 H444" stroke-width="10"/>
+<path d="M218 235 H207 M218 273 H207 M582 254 H593" stroke-width="10"/>
+</g>
+<text x="400" y="363" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="66" font-weight="600" fill="#00838F" >*16001#</text>
+<path d="M317 420 H487" stroke="#00838F" stroke-width="8" opacity=".4"/>
+<g stroke="#00838F" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path fill="#fff" d="M446 740 C397 734 360 712 339 674 L300 608 C293 595 296 579 308 572 C324 563 336 573 346 591 L379 632 L355 555 C349 538 355 522 371 518 C384 515 395 524 401 542 L423 617 L418 589 C416 571 428 563 441 566 C453 569 460 582 463 597 C463 581 476 575 488 581 C505 590 518 620 518 650 C520 690 494 729 473 740 Z"/><path d="M379 632 L400 671 M424 618 L441 669 M463 597 L469 652" fill="none"/></g>
+
+</svg>
