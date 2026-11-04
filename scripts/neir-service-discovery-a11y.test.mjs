@@ -45,6 +45,12 @@ for(let i=1;i<=6;i++){
     'Guide illustration '+i+' lost the approved vector/teal line-art language');
   assert(!/IMEI Verified|\+1\(600\)|<image\b|<foreignObject\b/i.test(svg),
     'Guide illustration '+i+' contains misleading legacy text or embedded raster assets');
+  for(const tag of svg.match(/<text\b[^>]*>/g) || []){
+    for(const attr of ['font-family','font-weight']){
+      assert((tag.match(new RegExp(attr+'=', 'g')) || []).length<=1,
+        'Duplicate '+attr+' attribute in guide SVG '+i);
+    }
+  }
 }
 assert(guide.includes('dial *16161#') && guide.includes('dial *16001#') &&
   guide.includes('Dial *#06#') && guide.includes('16002'),

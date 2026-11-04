@@ -9,7 +9,7 @@
 <text x="400" y="350" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="74" font-weight="600" fill="#00838F" >*#06#</text>
 <path d="M287 402 H513" stroke="#00838F" stroke-width="7" opacity=".45"/>
 <text x="400" y="455" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="29" font-weight="600" fill="#00838F" >IMEI</text>
-<text x="400" y="505" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F" font-family="monospace" font-weight="500">123456789012345</text>
+<text x="400" y="505" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F">123456789012345</text>
 <g stroke="#00838F" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><path fill="#fff" d="M446 740 C397 734 360 712 339 674 L300 608 C293 595 296 579 308 572 C324 563 336 573 346 591 L379 632 L355 555 C349 538 355 522 371 518 C384 515 395 524 401 542 L423 617 L418 589 C416 571 428 563 441 566 C453 569 460 582 463 597 C463 581 476 575 488 581 C505 590 518 620 518 650 C520 690 494 729 473 740 Z"/><path d="M379 632 L400 671 M424 618 L441 669 M463 597 L469 652" fill="none"/></g>
 
 </svg>

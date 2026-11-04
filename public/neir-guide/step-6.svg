@@ -13,8 +13,8 @@
 </g>
 <text x="398" y="361" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="33" font-weight="600" fill="#00838F" >NID SIMS</text>
 <text x="398" y="400" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="20" font-weight="600" fill="#00838F" >SAMPLE</text>
-<text x="398" y="442" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F" font-family="monospace" font-weight="500">01XXXXXXXXX</text>
-<text x="398" y="484" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F" font-family="monospace" font-weight="500">01XXXXXXXXX</text>
+<text x="398" y="442" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F">01XXXXXXXXX</text>
+<text x="398" y="484" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="28" font-weight="600" fill="#00838F">01XXXXXXXXX</text>
 <g stroke="#00838F" stroke-width="9" stroke-linecap="round" fill="none"><path d="M178 303 Q145 340 178 378"/><path d="M157 284 Q114 339 157 399"/><path d="M622 303 Q655 340 622 378"/><path d="M643 284 Q686 339 643 399"/></g>
 
 </svg>
