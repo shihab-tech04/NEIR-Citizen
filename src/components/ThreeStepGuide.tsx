@@ -7,6 +7,9 @@ type Props = {
   onOpenMobileGuide: () => void;
 };
 
+// Guide illustrations retain the approved source phone and hand artwork.
+// Refine only instructional screen content in public/neir-guide/*.svg;
+// preserve the unmodified originals in public/neir-source/images/.
 const sections = [
   {
     heading: 'Check Phone Registration Status by IMEI',
