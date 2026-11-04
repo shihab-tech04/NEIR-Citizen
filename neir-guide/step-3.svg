@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Read the IMEI result SMS</title><desc id="desc">A neutral incoming SMS contains an IMEI result with no positive status or guaranteed verification checkmark.</desc>
+<g stroke="#00838F" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<rect x="226" y="60" width="348" height="680" rx="55" fill="#fff" stroke-width="12"/>
+<rect x="245" y="110" width="310" height="555" rx="20" stroke-width="8"/>
+<path d="M349 88 H453 M358 699 H444" stroke-width="10"/>
+<path d="M218 235 H207 M218 273 H207 M582 254 H593" stroke-width="10"/>
+</g>
+<rect x="254" y="158" width="292" height="70" rx="9" fill="#DDF5F7" stroke="#00838F" stroke-width="7"/>
+<text x="400" y="202" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="36" font-weight="600" fill="#00838F" >SMS</text>
+<g stroke="#00838F" stroke-width="9" stroke-linejoin="round" fill="#fff">
+<path d="M276 311 H512 Q534 311 534 333 V488 Q534 509 512 509 H341 L296 550 V509 H276 Q259 509 259 488 V333 Q259 311 276 311 Z"/>
+</g>
+<text x="399" y="370" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="32" font-weight="600" fill="#00838F" >IMEI RESULT</text>
+<path d="M307 405 H488" stroke="#00838F" stroke-width="10" stroke-linecap="round" opacity=".55"/><path d="M307 436 H488" stroke="#00838F" stroke-width="10" stroke-linecap="round" opacity=".55"/><path d="M307 467 H488" stroke="#00838F" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+<g stroke="#00838F" stroke-width="10" stroke-linecap="round" fill="none"><path d="M331 581 H470"/><path d="M362 613 H439"/></g>
+<g stroke="#00838F" stroke-width="9" stroke-linecap="round" fill="none"><path d="M178 303 Q145 340 178 378"/><path d="M157 284 Q114 339 157 399"/><path d="M622 303 Q655 340 622 378"/><path d="M643 284 Q686 339 643 399"/></g>
+
+</svg>

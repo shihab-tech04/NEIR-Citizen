@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Enter the last four NID digits</title><desc id="desc">A phone USSD prompt requests the final four digits of an NID, using empty entry indicators instead of sensitive information.</desc>
+<g stroke="#00838F" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<rect x="226" y="60" width="348" height="680" rx="55" fill="#fff" stroke-width="12"/>
+<rect x="245" y="110" width="310" height="555" rx="20" stroke-width="8"/>
+<path d="M349 88 H453 M358 699 H444" stroke-width="10"/>
+<path d="M218 235 H207 M218 273 H207 M582 254 H593" stroke-width="10"/>
+</g>
+<rect x="263" y="186" width="274" height="256" rx="20" fill="#fff" stroke="#00838F" stroke-width="8"/>
+<text x="400" y="247" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="38" font-weight="600" fill="#00838F" >NID</text>
+<text x="400" y="293" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="25" font-weight="600" fill="#00838F" >LAST 4 DIGITS</text>
+<rect x="305" y="330" width="42" height="53" rx="7" fill="#DDF5F7" stroke="#00838F" stroke-width="6"/><rect x="355" y="330" width="42" height="53" rx="7" fill="#DDF5F7" stroke="#00838F" stroke-width="6"/><rect x="405" y="330" width="42" height="53" rx="7" fill="#DDF5F7" stroke="#00838F" stroke-width="6"/><rect x="455" y="330" width="42" height="53" rx="7" fill="#DDF5F7" stroke="#00838F" stroke-width="6"/>
+<circle cx="326" cy="359" r="6" fill="#00838F"/><circle cx="376" cy="359" r="6" fill="#00838F"/><circle cx="426" cy="359" r="6" fill="#00838F"/><circle cx="476" cy="359" r="6" fill="#00838F"/>
+<path d="M330 410 H470" stroke="#00838F" stroke-width="8" stroke-linecap="round" opacity=".5"/>
+<rect x="333" y="491" width="134" height="58" rx="26" fill="#DDF5F7" stroke="#00838F" stroke-width="7"/>
+<text x="400" y="531" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="30" font-weight="600" fill="#00838F" >OK</text>
+
+</svg>
