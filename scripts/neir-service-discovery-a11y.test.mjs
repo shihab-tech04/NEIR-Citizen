@@ -43,7 +43,7 @@ for(let i=1;i<=6;i++){
   const original=readFileSync(`public/neir-source/images/step-${i}.svg`,'utf8');
   const svgViewBox=svg.match(/viewBox="([^"]+)"/)?.[1];
   const originalViewBox=original.match(/viewBox="([^"]+)"/)?.[1];
-  const originalPaths=original.match(/<path\\b[^>]*\\/>/g)||[];
+  const originalPaths=original.match(/<path\b[^>]*\/>/g)||[];
   const preserved=originalPaths.filter(element=>svg.includes(element));
   assert(svg.includes('<svg') && svg.includes('<title') && svg.includes('<desc') &&
     svg.includes('#00838F') && svgViewBox===originalViewBox &&
