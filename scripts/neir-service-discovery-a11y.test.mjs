@@ -80,16 +80,41 @@ try{
     );
     assert.equal(guideHeadings.length,2,'Both homepage guide headings required');
     for(const [index,heading] of guideHeadings.entries()){
-      assert(Math.abs(heading.labelSize-heading.titleSize)<=3,
-        'Guide '+index+' uses mismatched type scale at '+width+'px');
+      assert(heading.titleSize-heading.labelSize>=3.5 && heading.titleSize-heading.labelSize<=4.5,
+        'Guide '+index+' needs a consistent 4px primary-title hierarchy at '+width+'px');
       assert.equal(heading.labelColor,heading.titleColor,
         'Guide '+index+' uses competing text colors at '+width+'px');
-      assert(heading.labelWeight>=heading.titleWeight && heading.titleWeight>=500,
-        'Guide '+index+' needs weight-based hierarchy at '+width+'px');
+      assert(heading.titleWeight===600 && heading.labelWeight===400,
+        'Guide '+index+' needs primary title 600 and supporting line 400 at '+width+'px');
       assert(heading.labelFamily.includes('Poppins') && heading.titleFamily.includes('Poppins'),
         'Guide '+index+' must retain Poppins at '+width+'px');
       assert(heading.labelsStacked,'Guide '+index+' heading lines overlap at '+width+'px');
     }
+    const faqMetrics=await page.locator('#faq-section .neir-faq-intro').evaluate(el=>{
+      const title=el.querySelector('h2'),subtitle=el.querySelector('p'),tabs=document.querySelector('#faq-section .neir-faq-tabs');
+      const a=getComputedStyle(title),b=getComputedStyle(subtitle);
+      return {
+        titleSize:parseFloat(a.fontSize),subtitleSize:parseFloat(b.fontSize),
+        titleWeight:Number(a.fontWeight),subtitleWeight:Number(b.fontWeight),
+        titleColor:a.color,subtitleColor:b.color,
+        titleFamily:a.fontFamily,subtitleFamily:b.fontFamily,
+        subtitleStartsBelowTitle:subtitle.getBoundingClientRect().top>=title.getBoundingClientRect().bottom-1,
+        tabsStartAfterSubtitle:tabs.getBoundingClientRect().top>=subtitle.getBoundingClientRect().bottom,
+        headingToTabs:tabs.getBoundingClientRect().top-subtitle.getBoundingClientRect().bottom,
+      };
+    });
+    assert(faqMetrics.titleSize-faqMetrics.subtitleSize>=3.5 &&
+      faqMetrics.titleSize-faqMetrics.subtitleSize<=4.5,
+      'FAQ must match the 4px type hierarchy at '+width+'px');
+    assert(faqMetrics.titleWeight===600 && faqMetrics.subtitleWeight===400 &&
+      faqMetrics.titleColor===faqMetrics.subtitleColor &&
+      faqMetrics.titleColor===guideHeadings[0].titleColor,
+      'FAQ needs the same dark ink and title/subtitle weights as guides at '+width+'px');
+    assert(faqMetrics.titleFamily.includes('Poppins') && faqMetrics.subtitleFamily.includes('Poppins'),
+      'FAQ must keep Poppins at '+width+'px');
+    assert(faqMetrics.subtitleStartsBelowTitle && faqMetrics.tabsStartAfterSubtitle &&
+      faqMetrics.headingToTabs<=44,
+      'FAQ title/subtitle/tabs spacing or alignment regressed at '+width+'px');
     const faqTab=page.getByRole('tablist',{name:'FAQ categories'});
     assert(await faqTab.getByRole('tab',{name:'Special Registration'}).isVisible(),
       'Special Registration FAQ tab must be unambiguous');

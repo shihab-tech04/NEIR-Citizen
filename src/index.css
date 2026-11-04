@@ -68,27 +68,27 @@ button,input,select,textarea{font:inherit}
 .neir-source-hero-media{width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;background:white;border-radius:32px;overflow:hidden}
 .neir-source-hero-media picture{display:block;width:100%}
 .neir-source-hero-media img{width:100%;height:auto;display:block;object-fit:contain;border-radius:16px}
-.neir-source-steps-wrap{display:flex;flex-direction:column;gap:24px}
+.neir-source-steps-wrap{display:flex;flex-direction:column;gap:16px}
 .neir-guide--0{background:var(--neir-secondary)}
 .neir-guide--1{background:var(--neir-quaternary)}
 .neir-guide-art--0{background:#B2EBF2}
 .neir-guide-art--1{background:#D1C4E9}
 .neir-guide-art--2{background:#DCEDC8}
-.neir-source-guide-section{border-radius:32px;padding:56px 24px 56px}
+.neir-source-guide-section{border-radius:32px;padding:48px 24px}
 @media(min-width:768px){
  .neir-source-hero,.neir-source-guide-section{position:relative;left:-8px;width:calc(100% + 16px)}
 }
 .neir-source-verify-short{display:none}
 .neir-source-mobile-auth{display:none}
 .neir-source-guide-inner{max-width:1200px;margin:auto}
-.neir-source-guide-heading{text-align:left;color:#111;margin:0 0 26px}
-.neir-source-guide-heading h2{font-size:clamp(28px,2.2vw,34px);font-weight:500;line-height:1.3;margin:0;color:inherit}
-.neir-source-guide-heading p{font-size:clamp(26px,2.05vw,32px);font-weight:700;line-height:1.3;margin:0 0 4px;color:inherit}
+.neir-source-guide-heading{text-align:left;color:#111;margin:0 0 24px}
+.neir-source-guide-heading h2{font-size:28px;font-weight:600;line-height:1.4;margin:0;color:inherit}
+.neir-source-guide-heading p{font-size:24px;font-weight:400;line-height:1.4;margin:0 0 6px;color:inherit}
 .neir-source-steps-row{display:flex;align-items:stretch;gap:0}
 .neir-source-step-card{background:white;border-radius:24px;flex:1 1 0;min-width:0;overflow:hidden;display:flex;flex-direction:column}
 .neir-source-step-art{display:flex;align-items:center;justify-content:center;padding:8px;min-height:220px;border-radius:24px}
 .neir-source-step-art img{max-width:100%;width:100%;height:auto;max-height:250px;object-fit:contain}
-.neir-source-step-content{padding:30px 28px;flex:1}
+.neir-source-step-content{padding:24px;flex:1}
 .neir-source-step-content h3{font-size:23px;font-weight:700;margin:0 0 8px;color:#111}
 .neir-source-step-content p{white-space:pre-line;font-size:16px;line-height:1.5}
 .neir-source-step-arrow{width:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:center}
@@ -145,11 +145,11 @@ button,input,select,textarea{font:inherit}
  .neir-source-guide-section{position:relative;left:-7px;width:calc(100% + 14px);border-radius:16px;padding:28px}
  .neir-source-guide-heading{width:100%;margin:0 0 24px;text-align:left}
  .neir-source-guide-heading h2{font-size:24px;line-height:1.3}
- .neir-source-guide-heading p{font-size:24px;line-height:1.3;white-space:normal}
+ .neir-source-guide-heading p{font-size:20px;line-height:1.4;white-space:normal}
  .neir-source-steps-row{width:100%;transform:none;flex-direction:column}
  .neir-source-step-arrow{height:70px;flex:0 0 70px;width:100%;transform:rotate(90deg)}
  .neir-source-step-art{min-height:170px;padding:7px}
- .neir-source-step-content{padding:28px}
+ .neir-source-step-content{padding:22px}
  .neir-source-step-content h3{font-size:22px;margin-bottom:6px}
  .neir-source-step-content p{font-size:14px;line-height:1.5}
 }
@@ -214,21 +214,21 @@ button,input,select,textarea{font:inherit}
 
 #faq-section{border-radius:32px;padding:64px max(24px,calc((100% - 1200px) / 2));}
 #faq-section>div:first-child{text-align:left}
-#faq-section>div:first-child h2{font-size:46px}
-#faq-section>div:first-child p{font-size:32px}
-@media(max-width:767px){.neir-original-dialog{width:100%;min-width:0;max-height:90vh}#faq-section{padding:28px 16px;border-radius:16px}#faq-section>div:first-child h2{font-size:35px}#faq-section>div:first-child p{font-size:24px}}
+
+
+@media(max-width:767px){.neir-original-dialog{width:100%;min-width:0;max-height:90vh}#faq-section{padding:28px 16px;border-radius:16px}}
 
 /* NEIR FAQ — source-matched visual primitives from the user's 28 Oct screenshots.
    Keep all adjustments scoped to FAQ; other pages and their source parity are frozen. */
 #faq-section.neir-faq-source{
-  padding:80px max(24px,calc((100% - 1284px)/2)) 64px;
+  padding:56px max(24px,calc((100% - 1284px)/2));
 }
 #faq-section .neir-faq-content{max-width:1284px}
-#faq-section .neir-faq-intro h2{font-size:46px;line-height:70px}
-#faq-section .neir-faq-intro p{font-size:32px;line-height:48px;margin-top:0}
-#faq-section .neir-faq-intro{margin-bottom:16px}
-#faq-section .neir-faq-intro p{color:#000;font-weight:400}
-#faq-section .neir-faq-tabs{gap:24px;margin-bottom:36px}
+#faq-section .neir-faq-intro h2{font-size:28px;line-height:1.4;font-weight:600;color:#111}
+#faq-section .neir-faq-intro p{font-size:24px;line-height:1.4;margin-top:6px}
+#faq-section .neir-faq-intro{margin-bottom:24px}
+#faq-section .neir-faq-intro p{color:#111;font-weight:400}
+#faq-section .neir-faq-tabs{gap:24px;margin-bottom:24px}
 #faq-section .neir-faq-tab{
   min-height:59px;
   font-weight:600;
@@ -262,8 +262,8 @@ button,input,select,textarea{font:inherit}
   #faq-section .neir-faq-tabs{gap:8px;margin-bottom:24px}
   #faq-section .neir-faq-tab{min-height:46px;padding-inline:12px}
   #faq-section .neir-faq-group{margin-inline:0;padding:18px;border-radius:18px}
-  #faq-section .neir-faq-intro h2{font-size:35px;line-height:1.3}
-  #faq-section .neir-faq-intro p{font-size:24px;line-height:1.5;margin-top:8px}
+  #faq-section .neir-faq-intro h2{font-size:24px;line-height:1.4}
+  #faq-section .neir-faq-intro p{font-size:20px;line-height:1.4;margin-top:6px}
   #faq-section .neir-faq-item{padding-inline:16px}
   #faq-section .neir-faq-question{min-height:52px}
   #faq-section .neir-faq-intro{margin-bottom:24px}
