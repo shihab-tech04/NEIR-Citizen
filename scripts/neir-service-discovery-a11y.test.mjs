@@ -63,6 +63,33 @@ try{
       'SMS registration guide needs a meaningful heading at '+width);
     assert(await page.getByRole('heading',{name:'Check Mobile Numbers Registered Under Your NID'}).isVisible(),
       'NID guide needs a meaningful heading at '+width);
+    const guideHeadings=await page.locator('.neir-source-guide-heading').evaluateAll(headings=>
+      headings.map(el=>{
+        const label=el.querySelector('p');
+        const title=el.querySelector('h2');
+        const a=getComputedStyle(label),b=getComputedStyle(title);
+        const labelBox=label.getBoundingClientRect(),titleBox=title.getBoundingClientRect();
+        return {
+          labelSize:parseFloat(a.fontSize),titleSize:parseFloat(b.fontSize),
+          labelColor:a.color,titleColor:b.color,
+          labelWeight:Number(a.fontWeight),titleWeight:Number(b.fontWeight),
+          labelFamily:a.fontFamily,titleFamily:b.fontFamily,
+          labelsStacked:labelBox.bottom<=titleBox.top+1,
+        };
+      })
+    );
+    assert.equal(guideHeadings.length,2,'Both homepage guide headings required');
+    for(const [index,heading] of guideHeadings.entries()){
+      assert(Math.abs(heading.labelSize-heading.titleSize)<=3,
+        'Guide '+index+' uses mismatched type scale at '+width+'px');
+      assert.equal(heading.labelColor,heading.titleColor,
+        'Guide '+index+' uses competing text colors at '+width+'px');
+      assert(heading.labelWeight>=heading.titleWeight && heading.titleWeight>=500,
+        'Guide '+index+' needs weight-based hierarchy at '+width+'px');
+      assert(heading.labelFamily.includes('Poppins') && heading.titleFamily.includes('Poppins'),
+        'Guide '+index+' must retain Poppins at '+width+'px');
+      assert(heading.labelsStacked,'Guide '+index+' heading lines overlap at '+width+'px');
+    }
     const faqTab=page.getByRole('tablist',{name:'FAQ categories'});
     assert(await faqTab.getByRole('tab',{name:'Special Registration'}).isVisible(),
       'Special Registration FAQ tab must be unambiguous');
