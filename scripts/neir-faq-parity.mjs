@@ -107,6 +107,9 @@ for(const [key,coordinates] of Object.entries(deltas)){
   // public original. Preserve horizontal alignment and content width, but do not
   // require outdated heading heights or vertical offsets.
   for(const dimension of ['x','width']){
+    // The prior FAQ group-only 8px inset was removed to align its outer card
+    // edge with the guide title and tabs. The responsive UX test checks that.
+    if(key==='firstGroup' && dimension==='x')continue;
     const delta=coordinates[dimension];
     assert(Math.abs(delta)<=3,'Original source FAQ '+key+'.'+dimension+' offset '+delta+'px exceeds 3px tolerance');
   }

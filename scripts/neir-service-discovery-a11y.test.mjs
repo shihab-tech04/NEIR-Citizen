@@ -115,6 +115,33 @@ try{
     assert(faqMetrics.subtitleStartsBelowTitle && faqMetrics.tabsStartAfterSubtitle &&
       faqMetrics.headingToTabs<=44,
       'FAQ title/subtitle/tabs spacing or alignment regressed at '+width+'px');
+    // One content grid across the guide and FAQ, independent of viewport.
+    const alignment=await page.evaluate(()=>{
+      const guide=document.querySelector('.neir-source-guide-heading');
+      const card=document.querySelector('.neir-source-step-card');
+      const faq=document.querySelector('#faq-section');
+      const intro=faq.querySelector('.neir-faq-intro');
+      const tabs=faq.querySelector('.neir-faq-tabs');
+      const faqCard=faq.querySelector('.neir-faq-group');
+      const rect=el=>el.getBoundingClientRect();
+      return {
+        lefts:[rect(guide).left,rect(card).left,rect(intro).left,
+          rect(tabs).left,rect(faqCard).left],
+        faqTopInset:rect(intro).top-rect(faq).top,
+        guideCardGap:rect(card).top-rect(guide).bottom,
+        guideWidth:rect(document.querySelector('.neir-source-guide-section')).width,
+        faqWidth:rect(faq).width,
+        viewport:document.documentElement.clientWidth,
+      };
+    });
+    assert(alignment.lefts.every(x=>Math.abs(x-alignment.lefts[0])<=2),
+      'Guide / FAQ headings, tabs and cards need a shared left edge at '+width+'px: '+JSON.stringify(alignment));
+    assert(alignment.faqTopInset>=20 && alignment.faqTopInset<=36,
+      'FAQ top padding should remain compact at '+width+'px');
+    assert(alignment.guideCardGap>=22 && alignment.guideCardGap<=26,
+      'Guide heading-to-cards gap should remain 24px at '+width+'px');
+    assert(alignment.guideWidth<=alignment.viewport+2 && alignment.faqWidth<=alignment.viewport+2,
+      'Guide and FAQ sections must not horizontally overflow at '+width+'px');
     const faqTab=page.getByRole('tablist',{name:'FAQ categories'});
     assert(await faqTab.getByRole('tab',{name:'Special Registration'}).isVisible(),
       'Special Registration FAQ tab must be unambiguous');
