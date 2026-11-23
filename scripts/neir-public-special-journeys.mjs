@@ -153,7 +153,7 @@ try{
   assert.equal(await eligibleWizard.locator('#neir-v7-imei').inputValue(),'990001234567899',
     'Search-to-Apply must preserve the exact 15-digit IMEI');
   await screenshot(desktop,'02-eligible-imei-prefilled');
-  await eligibleWizard.getByRole('button',{name:'Close dialog'}).click();
+  await eligibleWizard.getByRole('button',{name:'Close special registration'}).click();
   await desktop.locator('#neir-profile-imei-search').fill('990001234567923');
   await desktop.getByRole('button',{name:'Search device'}).click();
   await visible(desktop.locator('.neir-profile-no-match'),'unknown IMEI does not become eligible');
