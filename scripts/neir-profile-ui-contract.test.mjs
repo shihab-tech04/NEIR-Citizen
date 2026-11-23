@@ -6,7 +6,7 @@ const style = read('src/components/CitizenImeiListView.css');
 const wizard = read('src/components/ProfileSpecialRegistrationModal.tsx');
 const wizardStyle = read('src/components/ProfileSpecialRegistrationModal.css');
 const edge = read('supabase/functions/neir-prototype-special/index.ts');
-assert(profile.includes("searchedImei !== null && <div className=\"neir-profile-search-outcome\""),
+assert(profile.includes("searchedImei !== null && !eligibilityLoading && !eligibilityError && <div className=\"neir-profile-search-outcome\""),
   'Search results must not render before the user submits an IMEI');
 assert(!profile.includes('Your device information will appear here'),
   'Old always-visible empty state must stay removed');
