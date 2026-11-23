@@ -36,6 +36,8 @@ const localDate = () => {
 
 type Props = { initialImei?: string; citizenMobile: string; onClose: () => void; onBack?: () => void; onComplete?: (message: string) => void };
 export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei = '', citizenMobile, onClose, onBack, onComplete }) => {
+  // Only search-result handoffs lock the IMEI; a new blank application stays editable.
+  const imeiFromSearch = initialImei.trim().length > 0;
   const [imei, setImei] = useState(initialImei);
   const [reason, setReason] = useState<Reason>('');
   const [arrival, setArrival] = useState('');
@@ -218,7 +220,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
             <h3 className="neir-v7-section-heading" id="neir-v7-imei-heading">Enter the IMEI number of the device you want to register</h3>
             <label className="neir-v7-field" htmlFor="neir-v7-imei">
               <span>IMEI Number <b aria-hidden="true">*</b></span>
-              <UiInput id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15}
+              <UiInput id="neir-v7-imei" ref={imeiRef} value={imei} maxLength={15} readOnly={imeiFromSearch}
                 onChange={event => {
                   const nextImei = event.target.value.replace(/\D/g, '').slice(0,15);
                   setImei(nextImei);
@@ -230,7 +232,7 @@ export const ProfileSpecialRegistrationModal: React.FC<Props> = ({ initialImei =
                   }
                 }}
                 inputMode="numeric" autoComplete="off" placeholder="Enter 14 or 15 IMEI digits."
-                aria-description="The IMEI number must contain 14 or 15 digits." required aria-invalid={!!imei && !validImei} />
+                aria-description={imeiFromSearch ? 'Auto-filled from the IMEI search. This number is read only.' : 'The IMEI number must contain 14 or 15 digits.'} required aria-invalid={!!imei && !validImei} />
             </label>
           </section>
           {showReason && <>

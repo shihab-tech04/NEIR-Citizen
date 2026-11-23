@@ -12,6 +12,11 @@ assert(!profile.includes('Your device information will appear here'),
   'Old always-visible empty state must stay removed');
 assert(!profile.includes('stolenTarget') && !profile.includes('Mark as Stolen'),
   'Remove obsolete stolen flow completely without replacing device status');
+assert(wizard.includes("const imeiFromSearch = initialImei.trim().length > 0;") &&
+  wizard.includes("readOnly={imeiFromSearch}"),
+  'Only search-prefilled IMEIs are locked; new blank registrations remain editable');
+assert(wizardStyle.includes('.neir-v7-imei-section input[readonly]'),
+  'A read-only IMEI must have a visible state within the approved modal design');
 assert(profile.includes("onClick={() => startProfileRegistration('')}"),
   'Profile must offer the existing Special Registration wizard, respecting the 20-slot limit');
 assert(profile.includes("disabled={reachedLimit}"),'Quota-aware profile action remains guarded');

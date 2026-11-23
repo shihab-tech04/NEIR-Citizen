@@ -87,6 +87,8 @@ try{
   await success.getByRole('button',{name:'Proceed to special registration'}).click();
   const wizard=desktop.getByRole('dialog',{name:'Special Registration',exact:true});
   await visible(wizard,'special registration after explicit success handoff');
+  assert(await wizard.locator('#neir-v7-imei').isEditable(),
+    'A new registration with no searched IMEI must keep the manual IMEI field editable');
   assert.equal(await wizard.locator('.neir-v7-reason-card').count(),3);
   await wizard.locator('#neir-v7-imei').fill('23456789012345');
   await wizard.getByRole('radio',{name:'Bought/Brought from Air Mail'}).check();
@@ -152,6 +154,15 @@ try{
   await visible(eligibleWizard,'approved prefilled Special Registration form');
   assert.equal(await eligibleWizard.locator('#neir-v7-imei').inputValue(),'990001234567899',
     'Search-to-Apply must preserve the exact 15-digit IMEI');
+  assert(!(await eligibleWizard.locator('#neir-v7-imei').isEditable()),
+    'IMEI coming from a successful device search must be read only');
+  assert(await eligibleWizard.locator('#neir-v7-imei').evaluate(input => input.hasAttribute('readonly')),
+    'The readonly HTML attribute must reach the native input');
+  await eligibleWizard.locator('#neir-v7-imei').focus();
+  await eligibleWizard.locator('#neir-v7-imei').press('ControlOrMeta+A');
+  await eligibleWizard.locator('#neir-v7-imei').press('Backspace');
+  assert.equal(await eligibleWizard.locator('#neir-v7-imei').inputValue(),'990001234567899',
+    'Keyboard editing must not change the prefilled IMEI');
   await screenshot(desktop,'02-eligible-imei-prefilled');
   await eligibleWizard.getByRole('button',{name:'Close special registration'}).click();
   await desktop.locator('#neir-profile-imei-search').fill('990001234567923');
