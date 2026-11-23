@@ -46,10 +46,10 @@ try{
         const copy=el.querySelector('.neir-source-hero-copy').getBoundingClientRect();
         const media=el.querySelector('.neir-source-hero-media').getBoundingClientRect();
         return {width:bounds.width,center:bounds.left+bounds.width/2,
-          viewport:document.documentElement.clientWidth,
+          sectionCenter:(()=>{const section=el.closest('.neir-source-hero').getBoundingClientRect(); return section.left+section.width/2;})(),
           gap:media.left-copy.right,copyWidth:copy.width,mediaWidth:media.width};
       });
-      assert(Math.abs(hero.width-1240)<=2 && Math.abs(hero.center-hero.viewport/2)<=2 &&
+      assert(Math.abs(hero.width-1240)<=2 && Math.abs(hero.center-hero.sectionCenter)<=2 &&
         Math.abs(hero.gap-40)<=2 && Math.abs(hero.copyWidth-hero.mediaWidth)<=2,
         'Desktop homepage must match centered 1240px source grid with two 600px columns: '+JSON.stringify(hero));
     }
