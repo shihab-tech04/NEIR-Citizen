@@ -50,4 +50,30 @@ const luhn = imei => {
   return sum % 10 === 0;
 };
 assert(fixtures.every(luhn), 'Synthetic IMEIs must have valid check digits');
-console.log('PASS: 3 protected synthetic eligible IMEIs, SQL/Edge lookup, existing UI/modal prefill, status preservation');
+// Read-only integration verification against the deployed prototype Edge Function.
+const endpoint = 'https://wjsdylxbvdnraztktbtg.supabase.co/functions/v1/neir-prototype-special';
+const lookup = async (imei) => {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Origin': 'https://shihab-tech04.github.io' },
+    body: JSON.stringify({ action: 'lookup_imei_eligibility', imei }),
+    signal: AbortSignal.timeout(15000),
+  });
+  const data = await response.json();
+  return { response, data };
+};
+for (const imei of fixtures) {
+  const { response, data } = await lookup(imei);
+  assert.equal(response.status, 200, 'Synthetic eligible IMEI lookup must succeed');
+  assert.equal(data.eligible, true, 'Supabase must match the synthetic eligible IMEI ' + imei);
+  assert.equal(response.headers.get('access-control-allow-origin'), 'https://shihab-tech04.github.io', 'Live Pages CORS must be allowed');
+}
+for (const imei of ['990001234567923', '352093081234567', '869999008888777']) {
+  const { response, data } = await lookup(imei);
+  assert.equal(response.status, 200, 'Known and unknown noneligible IMEIs must not generate an API error');
+  assert.equal(data.eligible, false, 'Noneligible IMEI must never be promoted to eligible: ' + imei);
+}
+const invalid = await lookup('123');
+assert.equal(invalid.response.status, 400, 'Invalid IMEI must be rejected by the server');
+console.log('PASS: live Supabase eligibility, noneligible statuses, invalid IMEI, CORS, and existing modal contract');
+
