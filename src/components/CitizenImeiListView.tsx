@@ -3,14 +3,15 @@ import { AlertTriangle, CheckCircle2, FileSearch2, Info, Mail, Phone, Search, Sh
 import type { Language, UserSession } from '../types.ts';
 import { SAMPLE_HANDSETS, type HandsetRecord } from '../utils/imei.ts';
 import { ProfileSpecialRegistrationModal } from './ProfileSpecialRegistrationModal.tsx';
-import { listCitizenSpecialRegistrations, type SpecialApplication } from '../utils/neirSpecialRegistrationApi.ts';
+import { listCitizenSpecialRegistrations, lookupSpecialRegistrationEligibility, type SpecialApplication } from '../utils/neirSpecialRegistrationApi.ts';
 import { UiButton, UiInput, UiDataTable, UiStatusBadge, UiDialog } from '../ui/index.ts';
 import type { UiColumn } from '../ui/index.ts';
 import './CitizenImeiListView.css';
 
 type DeviceStatus =
   | 'Registered' | 'Applied for registration' | 'Registration Pending' | 'Restricted'
-  | 'Whitelisted' | 'Greylisted' | 'Unregistered' | 'Blacklisted';
+  | 'Whitelisted' | 'Greylisted' | 'Unregistered' | 'Blacklisted'
+  | 'Eligible for Special Registration';
 
 type Device = { imei: string; status: DeviceStatus; brand?: string; model?: string; explanation?: string };
 
@@ -37,7 +38,7 @@ const statusFromSample: Record<HandsetRecord['registrationStatus'], DeviceStatus
   blacklisted: 'Blacklisted',
 };
 const requiresSpecialRegistration = (status: DeviceStatus) =>
-  status === 'Greylisted' || status === 'Registration Pending';
+  status === 'Greylisted' || status === 'Registration Pending' || status === 'Eligible for Special Registration';
 
 const explanations: Record<DeviceStatus, { en: string; bn: string }> = {
   Registered: {
@@ -51,6 +52,10 @@ const explanations: Record<DeviceStatus, { en: string; bn: string }> = {
   'Registration Pending': {
     en: 'Registration is pending. Continue with Special Registration.',
     bn: 'নিবন্ধন অপেক্ষমাণ। বিশেষ নিবন্ধন চালিয়ে যেতে পারেন।',
+  },
+  'Eligible for Special Registration': {
+    en: 'This device is eligible for Special Registration. Apply to proceed with verification.',
+    bn: 'এই ডিভাইসটি বিশেষ নিবন্ধনের জন্য যোগ্য। যাচাইয়ের জন্য আবেদন করুন।',
   },
   'Restricted': {
     en: 'This device is marked as restricted.',
@@ -78,10 +83,11 @@ const bnStatus: Partial<Record<DeviceStatus, string>> = {
   'Registration Pending': 'নিবন্ধন অপেক্ষমাণ', Whitelisted: 'হোয়াইটলিস্টেড',
   Greylisted: 'গ্রেলিস্টেড', Unregistered: 'অনিবন্ধিত', Blacklisted: 'ব্ল্যাকলিস্টেড',
   'Restricted': 'সীমাবদ্ধ',
+  'Eligible for Special Registration': 'বিশেষ নিবন্ধনের জন্য যোগ্য',
 };
 const statusClass = (status: DeviceStatus) => {
   if (status === 'Whitelisted' || status === 'Registered') return 'is-approved';
-  if (status === 'Greylisted' || status === 'Registration Pending') return 'is-warning';
+  if (status === 'Greylisted' || status === 'Registration Pending' || status === 'Eligible for Special Registration') return 'is-warning';
   if (status === 'Blacklisted' || status === 'Restricted') return 'is-danger';
   return 'is-neutral';
 };
@@ -106,6 +112,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
   const [imeiQuery, setImeiQuery] = useState('');
   const [searchedImei, setSearchedImei] = useState<string | null>(null);
   const [searchError, setSearchError] = useState('');
+  const [eligibilityDevice, setEligibilityDevice] = useState<Device | null>(null);
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [eligibilityError, setEligibilityError] = useState('');
+  const eligibilityRequest = useRef(0);
   const [detail, setDetail] = useState<Device | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileName, setProfileName] = useState(session.name);
@@ -173,7 +183,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
     imei: sample.imei, brand: sample.brand, model: sample.model,
     status: statusFromSample[sample.registrationStatus],
     explanation: isBn ? sample.detailsBangla : sample.detailsEnglish,
-  } : null);
+  } : eligibilityDevice?.imei === searchedImei ? eligibilityDevice : null);
   const applicationForSearch = specialApplications.find(app => app.imei === searchedImei);
   const matchedDevice = originalDevice && {
     ...originalDevice,
@@ -182,9 +192,13 @@ export const CitizenImeiListView: React.FC<Props> = ({
       : originalDevice.status,
   };
 
-  const searchDevice = (event: React.FormEvent<HTMLFormElement>) => {
+  const searchDevice = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const ticket = ++eligibilityRequest.current;
     setSearchError('');
+    setEligibilityError('');
+    setEligibilityDevice(null);
+    setEligibilityLoading(false);
     setResult('');
     const clean = imeiQuery.replace(/[\s-]/g, '');
     if (!/^\d{14,15}$/.test(clean)) {
@@ -195,6 +209,21 @@ export const CitizenImeiListView: React.FC<Props> = ({
       return;
     }
     setSearchedImei(clean);
+    // Leave all existing reference/sample statuses and 14-digit searches unchanged.
+    if (clean.length !== 15 || referenceDevices.some(device => device.imei === clean) || SAMPLE_HANDSETS[clean]) return;
+    setEligibilityLoading(true);
+    try {
+      const lookup = await lookupSpecialRegistrationEligibility(clean);
+      if (ticket !== eligibilityRequest.current) return;
+      if (lookup.eligible) setEligibilityDevice({ imei: clean, status: 'Eligible for Special Registration' });
+    } catch {
+      if (ticket !== eligibilityRequest.current) return;
+      setEligibilityError(isBn
+        ? 'ডিভাইসের যোগ্যতা যাচাই করা যায়নি। আবার অনুসন্ধান করুন।'
+        : 'Device eligibility could not be checked. Please search again.');
+    } finally {
+      if (ticket === eligibilityRequest.current) setEligibilityLoading(false);
+    }
   };
   const startProfileRegistration = (imei: string) => {
     const previousDevice = detail;
@@ -321,8 +350,12 @@ export const CitizenImeiListView: React.FC<Props> = ({
                   placeholder={isBn ? '১৪ বা ১৫ সংখ্যার IMEI লিখুন' : 'Enter 14- or 15-digit IMEI'}
                   aria-invalid={!!searchError} aria-describedby={searchError ? 'neir-profile-search-error' : undefined}
                   onChange={event => {
+                    ++eligibilityRequest.current;
                     setImeiQuery(event.target.value);
                     setSearchedImei(null);
+                    setEligibilityDevice(null);
+                    setEligibilityLoading(false);
+                    setEligibilityError('');
                     setSearchError('');
                   }} />
               </div>
@@ -333,8 +366,10 @@ export const CitizenImeiListView: React.FC<Props> = ({
             </div>
             {searchError && <p id="neir-profile-search-error" className="neir-profile-search-error" role="alert">{searchError}</p>}
           </form>
+          {eligibilityLoading && <p className="neir-profile-data-note" role="status">{isBn ? 'ডিভাইসের যোগ্যতা যাচাই করা হচ্ছে…' : 'Checking device eligibility…'}</p>}
+          {eligibilityError && <p className="neir-profile-search-error" role="alert">{eligibilityError}</p>}
 
-          {searchedImei !== null && <div className="neir-profile-search-outcome" aria-live="polite">
+          {searchedImei !== null && !eligibilityLoading && !eligibilityError && <div className="neir-profile-search-outcome" aria-live="polite">
             {matchedDevice ? <article className="neir-profile-device-result" aria-label={isBn ? 'ডিভাইসের অনুসন্ধান ফলাফল' : 'Device search result'}>
               <div className="neir-profile-result-top">
                 <span className="neir-profile-device-icon"><Smartphone size={26} aria-hidden="true" /></span>
