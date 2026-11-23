@@ -20,6 +20,8 @@ jobs:
         run: npm run lint
       - name: Enforce shared NEIR UI component library
         run: npm run ui:audit
+      - name: NEIR eligible IMEI and registration contract
+        run: node scripts/neir-special-eligibility.test.mjs
       - name: Production build
         run: npm run build
       - name: Save offline presentation build
