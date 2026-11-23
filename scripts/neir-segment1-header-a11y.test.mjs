@@ -40,6 +40,19 @@ try{
     }));
     assert(initial.overflow<=4,'Header overflow at '+width);
     assert(!/prototype/i.test(initial.title+' '+initial.meta),'Outdated prototype metadata remains');
+    if(width>=1500){
+      const hero=await page.locator('.neir-source-hero-inner').evaluate(el=>{
+        const bounds=el.getBoundingClientRect();
+        const copy=el.querySelector('.neir-source-hero-copy').getBoundingClientRect();
+        const media=el.querySelector('.neir-source-hero-media').getBoundingClientRect();
+        return {width:bounds.width,center:bounds.left+bounds.width/2,
+          viewport:document.documentElement.clientWidth,
+          gap:media.left-copy.right,copyWidth:copy.width,mediaWidth:media.width};
+      });
+      assert(Math.abs(hero.width-1240)<=2 && Math.abs(hero.center-hero.viewport/2)<=2 &&
+        Math.abs(hero.gap-40)<=2 && Math.abs(hero.copyWidth-hero.mediaWidth)<=2,
+        'Desktop homepage must match centered 1240px source grid with two 600px columns: '+JSON.stringify(hero));
+    }
     if(width<=1000){
       const menu=page.getByRole('button',{name:'Navigation menu'});
       await menu.waitFor({state:'visible'});
