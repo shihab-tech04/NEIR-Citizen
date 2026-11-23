@@ -103,6 +103,15 @@ Deno.serve(async(req:Request)=>{
     const payload=JSON.parse(bodyText);
     if(!payload || typeof payload.action!=='string')return json({error:'Missing action'},400,origin);
     const action=payload.action;
+    if(action==='lookup_imei_eligibility'){
+      if(typeof payload.imei!=='string'||!/^\d{15}$/.test(payload.imei))
+        return json({error:'A valid 15-digit IMEI is required.'},400,origin);
+      // SQL is authoritative for the synthetic eligibility fixtures; do not infer
+      // eligibility for unknown, greylisted, registered, or blacklisted devices.
+      const rows=await requestDB('neir_special_eligible_imeis?select=imei&imei=eq.'+
+        encodeURIComponent(payload.imei)+'&enabled=eq.true&limit=1');
+      return json({eligible:rows.length===1},200,origin);
+    }
     if(action==='list' || action==='admin_list' || action==='citizen_list'){
       const citizen=action==='citizen_list';
       if(citizen && (typeof payload.mobile!=='string'||!/^01\d{9}$/.test(payload.mobile)))
