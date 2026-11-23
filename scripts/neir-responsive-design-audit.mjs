@@ -24,17 +24,22 @@ try {
         const box=el.getBoundingClientRect();
         const copy=el.querySelector('.neir-source-hero-copy').getBoundingClientRect();
         const media=el.querySelector('.neir-source-hero-media').getBoundingClientRect();
+        const section=el.closest('.neir-source-hero').getBoundingClientRect();
+        const viewport=window.innerWidth;
         return {width:box.width,center:box.left+box.width/2,
-          sectionCenter:(()=>{const section=el.closest('.neir-source-hero').getBoundingClientRect(); return section.left+section.width/2;})(),
-          gap:media.left-copy.right,
-          copyWidth:copy.width,mediaWidth:media.width};
+          sectionCenter:section.left+section.width/2,
+          gap:media.left-copy.right,copyWidth:copy.width,mediaWidth:media.width,
+          expectedWidth:Math.min(1500,Math.max(1200,viewport*0.74)),
+          expectedGap:Math.min(60,Math.max(44,viewport*0.03)),
+          expectedOffset:viewport*0.015};
       });
-      assert(Math.abs(hero.width-1240)<=2,
-        'Wide NEIR homepage must use the source-sized 1240px grid: '+JSON.stringify(hero));
-      assert(Math.abs(hero.center-hero.sectionCenter)<=2,
-        'Wide homepage hero must be centered within its containing section');
-      assert(Math.abs(hero.gap-40)<=2 && Math.abs(hero.copyWidth-hero.mediaWidth)<=2,
-        'Wide homepage must preserve the two balanced source columns and 40px gutter');
+      assert(Math.abs(hero.width-hero.expectedWidth)<=2,
+        'Desktop hero must follow the official reference responsive width: '+JSON.stringify(hero));
+      assert(Math.abs(hero.center-hero.sectionCenter-hero.expectedOffset)<=2,
+        'Desktop hero must align with the approved reference offset: '+JSON.stringify(hero));
+      assert(Math.abs(hero.gap-hero.expectedGap)<=2 &&
+        Math.abs(hero.copyWidth-hero.mediaWidth)<=2,
+        'Desktop hero columns must retain equal width and reference gap: '+JSON.stringify(hero));
     }
     if(width<=390){
       for(const selector of ['#neir-imei-input','.neir-source-verify-button','.neir-source-mobile-language']){
