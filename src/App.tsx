@@ -9,7 +9,6 @@ import { AppRoute, Language, UserSession } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { HomeHero } from './components/HomeHero.tsx';
-import { HomeServiceEntry } from './components/HomeServiceEntry.tsx';
 import { SpecialRegistrationSection } from './components/SpecialRegistrationSection.tsx';
 import { ThreeStepGuide } from './components/ThreeStepGuide.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
@@ -210,23 +209,6 @@ export default function App() {
             <HomeHero
               language={language}
               onScrollToVerifier={handleScrollToVerifier}
-              onOpenGuides={() => {
-                setCurrentRoute('guides');
-                scrollToTop();
-              }}
-            />
-
-            {/* Clear service shortcuts, outside the frozen IMEI checker. */}
-            <HomeServiceEntry
-              language={language}
-              isLoggedIn={session.isLoggedIn}
-              onCreateAccount={() => {
-                setLoginForSpecialRegistration(false);
-                setLoginInitialView('register');
-                setIsLoginOpen(true);
-              }}
-              onOpenDashboard={() => setCurrentRoute('dashboard')}
-              onSpecialRegistration={requestSpecialRegistration}
               onOpenGuides={() => {
                 setCurrentRoute('guides');
                 scrollToTop();
