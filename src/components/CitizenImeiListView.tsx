@@ -359,7 +359,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
                     setSearchError('');
                   }} />
               </div>
-              <UiButton variant="primary" className="neir-profile-search-button" type="submit" disabled={!imeiQuery.trim()}>
+              <UiButton variant="primary" className="neir-profile-search-button" type="submit" disabled={!imeiQuery.trim() || eligibilityLoading}>
                 <Search size={18} aria-hidden="true" />
                 {isBn ? 'খুঁজুন' : 'Search device'}
               </UiButton>
@@ -378,7 +378,7 @@ export const CitizenImeiListView: React.FC<Props> = ({
                   <p><span>IMEI</span> <strong>{matchedDevice.imei}</strong></p>
                 </div>
                 <span className={'neir-profile-status ' + statusClass(matchedDevice.status)}>
-                  {matchedDevice.status === 'Whitelisted' || matchedDevice.status === 'Registered'
+                  {matchedDevice.status === 'Whitelisted' || matchedDevice.status === 'Registered' || matchedDevice.status === 'Eligible for Special Registration'
                     ? <CheckCircle2 size={17} aria-hidden="true" />
                     : matchedDevice.status === 'Greylisted' || matchedDevice.status === 'Registration Pending'
                       ? <AlertTriangle size={17} aria-hidden="true" />
