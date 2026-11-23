@@ -52,6 +52,13 @@ export async function submitNeirSpecialRegistration(input:{
     arrivalDate:input.arrivalDate,mobile:input.mobile,files
   });
 }
+export async function lookupSpecialRegistrationEligibility(imei: string): Promise<{ eligible: boolean }> {
+  if (!/^\d{15}$/.test(imei)) throw new Error('A 15-digit IMEI is required for eligibility lookup.');
+  const response = await neirSpecialRequest<{ eligible: boolean }>('lookup_imei_eligibility', { imei });
+  if (typeof response.eligible !== 'boolean') throw new Error('Invalid device eligibility response.');
+  return response;
+}
+
 export async function listCitizenSpecialRegistrations(mobile:string):Promise<SpecialApplication[]>{
   const response=await neirSpecialRequest<{items:SpecialApplication[]}>('citizen_list',{mobile});
   return response.items;
