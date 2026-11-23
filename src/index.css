@@ -268,11 +268,11 @@ button,input,select,textarea{font:inherit}
   #faq-section .neir-faq-intro{margin-bottom:24px}
 }
 
-/* Desktop homepage: retain the approved source proportions—two fluid 600px
-   columns with a 40px gutter in a centered 1240px container at wide widths.
-   Fixed 626px columns + a horizontal translate previously inflated the hero. */
+/* Match the official NEIR hero at large screens by viewport proportion,
+   rather than a fixed 1240px cap that shrank the illustration and form.
+   Preserve the approved two-column structure and all smaller breakpoints. */
 @media(min-width:1500px) {
- .neir-source-hero-inner{max-width:1240px;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px;transform:none}
+ .neir-source-hero-inner{width:clamp(1200px,74vw,1500px);max-width:calc(100% - 48px);grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(44px,3vw,60px);transform:translateX(1.5vw)}
  .neir-source-description{margin-bottom:13px}
  .neir-source-hero-copy{transform:translateY(-1px)}
  
