@@ -22,6 +22,8 @@ const registerApi=async page=>{
     if(req.action==='citizen_list'){
       assert.equal(req.mobile,mobileNumber,'citizen history requested by existing mobile');
       body={items:records.filter(r=>r.citizenMobile===req.mobile)};
+    }else if(req.action==='lookup_imei_eligibility'){
+      body={eligible:['990001234567899','990001234567907','990001234567915'].includes(req.imei)};
     }else if(req.action==='submit'){
       assert.equal(req.mobile,mobileNumber,'submit links IMEI to the logged-in citizen');
       assert(Array.isArray(req.files)&&req.files.length===1,'citizen sends the uploaded document, not merely checklist titles');
@@ -139,6 +141,28 @@ try{
   assert.equal(await deviceDialog.locator('.neir-profile-detail-grid').count(),1,
     'IMEI details use a structured information grid');
   await deviceDialog.getByRole('button',{name:'Close dialog'}).click();
+  // Reuse the approved Device Information card and Special Registration modal.
+  await desktop.locator('#neir-profile-imei-search').fill('990001234567899');
+  await desktop.getByRole('button',{name:'Search device'}).click();
+  const eligibleResult=desktop.locator('.neir-profile-device-result');
+  await visible(eligibleResult.getByText('Eligible for Special Registration',{exact:true}),'eligible device status');
+  await visible(eligibleResult.getByText('This device is eligible for Special Registration. Apply to proceed with verification.'),'eligible guidance');
+  await eligibleResult.getByRole('button',{name:'Apply for Special Registration'}).click();
+  const eligibleWizard=desktop.getByRole('dialog',{name:'Special Registration',exact:true});
+  await visible(eligibleWizard,'approved prefilled Special Registration form');
+  assert.equal(await eligibleWizard.locator('#neir-v7-imei').inputValue(),'990001234567899',
+    'Search-to-Apply must preserve the exact 15-digit IMEI');
+  await screenshot(desktop,'02-eligible-imei-prefilled');
+  await eligibleWizard.getByRole('button',{name:'Close dialog'}).click();
+  await desktop.locator('#neir-profile-imei-search').fill('990001234567923');
+  await desktop.getByRole('button',{name:'Search device'}).click();
+  await visible(desktop.locator('.neir-profile-no-match'),'unknown IMEI does not become eligible');
+  assert.equal(await desktop.getByText('Eligible for Special Registration',{exact:true}).count(),0,
+    'Unlisted IMEIs must not be classified as eligible');
+  await desktop.locator('#neir-profile-imei-search').fill('12345678901234');
+  await desktop.getByRole('button',{name:'Search device'}).click();
+  await visible(desktop.locator('.neir-profile-device-result').getByText('Registered',{exact:true}),
+    'existing registered handset status preserved');
   await desktop.locator('.neir-special-table').getByRole('button',{name:'Details'}).first().click();
   const appDialog=desktop.getByRole('dialog',{name:'Special Registration details'});
   await visible(appDialog,'Special Registration details');
