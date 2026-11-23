@@ -75,9 +75,8 @@ button,input,select,textarea{font:inherit}
 .neir-guide-art--1{background:#D1C4E9}
 .neir-guide-art--2{background:#DCEDC8}
 .neir-source-guide-section{border-radius:32px;padding:48px 24px}
-@media(min-width:768px){
- .neir-source-hero{position:relative;left:-8px;width:calc(100% + 16px)}
-}
+/* Keep the desktop hero flush with the viewport; old -8px/extra-width
+   workaround shifted the centered content and broke source-width parity. */
 .neir-source-verify-short{display:none}
 .neir-source-mobile-auth{display:none}
 .neir-source-guide-inner{width:100%;max-width:var(--neir-home-content-max,1284px);margin:0 auto}
