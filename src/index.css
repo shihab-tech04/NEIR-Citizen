@@ -75,9 +75,8 @@ button,input,select,textarea{font:inherit}
 .neir-guide-art--1{background:#D1C4E9}
 .neir-guide-art--2{background:#DCEDC8}
 .neir-source-guide-section{border-radius:32px;padding:48px 24px}
-@media(min-width:768px){
- .neir-source-hero{position:relative;left:-8px;width:calc(100% + 16px)}
-}
+/* Keep the desktop hero flush with the viewport; old -8px/extra-width
+   workaround shifted the centered content and broke source-width parity. */
 .neir-source-verify-short{display:none}
 .neir-source-mobile-auth{display:none}
 .neir-source-guide-inner{width:100%;max-width:var(--neir-home-content-max,1284px);margin:0 auto}
@@ -269,10 +268,11 @@ button,input,select,textarea{font:inherit}
   #faq-section .neir-faq-intro{margin-bottom:24px}
 }
 
-/* Final desktop alignment from captured 1780px source viewport. The source contains
-   a 600px media frame and a 600px content column with a 40px gutter. */
+/* Desktop homepage: retain the approved source proportions—two fluid 600px
+   columns with a 40px gutter in a centered 1240px container at wide widths.
+   Fixed 626px columns + a horizontal translate previously inflated the hero. */
 @media(min-width:1500px) {
- .neir-source-hero-inner{max-width:1300px;grid-template-columns:626px 626px;gap:64px;transform:translateX(16px)}
+ .neir-source-hero-inner{max-width:1240px;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px;transform:none}
  .neir-source-description{margin-bottom:13px}
  .neir-source-hero-copy{transform:translateY(-1px)}
  

@@ -19,6 +19,23 @@ try {
     assert(home.headingVisible,'Homepage heading missing at '+width);
     assert(home.overflow<=4,'Home horizontal overflow at '+width+': '+home.overflow);
     assert(home.bodyFont.toLowerCase().includes('poppins'),'Poppins missing at '+width);
+    if(width>=1500){
+      const hero=await page.locator('.neir-source-hero-inner').evaluate(el=>{
+        const box=el.getBoundingClientRect();
+        const copy=el.querySelector('.neir-source-hero-copy').getBoundingClientRect();
+        const media=el.querySelector('.neir-source-hero-media').getBoundingClientRect();
+        return {width:box.width,center:box.left+box.width/2,
+          sectionCenter:(()=>{const section=el.closest('.neir-source-hero').getBoundingClientRect(); return section.left+section.width/2;})(),
+          gap:media.left-copy.right,
+          copyWidth:copy.width,mediaWidth:media.width};
+      });
+      assert(Math.abs(hero.width-1240)<=2,
+        'Wide NEIR homepage must use the source-sized 1240px grid: '+JSON.stringify(hero));
+      assert(Math.abs(hero.center-hero.sectionCenter)<=2,
+        'Wide homepage hero must be centered within its containing section');
+      assert(Math.abs(hero.gap-40)<=2 && Math.abs(hero.copyWidth-hero.mediaWidth)<=2,
+        'Wide homepage must preserve the two balanced source columns and 40px gutter');
+    }
     if(width<=390){
       for(const selector of ['#neir-imei-input','.neir-source-verify-button','.neir-source-mobile-language']){
         const geometry=await page.locator(selector).boundingBox();
