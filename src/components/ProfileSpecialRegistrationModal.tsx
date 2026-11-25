@@ -23,7 +23,6 @@ const documentSets: Record<Exclude<Reason, ''>, DocumentDefinition[]> = {
   ],
   airmail: [
     { id: 'courierBill', label: 'Courier Bill', required: false, purpose: 'Courier receipt with tracking and recipient details.' },
-    { id: 'packingList', label: 'Packing List', required: false, purpose: 'Item list showing the handset in the parcel.' },
     { id: 'commercialInvoice', label: 'Commercial Invoice', required: true, purpose: 'Invoice identifying the seller and handset.' },
   ],
 };
