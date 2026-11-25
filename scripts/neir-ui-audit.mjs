@@ -77,6 +77,10 @@ const wizard = requireText('src/components/ProfileSpecialRegistrationModal.tsx',
   'Download sample', 'Select how you purchased or received the device',
 ]);
 assert(!wizard.includes('setStage('), 'Special Registration must not regain a Continue dependency');
+const airmailChecklist = wizard.match(/airmail: \[([\s\S]*?)\],/)?.[1] ?? '';
+assert(!wizard.includes("id: 'packingList'"), 'Packing List must not be offered for new Special Registration applications');
+assert.deepEqual([...airmailChecklist.matchAll(/id: '([^']+)'/g)].map(match => match[1]), ['courierBill', 'commercialInvoice'], 'Air Mail must offer only Courier Bill and Commercial Invoice');
+assert(airmailChecklist.includes("label: 'Commercial Invoice', required: true") && airmailChecklist.includes("label: 'Courier Bill', required: false"), 'Existing document required/optional rules must remain');
 requireText('src/components/NeirModalFrame.tsx', ['aria-modal="true"', 'useNeirDialogFocus', 'neir-shared-dialog']);
 requireText('src/ui/useNeirDialogFocus.ts', ["event.key === 'Escape'", "event.key !== 'Tab'", 'previouslyFocused?.focus()', "document.body.style.overflow = 'hidden'"]);
 requireText('src/components/LoginModal.tsx', ['useNeirDialogFocus']);
