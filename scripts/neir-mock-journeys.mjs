@@ -352,7 +352,7 @@ try{
     const docRows=dlg.locator('.neir-v7-upload-group');
     assert.equal(await docRows.count(),3,'Air Mail has no Applicant Tax Document row');
     const actual=(await dlg.locator('.neir-v7-upload-title').allTextContents()).map(x=>x.trim().replace(/\s+/g,' '));
-    assert.deepEqual(actual, ['Courier Bill','Packing List','Commercial Invoice *'],'Air Mail invoice is the only required attachment');
+    assert.deepEqual(actual, ['Courier Bill','Commercial Invoice *'],'Air Mail invoice is the only required attachment');
     assert.equal(await dlg.getByText('Applicant Tax Document').count(),0,'Applicant Tax Document is removed');
     assert.equal(await dlg.locator('.neir-v7-required').count(),1,'one document required star');
     assert.equal(await dlg.locator('.neir-v7-optional').count(),0,'no optional labels beside names');
