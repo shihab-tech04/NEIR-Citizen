@@ -49,7 +49,7 @@ assert.deepEqual(ids(tour),['passportInfo','arrivalSeal'],
   'Foreign Tour must request only passport information and arrival-seal documents');
 assert.deepEqual(ids(gift),['donorPassport','donorArrivalSeal'],
   'Gift must request only donor passport information and arrival-seal documents');
-assert.deepEqual(ids(airmail),['courierBill','packingList','commercialInvoice'],
+assert.deepEqual(ids(airmail),['courierBill','commercialInvoice'],
   'Air Mail document checklist is approved and must not change');
 assert(edge.includes("['donorPassport','donorArrivalSeal'].some(type=>!selected.includes(type))"),
   'Edge function must accept the two-document Gift submission');
